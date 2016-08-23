@@ -193,7 +193,7 @@ image::images/appharbor-simplecalc-1.png[]
 
 If it failed, there will be a red crossed circle to the left of the build. As you can see, it took me a few tries to clean up my deployment. Click on the red crossed circle to see the build details page:
 
-.AppHarbor SimpleCalculator application page
+.AppHarbor SimpleCalculator build details page
 image::images/appharbor-build-details.png[]
 
 Click on the second "View Log" to see what the problems are. You may need to resort to StackOverflow if it is a configuration issue -- as you can see from the list of failures on my screen, I worked through a few configuration issues (now addressed in this writeup and associated .gitignore file).
