@@ -33,7 +33,7 @@ TODO: create a project and review the directories created. Which project type ma
 The second thing to figure out once you start coding is how to isolate and repair errors; we call this debugging.
 
 .https://en.wikipedia.org/wiki/Software_bug#/media/File:H96566k.jpg[An early computer bug] (Public Domain; work of a federal government employee)
-image::images/bug.jpg[The First Computer Bug: a Moth]
+image::images/bug.png[The First Computer Bug: a Moth]
 
 http://thenextweb.com/shareables/2013/09/18/the-very-first-computer-bug/#gref[Bill Burke's journal entry on September 9, 1947] captures an early use of the term bug for a problem in a computer - in this case a real bug, a moth in a relay.
 
