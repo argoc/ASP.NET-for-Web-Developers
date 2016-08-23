@@ -1,0 +1,58 @@
+= New to ASP: Razor, C#, ASP.NET
+Amelia Garripoli <agarripoli@olympic.edu>
+:doctype: book
+:source-highlighter: coderay
+:listing-caption: Listing
+:encoding: utf-8
+:lang: en
+:toc: left
+:toclevels: 2
+:numbered:
+
+
+
+
+////
+Generate book from directory with book.adoc in it with the command
+asciidoctor-pdf book.adoc
+prepare to be amazed
+////
+
+////
+Organize your book chapter by chapter
+////
+
+include::preface.adoc[]
+
+include::colophon.adoc[]
+
+include::dedication.adoc[]
+
+include::chapter-01.adoc[Web Development]
+
+include::chapter-02.adoc[Layouts and Web Design]
+
+include::chapter-03.adoc[Razor in Web Pages]
+
+include::chapter-04.adoc[C# Variables, Types, Expressions]
+
+include::chapter-05.adoc[C# Control Flow and Arrays]
+
+include::chapter-06.adoc[Deploying Web Page applications]
+
+include::chapter-07.adoc[C# methods, classes, and objects]
+
+include::chapter-08.adoc[Collections and Databases]
+
+include::chapter-09.adoc[Security and Accessibility]
+
+include::chapter-10.adoc[Validation]
+
+include::chapter-11.adoc[MVC]
+
+include::bibliography.adoc[]
+
+include::glossary.adoc[]
+
+include::index.adoc[]
+

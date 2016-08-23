@@ -1,0 +1,5 @@
+[colophon]
+:numbered!:
+== Colophon
+
+Produced using AsciiDocFX, AsciiDoctor, Google Drive, GitHub, and AppHarbor. Using material from other Open Educational Resources noted in the bibliography.

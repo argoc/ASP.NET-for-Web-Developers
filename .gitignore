@@ -1,0 +1,6 @@
+*.html
+*.pdf
+*~
+cheatsheet*
+cheatsheet*/*
+cheatsheet*/*.adoc

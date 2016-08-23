@@ -1,0 +1,14 @@
+[preface]
+:numbered!:
+== Introduction
+
+I wrote this book over my 2016 summer break, off-contract. My goal was to make the Introduction to ASP.NET class something approachable without requiring a heavy math background. It assumes that you have had programming and written small (100-line or more) programs successfully in an object-oriented language (such as Java or JavaScript); put together multi-page websites in HTML and CSS succcessfully; have used SQL in database systems; and desire to learn the ASP.NET environment.
+
+Due to time constraints, I've made heavy use of excellent OER resources written for Java; C# and Java share many similarities. That said, this could not have been accomplished without the excellent Microsoft Developer's Network resources at http://www.asp.net/ and http://www.msdn.com/
+
+This book will be covering Razor, C#, and the ASP.NET library.
+
+If you need a basis in HTML, I recommend the Microsoft Academy course, https://mva.microsoft.com/en-US/training-courses/html5-css3-fundamentals-development-for-absolute-beginners-14207[HTML5 & CSS3 Fundamentals: Development for Absolute Beginners]
+
+If you need a basis in SQL, I recommend http://sqlzoo.net/[SQLZoo's Tutorial] or Learn Code The Hard Way's http://sql.learncodethehardway.org/[Learn SQL The Hard Way].
+

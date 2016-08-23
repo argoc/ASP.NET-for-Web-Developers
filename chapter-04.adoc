@@ -1,0 +1,1590 @@
+== C# Variables and Expressions
+
+_Based on Think Java Chapter 2_
+
+You have already seen a little bit of C#. Now we are going to take a step back and cover the core features a bit more thoroughly.
+
+This chapter describes how to write statements using variables, which 
+store values like numbers and words, and operators, which are symbols 
+that perform a computation.
+We also explain three kinds of programming errors and offer additional 
+debugging advice.
+
+This chapter will cover primitive types, variables, literals, expressions, statements, and method calls.
+
+Later chapters will look into defining arrays, object classes, properties, and methods, and exception handling.
+
+=== Declaring variables
+
+One of the most powerful features of a programming language is the ability to define and manipulate variables.
+A variable is a named location that stores a value.
+Values may be numbers, strings, booleans, objects, and other types of data.
+To store a value, you first have to declare a variable.
+
+[source,java]
+----
+string message;
+----
+
+This statement is a declaration, because it declares that the variable named ``message`` has the type ``string``.
+Each variable has a type that determines what kind of values it can store.
+For example, the ``int`` type can store integers, and the ``char`` type can store characters.
+
+Some types begin with a capital letter and some with lowercase.
+We will learn the significance of this distinction later, but for now you should take care to get it right.
+There is no such type as ``Int``; there is actually a ``String`` type in C#, it is the system class defined to support the string primitive type, and there is also an Int32 type behind int.
+
+To declare an integer variable, the syntax is:
+
+[source,java]
+----
+int x;
+----
+
+Note that ``x`` is an arbitrary name for the variable.
+In general, you should use names that indicate what the variables mean.
+For example, if you saw these declarations, you could probably guess what values would be stored:
+
+[source,java]
+----
+string firstName;
+string lastName;
+int hour, minute;
+----
+
+This example declares two variables with type ``string`` and two with type ``int``.
+When a variable name contains more than one word, like ``firstName``, it is conventional to capitalize the first letter of each word except the first.
+Variable names are case-sensitive, so ``firstName`` is not the same as ``firstname`` or ``FirstName``.
+
+variable names can contain underscores and numbers as well as letters. By convention, start with a lowercase letter, start inner words with an uppercase letter, even when they are acronyms such as HTML (use Html within a name or html at the start of a name).
+
+This example also demonstrates the syntax for declaring multiple variables with the same type on one line: ``hour`` and ``minute`` are both integers.
+Note that each declaration statement ends with a semicolon.
+
+You can use any name you want for a variable.
+But there are about 50 reserved words, called keywords, that you are not allowed to use as variable names.
+These words include ``public``, ``class``, ``static``, ``void``, and ``int``, which are used by the compiler to analyze the structure of the program.
+
+You can find the complete list of keywords at https://msdn.microsoft.com/en-us/library/x53a06bb.aspx[https://msdn.microsoft.com/en-us/library/x53a06bb.aspx], but you don’t have to memorize them.
+Most programming editors provide “syntax highlighting”, which makes different parts of the program appear in different colors.
+
+C# also allows another form of variable declaration:
+
+[source, java]
+----
+var message = "Hello World";
+var age = 23;
+----
+
+The keyword ``var`` can be used in C# to declare a variable _if_ there is an initialization in the same statement -- the ``=`` is used to assign an initial value to the variable. The C# compiler uses this to determine the type of the variable. 
+
+The type is fixed at compile time by the type of the initialization value.
+
+In our example, ``message`` will be a ``string`` variable, and ``age`` will be an ``int`` variable.
+
+The initializer cannot be null (which is a special, untyped value).
+
+===  Assignment
+
+Now that we have declared variables, we want to use them to store values.
+We do that with an assignment statement.
+
+[source, java]
+----
+message = "Hello!";  // give message the value "Hello!"
+hour = 11;           // assign the value 11 to hour
+minute = 59;         // set minute to 59
+----
+
+This example shows three assignments, and the 
+comments illustrate different ways people sometimes talk about 
+assignment statements.
+The vocabulary can be confusing here, but the idea is straightforward:
+
+*   When you declare a variable, you create a named storage location.
+
+*   When you make an assignment to a variable, you update its value.
+As a general rule, a variable has to have the same type as the value you assign to it.
+For example, you cannot store a string in ``minute`` or an integer in ``message``.
+We will see some examples that seem to break this rule, but we’ll get to that later.
+
+A common source of confusion is that some strings __look__ like integers, but they are not.
+For example, ``message`` can contain the string ``"123"``, which is made up of the characters ``'1'``, ``'2'``, and ``'3'``.
+But that is not the same thing as the integer ``123``.
+
+[source, java]
+----
+message = "123";     // legal
+message = 123;       // not legal
+----
+
+Variables must be initialized (assigned for the first time) before they can be used.
+You can declare a variable and then assign a value later, as in the previous example.
+You can also declare and initialize on the same line:
+
+[source, java]
+----
+string message = "Hello!";
+int hour = 11;
+int minute = 59;
+----
+
+This is the same syntax we saw with the ``var`` declarations above.
+
+=== State diagrams
+
+Because C# uses the ``=`` symbol for assignment, it is tempting to interpret the statement ``a = b`` as a statement of equality.
+It is not!
+
+Equality is commutative, and assignment is not.
+For example, in mathematics if a = 7 then 7 = a.
+In C# ``a = 7;`` is a legal assignment statement, but ``7 = a;`` is not.
+The left side of an assignment statement has to be a variable name (storage location).
+
+Also, in mathematics, a statement of equality is true for all time.
+If a = b now, a is always equal to b.
+In C#, an assignment statement can make two variables equal, but they don’t have to stay that way.
+
+[source, java]
+----
+int a = 5;
+int b = a;     // a and b are now equal
+a = 3;         // a and b are no longer equal
+----
+
+The third line changes the value of ``a``, but it does not change the value of ``b``, so they are no longer equal.
+
+Taken together, the variables in a program and their current values make up the program’s state.
+This figure shows the state of the program after these assignment statements run:
+
+.State diagram of the varaibles ``a`` and ``b``
+image::images/variablevalues.png[]
+
+Diagrams like this one that show the state of the program are called state diagrams.
+Each variable is represented with a box showing the name of the variable
+ on the outside and the value inside.
+As the program runs, the state changes, so you should think of a state 
+diagram as a snapshot of a particular point in the execution.
+
+=== Constants
+
+Sometimes we want names for values even though they don't change. This cuts down on comments in the code, if the names are well-chosen. However, variable contents can be changed with a simple assignment statement. C# comes to the rescue with constants: add the keyword ``const`` before the variable declaration like so:
+
+[source,java]
+----
+const int meaning = 42;
+----
+
+The constant must be initialized when it is declared, and its value cannot be changed once it is declared.
+
+C# conventions say that local constants should be named just like local variables, with camel case (not all upper case as we see in other languages).
+
+=== Displaying values
+
+You can put the value of the variable on your web page with an inline expression.
+
+The following statements declare a variable named ``firstLine``, assign it the value ``"Hello, again!"``, and display that value.
+
+[source,java]
+----
+@{ string firstLine = "Hello, again!"; }
+<p>@firstLine</p>
+----
+
+When we talk about displaying a variable, we generally mean the __value__ of the variable.
+To display the __name__ of a variable, you have to put it in the HTML directly.
+
+[source,java]
+----
+<p> The value of firstLine is @firstLine</p>
+----
+
+For this example, the resulting HTML is:
+
+[source,java]
+----
+<p>The value of firstLine is Hello, again!</p>
+----
+
+Conveniently, the syntax for displaying a variable is the same regardless of its type.
+For example:
+
+[source,java]
+----
+@{
+int hour = 11;
+int minute = 59;
+}
+
+<p>The current time is @hour:@minute.</p>
+----
+
+For this example, the resulting HTML is:
+
+[source,java]
+----
+<p>The current time is 11:59.</p>
+----
+
+Note that the HTML formatting is required. Without the <p> tags, the text will run together even if you put whitespace between your un-tagged 'paragraphs'.
+
+=== Data types in C#
+
+Variables, constants, and literals all have a data type -- the type of the data. So far, you've seen int and char. C# has a rich set of built-in primitive types, as shown in the table below.
+
+|====================================
+|*type* | *description* | *range of values* | *literal*
+|byte | 8-bit unsigned integer | 0 - 255 | whole number in range
+|sbyte | 8-bit signed integer | -128 - 127 | whole number in range
+|short | 16-bit signed integer | -32,768 - 32,767 | whole number in range
+|ushort | 16-bit unsigned integer | 0 - 65,535 | whole number in range
+|int | 32-bit signed integer | - 2,147,483,648 - 2,147,483,647 | whole number i.e. 452
+| uint | 32-bit unsigned integer |  0 - 4,294,967,295 | whole number in range
+| long | 64-bit signed integer | -9,223,372,036,854,775,808 .. 9,223,372,036,854,775,807 | whole number with l sufficx, i.e. 452l
+| ulong | 64-bit unsigned integer | 0 .. 18,446,744,073,709,551,615 | ul suffix
+| float | 32-bit floating point (7 digits) | ±1.5e−45 to ±3.4e38 | decimal number with f suffix
+| double | 64-bit floating point (15 digits) |  ±5.0e−324 to ±1.7e308 | decimal number with optional d suffix 
+| decimal | 128-bit, 28 digits of precision | -79228162514264337593543950335 .. 79228162514264337593543950335 | decimal number with m suffix
+| char | 16-bit Unicode character | U+0000 - U+FFFF | single quotes around one character
+| string | sequence of Unicode characters | | double quotes around 0 or more characters or null (a special value meaning there is no value)
+| bool | Boolean value | true or false | true or false
+| object | An object |  | new creates one; null (more on this later)
+|====================================
+
+As you will see later, C# also allows you to define classes, which are object-oriented types you can then use in your programs. ASP.NET actually defines its own classes, which C# maps to these primitive types. So, `int` maps to ASP.NET's `Int32` and `string` maps to `String`. It is C#'s convention to capitalize class names, property names, and method names while the primitive types and local variables and local constants are initial lower case. Both use camel case.
+
+==== String.Format
+
+ASP.NET provides a helper method for formatting values. This is useful to truncate double values and also to display date time values.  This helper is ``String.Format``: the Format method on the system object String.
+
+Here is a first example of how String.Format works. Its first parameter is a format string, and the remaining parameters are expressions that are plugged into the format string.
+
+[source,java]
+----
+@String.Format("Hello, {0}.",name)
+----
+
+If the value in the variable name is "Dave", then the String.Format result is the string "Hello, Dave.".  name is the first expression in the list after the format string, and so it is put in place of the {0}, which is a specification for the first expression (Format uses 0-based counting).
+
+Here are some additional examples showing formatting and what it produces. Notice that the arguments do not need to be variables -- they can be any expression, a literal, a method call, or operations on them:
+
+|====
+| String.Format("{0:C}",23.456) | "$23.45" // C is for currency
+| String.Format("{0:0.00}", Math.PI) | "3.14" // the result is always a string
+| String.Format("{0:#,##0.00}", 123456789) | "123,456,789.00" // notice the .00
+| String.Format("{0,-6}{1,10},"Name","Phone") | "Name       Phone" // field widths: -6 left aligns; 10 right aligns
+| String.Format("It is now {0:d} at {0:t}", DateTime.Now) | 
+    "It is now 4/10/2015 at 10:04 AM" +
+    //notice the value is used in two places
+|====
+
+For more information on String.Format formats, see https://msdn.microsoft.com/en-us/library/system.string.format(v=vs.110).aspx and the links at the end of that page to numeric, date/time, and additional formatting options.
+
+
+=== Arithmetic operators
+
+Operators are symbols that represent simple computations.
+In C#, the arithmetic operators include the addition operator is ``+``, subtraction is ``-``, multiplication is ``*``,  division is ``/``, and remainder of division (modulus) is ``%``.
+
+The following code converts a time of day to minutes:
+
+[source,java]
+----
+@{
+  int hour = 11;
+  int minute = 59;
+ }
+
+<p>Number of minutes since midnight:
+   @(hour * 60 + minute)</p>
+----
+
+In this program, ``hour * 60 + minute`` is an expression, which represents a single value to be computed.
+When the program runs, each variable is replaced by its current value, and then the operators are applied.
+The values operators work with are called operands.
+
+The result of the previous example is:
+
+[source,java]
+----
+<p>Number of minutes since midnight: 719</p>
+----
+
+Expressions are generally a combination of numbers, variables, and operators.
+When complied and executed, they become a single value.
+
+For example, the expression ``1 + 1`` has the value ``2``.
+In the expression ``hour - 1``, C# replaces the variable with its value, yielding ``11 - 1``, which has the value ``10``.
+In the expression ``hour * 60 + minute``, both variables get replaced, yielding ``11 * 60 + 59``.
+The multiplication happens first, yielding ``660 + 59``.
+Then the addition yields ``719``.
+
+Addition, subtraction, and multiplication all do what you expect, but you might be surprised by division.
+For example, the following fragment tries to compute the fraction of an hour that has elapsed:
+
+[source,java]
+----
+<p>Fraction of the hour that has passed:
+@(minute / 60)</p>
+----
+
+The output is:
+
+[source,java]
+----
+<p>Fraction of the hour that has passed: 0</p>
+----
+
+This result often confuses people.
+The value of ``minute`` is 59, and 59 divided by 60 should be 0.98333, not 0.
+The problem is that C# performs “integer division” when the operands are integers.
+By design, integer division always rounds toward zero, even in cases like this one where the next integer is close.
+
+As an alternative, we can calculate a percentage rather than a fraction:
+
+[source,java]
+----
+<p>Percent of the hour that has passed:
+@(minute * 100 / 60)</p>
+----
+
+The new output is:
+
+[source,java]
+----
+<p>Percent of the hour that has passed: 98</p>
+----
+
+Again the result is rounded down, but at least now it’s approximately correct.
+
+==== Assignment and arithmetic
+
+C# defines several short-hand operators that combine arithmetic and assignment: +=, -=, *=, /=, and %=.
+
+These work like so:
+
+[source,java]
+----
+x += 2;
+----
+
+means
+[source,java]
+----
+x = x + 2;
+----
+
+The other operators work in the same manner.
+
+There is an even shorter form for +1 and -1, the post-fix (after) ++ and-- and pre-fix (before) ++ and -- operators.
+
+These have subtle impacts when embedded within other expressions.
+
+``x++`` and `++x`` both add one to x, changing the value in the variable x. However, the _value_ of ``x++` is x _before_ it is updated, while the value of `++x`` is the value of x _after_ it is updated.
+
+[source,java]
+----
+int x = 3;
+int y, z;
+
+y = x++; // y is now 3 and x is now 4
+z = ++x; // z is now 5 and x is now 5
+----
+
+
+=== Floating-point numbers
+
+A more general solution is to use floating-point numbers, which can represent fractions as well as integers.
+In C#, the default floating-point type is called ``double``, which is short for double-precision.
+You can create ``double`` variables and assign values to them using the same syntax we used for the other types:
+
+[source,java]
+----
+double pi;
+pi = 3.14159;
+----
+
+C# performs “floating-point division” when one or more operands are ``double`` values.
+So we can solve the problem we saw in the previous section:
+
+[source,java]
+----
+double minute = 59.0;
+<p>Fraction of the hour that has passed:
+@(minute / 60.0)</p>
+----
+
+The output is:
+
+[source,java]
+----
+<p>Fraction of the hour that has passed: 0.9833333333333333</p>
+----
+
+Although floating-point numbers are useful, they can be a source of confusion.
+For example, C# distinguishes the integer value ``1`` from the floating-point value ``1.0``, even though they seem to be the same number.
+They belong to different data types, and strictly speaking, you are not allowed to make assignments between types.
+
+The following is illegal because the variable on the left is an ``int`` and the value on the right is a ``double``:
+
+[source,java]
+----
+int x = 1.1;  // compiler error
+----
+
+It is easy to forget this rule because in many cases C# __automatically__ converts from one type to another:
+
+[source,java]
+----
+double y = 1;  // legal, but bad style
+----
+
+The preceding example should be illegal, but C# allows it by converting the ``int`` value ``1`` to the ``double`` value ``1.0`` automatically.
+This leniency is convenient, but it often causes problems for beginners.
+For example:
+
+[source,java]
+----
+double y = 1 / 3;  // common mistake
+----
+
+You might expect the variable ``y`` to get the value ``0.333333``, which is a legal floating-point value.
+But instead it gets the value ``0.0``.
+The expression on the right divides two integers, so C# does integer division, which yields the ``int`` value ``0``.
+Converted to ``double``, the value assigned to ``y`` is ``0.0``.
+
+One way to solve this problem (once you figure out the bug) is to make the right-hand side a floating-point expression.
+The following sets ``y`` to ``0.333333``, as expected:
+
+[source,java]
+----
+double y = 1.0 / 3.0;  // correct
+----
+
+As a matter of style, you should always assign floating-point values to floating-point variables.
+The compiler won’t make you do it, but you never know when a simple mistake will come back and haunt you.
+
+==== Rounding errors
+
+Most floating-point numbers are only __approximately__ correct.
+Some numbers, like reasonably-sized integers, can be represented exactly.
+But repeating fractions, like 1/3, and irrational numbers, like π, cannot.
+To represent these numbers, computers have to round off to the nearest floating-point number.
+
+The difference between the number we want and the floating-point number we get is called rounding error.
+For example, the following two statements should be equivalent:
+
+[source,java]
+----
+<p>@(0.1 * 10)</p>
+<p>@(0.1 + 0.1 + 0.1 + 0.1 + 0.1
+     + 0.1 + 0.1 + 0.1 + 0.1 + 0.1)</p>
+----
+
+But on many machines, the output is:
+
+[source,java]
+----
+<p>1.0</p>
+<p>0.9999999999999999</p>
+----
+
+The problem is that ``0.1``, which is a terminating fraction in base 10, is a repeating fraction in base 2.
+[NOTE]
+====
+In base 2, 0.1 is 0.000110011... The ... means that it keeps repepating 0011 over and over again; the computer has to cut it off, so cannot represent this value precisely. That is why they are called "floating point" or approximate numeric values.
+====
+
+So its floating-point representation is only approximate.
+When we add up the approximations, the rounding errors accumulate.
+
+For
+ many applications, like computer graphics, encryption, statistical 
+analysis, and multimedia rendering, floating-point arithmetic has 
+benefits that outweigh the costs.
+But if you need __absolute__ precision, use integers instead.
+For example, consider a bank account with a balance of $123.45:
+
+[source,java]
+----
+double balance = 123.45;  // potential rounding error
+----
+
+In this example, balances will become inaccurate over
+ time as the variable is used in arithmetic operations like deposits and
+ withdrawals.
+The result would be angry customers and potential lawsuits.
+You can avoid the problem by representing the balance as a decimal:
+
+[source,java]
+----
+decimal balance = 123.45m;      // decimal literal, 28 digits of precision
+----
+
+This solution works as long as the value does not exceed 28 digits.
+
+Note that there is an ``m`` after the value -- this tells the compiler the literal is a decimal literal, not a double literal.
+
+=== String operators
+
+In general, you cannot perform mathematical operations on strings, even if the strings look like numbers.
+The following expressions are illegal:
+
+[source,java]
+----
+"Hello" - 1     "World" / 123     "Hello" * "World"
+----
+
+The ``+`` operator works with strings, but it might not do what you expect.
+For strings, the ``+`` operator performs concatenation, which means joining end-to-end.
+So ``"Hello, " + "World!"`` yields the string ``"Hello, World!"``.
+
+Or if you have a variable called ``name`` that has type ``string``, the expression ``"Hello, " + name`` appends the value of ``name`` to the hello string, which creates a personalized greeting.
+
+Since addition is defined for both numbers and strings, C# performs automatic conversions you may not expect:
+
+[source,java]
+----
+@(1 + 2 + "Hello") @* the value is 3Hello *@
+
+@("Hello" + 1 + 2) @* the value is Hello12 *@
+----
+
+C# executes these operations from left to right.
+In the first line, ``1 + 2`` is ``3``, and ``3 + "Hello"`` is ``"3Hello"``.
+But in the second line, ``"Hello" + 1`` is ``"Hello1"``, and ``"Hello1" + 2`` is ``"Hello12"``.
+
+==== string methods
+
+In C#, even the primitive types are seen as objects. So, you can dot off of a string variable to invoke any of the methods defined on the string type. Many useful methods are defined, including:
+
+|====
+| CompareTo | compares the string to another string
+|Contains | determines if the string contains another string or character
+| EndsWith | determines if the string ends with another string
+| Equals | determines if the string is equal to another string
+| IndexOf | returns the first index of the provided char or string within the string
+| IsNullOrEmpty | returns true if the string is null or has no characters
+| IsNullOrWhitespace | returns true if the string is null or is a valid whitespace character (such as a space, tab, or other non-printing character)
+| LastIndexOf | returns the last index of the provided char or string within the string
+| PadLeft | pads the string on the left with the provided string or char
+| PadRight | pads the string on the right with the provided string or char
+| Remove | removes the provided char or string from the string
+| Replace | replaces a given char or string within the string with a new one 
+| Split | splits the string on the given char (returns an array of strings)
+| StartsWith | returns true if the string starts with the specified char or string
+| ToLower | converts the string to lower case
+| ToUpper | converts the string to upper case
+|====
+
+For the full list of string operators and their behavior, see https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx
+
+These methods do not actually change the current string -- those that return strings create a new string that holds the value described above. So to affect a variable, you would need to say, for example:
+
+[source,java]
+----
+string message = "Welcome to my Page";
+string thanks = "Thanks for Shopping";
+message = message.ToLower(); // message holds "welcome to my page"
+thanks.ToLower(); // thanks holds "Thanks for Shopping"
+----
+
+The second call to ToLower returns the new string, but since it isn't stored with an assignment statement, it isn't captured anywhere.
+
+
+==== string extensions in Razor
+
+In the Razor environment, string extensions provide a collection of conversion and test methods as well:
+
+|====
+| AsBool, AsDateTime, AsDecimal, AsFloat, AsInt | converts the string value to the specified type, returns a 0/false if it was not the type
+| IsBool, IsDateTime, IsDecimal, IsFloat, IsInt | returns true if the string value can be converted to a value of the specified type
+|====
+
+Any operators that would alter the string contents return a new string value, they do not modify the underlying string value.
+
+==== string properties
+In addition there are two properties available on string variables:
+
+
+|====
+| *Name* | *Description*
+| [x] | Gets the char at position ``x`` in the string (there is no dot operator before this)
+| Length | Gets the number of characters in the string
+|====
+
+
+==== ToString()
+
+All types in C# define a method `ToString()` that converts the value of the type to a string value. This is useful when you want to get a printable version of a value, or compare the value to that stored in a string.
+
+
+=== Precedence of operators
+
+When more than one operator appears in an expression, they are evaluated according to order of operations.
+Generally speaking, C# evaluates operators from left to right (as we saw in the previous section).
+But for numeric operators, C# follows mathematical conventions:
+
+*   Multiplication and division take “precedence” over addition and subtraction, which means they happen first.
+So ``1 + 2 * 3`` yields 7, not 9, and ``2 + 4 / 2`` yields 4, not 3.
+*   If the operators have the same precedence, they are evaluated from left to right.
+So in the expression ``minute * 100 / 60``, the multiplication happens first; if the value of ``minute`` is 59, we get ``5900 / 60``, which yields ``98``.
+If these same operations had gone from right to left, the result would have been ``59 * 1``, which is incorrect.
+*   Any time you want to override the order of operations (or you are not sure what it is) you can use parentheses.
+Expressions in parentheses are evaluated first, so ``(1 + 2) * 3`` is 9.
+You can also use parentheses to make an expression easier to read, as in ``(minute * 100) / 60``, even though it doesn’t change the result.
+Don’t work too hard to remember the order of operations, especially for other operators.
+If it’s not obvious by looking at the expression, use parentheses to make it clear.
+
+There are many operators defined in C#, similar to those found in Java, C, and other languages. This table provides the order of precedence of the operators from highest (first to evaluate) to lowest (last to evaluate). When the order of precedence is the same, expressions are evaluated from left to right.
+
+.Precedence and Associativity of C# Operators
+|====
+| **Symbol** | *Type of Operation* | *Associativity*
+| **()** | parentheses | left to right
+| **. ?. f(x) a[x] a?[x] x++ x-- new typeof sizeof** | Primary: member access, null conditional member access, function invocation, aggregate object indexing, null conditional indexing, postfix increment, postfix decrement, type instantiation, type object, size | left to right
+| **+x -x !x ~x (T)x**  | Unary positive, negative, negation, bitwise negation, type cast | Right to left
+| *** / %** | Multiplicative | Left to right
+| **+ –** | Additive | Left to right
+| **<< >>** | Bitwise shift | Left to right
+| **< > +<=+ >= Is As** | Relational and conversion | Left to right
+| **== !=** | Equality | Left to right
+| **&** | Bitwise-AND | Left to right
+| **^** | Bitwise-exclusive-OR | Left to right
+| **\|** | Bitwise-inclusive-OR | Left to right
+| **&&** | Logical-AND | Left to right
+| **\|\|** | Logical-OR | Left to right
+| **??** | Null coalesce | Left to right
+| **? :** | Conditional-expression | Right to left
+| **= *= /= %=** +
+**+++=++ –= +<<=+ >>= ** +
+** &= ^= \|=** +
+** +=>+ **| assignments and lambda | Right to left
+|====
+
+There are additional operators not included here, see https://msdn.microsoft.com/en-us/library/6a71f45d.aspx[MSDN C# Operators].
+
+===  Composition
+
+So far we have looked at the 
+elements of a programming language – variables, expressions, and 
+statements – in isolation, without talking about how to put them 
+together.
+
+One of the most useful features of programming languages is their ability to take small building blocks and compose them.
+For example, we know how to multiply numbers and we know how to display values.
+We can combine these operations into a single statement:
+
+[source,java]
+----
+@(17 * 3)
+----
+
+Any arithmetic expression can be used inside an inline expression.
+We’ve already seen one example:
+
+[source,java]
+----
+@(hour * 60 + minute)
+----
+
+You can also put arbitrary expressions on the right side of an assignment:
+
+[source,java]
+----
+@{
+  int percentage;
+  percentage = (minute * 100) / 60;
+ }
+----
+
+The left side of an assignment must be a variable name, not an expression.
+That’s because the left side indicates where the result will be stored, and expressions do not represent storage locations.
+
+[source,java]
+----
+hour = minute + 1;  // correct
+minute + 1 = hour;  // compiler error
+----
+
+The ability to 
+compose operations may not seem impressive now, but we will see examples
+ later on that allow us to write complex computations neatly and 
+concisely.
+But don’t get too carried away.
+Large, complex expressions can be hard to read and debug.
+
+=== Boolean operators
+
+C# has a primitive boolean type. These are very handy for storing simple states, testing conditions, and other operations. We will see they are heavily used in the C# flow-of-control statements.  They take on only two values: true or false.
+
+The operators on booleans include
+
+|====
+| && | logical and | both sides must be true for true result
+| ^^ | logical exclusive or | only one side can be true for true result
+| ! | logical not (unary operator) | reverses the value
+|====
+
+Also, comparison operators are supplied on all of the primitive types that result in boolean values: <, >, +<=+, >=, ==, !=, is.  Note that == tests equality, not =, which is for assignment statements. ``Is`` tests the type of a value and is true if the value has the type specified.
+
+Composition is used extensively with boolean expressions. For example, we might say
+
+[source,java]
+----
+// can I sell a movie ticket?
+bool okToSell = ((movie < 17) || (age >= 17)) && (cash > total);
+----
+
+In this code we are testing to see if we can sell a movie ticket: if the movie requires the person be over 17, then we check their age; and they have to have the money to buy the ticket. Notice the use of parentheses; the expression would not evaluate correctly without the outer pair on the left, since && is evaluated before || (but luckily () is evaluated before &&).
+
+=== General operators
+
+These operators work on a variety of types and return either the same type or another one
+
+|====
+| ?? | null coalescing | x??y is y if x is null, otherwise it is x
+| ?: | conditional operator | x?y:z is y if x is true, otherwise it is z
+| x++ | postfix addition | result is x before changing, but x is incremented after that
+| ++x | prefix addition | x is incremented and that new value is the result
+| sizeof(x) | size of | gives the size in bytes of the storage location or type
+| type(x) | type of | returns the object representing the type of the storage location
+|====
+
+=== Method calls
+
+We have already shown you method calls, as we are making use of ASP.NET throughout our code. When a method is called, it is called on an object (there is an implicit object for RenderBody, the current page). We call this "dotting off" of the object. The function name is given, and then values are specified to be passed to the method for it to use.  These are called the method's argument values. Argument values can be literals, variables, expressions, and even other function calls. They are evaluated and their value is copied and passed to the method. Any connection to a variable is broken at that point, as in C# "pass by copy" is used, with a copy of the value going into the method's parameters for use in the method.
+
+Methods can change the object they are invoked on, and can invoke methods on objects they are passed to change their state as well. It is important ot understand that it is not the original variable that changes, but only object state.
+
+=== Classes and Objects
+
+While we will not study objects in detail until
+a later chapter, it will be useful for you to know a
+little about them and about a closely related topic: classes. 
+ASP.NET's functionality is provided as a library of classes with properties and methods, 
+and to understand what they are doing we need to explain just a bit about objects and
+classes up front.
+
+==== Built-in methods and properties
+
+A method is a set of program instructions that have been
+chunked together and given a name.  A method is designed to perform some
+task.  To get that task performed in a program, you can "call" the method by dotting off of the object that it acts on.
+Later on you will learn how to write your own classes and methods, but you can get a lot done in a
+program just by calling methods that have already been written for you. In
+C#, every method is contained either in a class or in an object. Some classes
+that are standard parts of the C# language contain predefined methods
+that you can use. Even the primitive types are viewed as objects, and have methods that can be used to manipulate them.  These methods are
+"built into" the C# language, as part of ASP.NET.  You can call all these
+methods without understanding how they were written or how they work.
+Indeed, that's the whole point of methods: A method is a "black box"
+which can be used without knowing what goes on inside.
+
+Let's first consider methods that are part of a class.  One of the 
+purposes of a class is to group together some properties and methods,
+which are contained in that class.
+These properties and methods are called static members 
+of the class. You've seen one example: Math is actually a class, and has a static member called Pi, a static property on the class. The parts
+of a class definition that define static members are marked with the reserved
+word "static", as you will see when we cover class definition.
+
+When a class contains a static property or method, the name of the class is part
+of the full name of the property or method.  For example,
+the standard class named Math contains a method named
+Abs.  To use that method in your program, you must refer to it as
+Math.Abs.  This full name consists of the name of the class that contains
+the method, followed by a period, followed by the name of the method.
+This method requires a number as parameter, and returns a new number that is the absolute value, so you would actually use it with
+a method call expression such as
+
+----
+absVal = Math.Abs(val);
+----
+
+Calling Math.Abs will invoke a system utility provided in ASP.NET. That utility is provided in compiled form, and in fact may not even have been written in C# -- it doesn't matter.
+
+The Math class gives us an example of a class that contains
+static properties: Math.Pi and Math.E
+whose values are the mathematical constants π and e.
+Math also contains a large number of mathematical "functions."
+Every method performs some specific task. For some methods, that
+task is to compute or retrieve some data value. Methods of this type are
+called functions. We say that a function
+returns a value. Generally, the returned value is meant to be
+used somehow in the program that calls the function.
+
+You are familiar with the mathematical function that computes the square
+root of a number. The corresponding function in C# is called Math.Sqrt.
+This function is a static method in the class named Math.
+If x is any numerical value, then Math.Sqrt(x) computes and
+returns the square root of that value. Since Math.Sqrt(x) represents a
+value, it doesn't make sense to put it on a line by itself in a call
+statement such as
+
+[source,java]
+----
+Math.Sqrt(x);   // This doesn't make sense!
+----
+
+What, after all, would the computer do with the value computed by the
+function in this case? You have to tell the computer to do something with the
+value. You might tell the computer to display it:
+
+[source,java]
+----
+<p>@Math.Sqrt(x)</p>
+----
+
+or you might use an assignment statement to tell the computer to store that
+value in a variable:
+
+[source,java]
+----
+lengthOfSide = Math.Sqrt(x);
+----
+
+The function call Math.Sqrt(x) represents a value of type
+double, and it can be used anyplace where a numeric literal of type
+double could be used.
+
+The Math class contains many static member functions. Here is a
+list of some of the more important of them:
+
+*   Math.Abs(x), which computes the absolute value of x.
+*   The usual trigonometric functions, Math.Sin(x),
+Math.Cos(x), and Math.Tan(x). (For all the trigonometric
+functions, angles are measured in radians, not degrees.)
+*   The inverse trigonometric functions arcsin, arccos, and arctan, which are
+written as: Math.Asin(x), Math.Acos(x), and
+Math.Atan(x).  The return value is expressed in radians, not degrees.
+*   The exponential function Math.Exp(x) for computing the number e
+raised to the power x, and the natural logarithm function
+Math.Log(x) for computing the logarithm of x in the base
+e.
+*   Math.Pow(x,y) for computing x raised to the power
+y.
+*   Math.Floor(x), which rounds x down to the nearest integer
+value that is less than or equal to x.   Even though the return value is
+mathematically an integer, it is returned as a value of type double, rather than
+of type int as you might expect.   For example,
+Math.Floor(3.76) is 3.0.  The function Math.Round(x) returns
+the integer that is closest to x, and Math.Ceil(x) rounds x
+up to an integer.  ("Ceil" is short for "ceiling", the opposite of "floor.")
+
+For these functions, the type of the parameter -- the x or y inside
+the parentheses -- can be any value of any numeric type. For most of the functions, the value
+returned by the function is of type double no matter what the type of
+the parameter. However, for Math.Abs(x), the value returned will be
+the same type as x; if x is of type int, then so is
+Math.Abs(x). So, for example, while Math.Sqrt(9) is the
+double value 3.0, Math.Abs(9) is the int value
+9.
+
+You also saw the useful class DateTime, which has the very useful static property Now. Now is itself an object of type DateTime, representing the current system time. Because it is an object, not a class, you can call the instance methods and access the instance properties defined on the DateTime class. ("Instance" is the opposite of "static".) Instance properties and methods are defined for objects, not classes; you have to have an object instance to access them.
+
+It is useful to look at how long processing takes; to do that, you will need to access the `Ticks` instance property on Now; this is the number of 100-nanosecond intervals since 12:00:00 midnight, January 1, 0001. This is a long value. Recording this value at the start and after completion of
+a section of code, lets you measure the time that it takes the computer to perform a task.
+Remember that C# is executed on the web server, so the performance you are measuring is the web server's performance, not the client machine's.
+
+Here is a sample program that performs a few mathematical tasks and reports
+the time that it takes for the program to run. On some computers, the time
+reported might be zero, because it is too small to measure in ticks.
+Even if it's not zero, you can be sure that most of the time reported by the
+computer was spent doing output or working on tasks other than the program,
+since the calculations performed in this program occupy only a tiny fraction of
+a 100-nanosecond interval of a computer's time.
+
+.TimedComputation.cshtml
+[source,java]
+----
+/**
+ * This program performs some mathematical computations and displays the
+ * results.  It also displays the value of the constant Math.PI.  It then 
+ * reports the number of seconds that the computer spent on this task.
+ */
+
+public class TimedComputation {
+
+   public static void main(String[] args) {
+
+      long startTime; // Starting time of program, in milliseconds.
+      long endTime;   // Time when computations are done, in milliseconds.
+      double time;    // Time difference, in seconds.
+
+      startTime = System.currentTimeMillis();
+
+      double width, height, hypotenuse;  // sides of a triangle
+      width = 42.0;
+      height = 17.0;
+      hypotenuse = Math.sqrt( width*width + height*height );
+      System.out.print("A triangle with sides 42 and 17 has hypotenuse ");
+      System.out.println(hypotenuse);
+
+      System.out.println("\nMathematically, sin(x)*sin(x) + "
+                                       + "cos(x)*cos(x) - 1 should be 0.");
+      System.out.println("Let's check this for x = 1:");
+      System.out.print("      sin(1)*sin(1) + cos(1)*cos(1) - 1 is ");
+      System.out.println( Math.sin(1)*Math.sin(1) 
+                                        + Math.cos(1)*Math.cos(1) - 1 );
+      System.out.println("(There can be round-off errors when" 
+                                      + " computing with real numbers!)");
+
+      System.out.print("\nHere is a random number:  ");
+      System.out.println( Math.random() );
+
+      System.out.print("The value of Math.PI is ");
+      System.out.println( Math.PI );
+
+      endTime = System.currentTimeMillis();
+      time = (endTime - startTime) / 1000.0;
+
+      System.out.print("\nRun time in seconds was:  ");
+      System.out.println(time);
+
+   } // end main()
+
+} // end class TimedComputation
+----
+
+'''
+
+==== Classes and Objects
+
+Classes can be containers for static properties and methods.  However classes also have
+another purpose.  They are used to describe objects.  In
+this role, the class is a **type**, in the same way that int
+and double are types.  That is, the class name can be used to declare
+variables. Such variables can only hold one type of value. The values in this case are
+objects.  An object is a collection of properties and methods.
+Every object has an associated class that tells what "type" of object it is.
+The class of an object specifies what properties and methods that object contains.
+All objects defined by the same class are similar in that they contain similar collections
+of properties and methods.  For example, an object might represent a point in the plane,
+and it might contain properties named x and y to represent the
+coordinates of that point.  Every point object would have an x and a y,
+but different points would have different values for these properties.  A class, named
+Point, for example, could exist to define the common structure of
+all point objects, and all such objects would then be values of type Point.
+
+As another example, let's look at DateTime.Now.Time.  DateTime
+is a class, and Now is a static property within that class.  However, the value of 
+Date.Now is an **object**, and DateTime.Now.Time is actually
+the full name of a property that is contained in the object DateTime.Now.  You don't need to
+understand it at this point, but  the object referred to by DateTime.Now
+is an object of the class DateTime. **Any** object of type
+DateTime  has a Time
+property that can be used to get the time value from the object. The object in
+DateTime.Now is just one possible object, and
+DateTime.Now.Time is a property of that value. Other objects of type DateTime will
+have a Time property that holds their time value.
+This is object-oriented programming: Many different things which have something
+in common -- they can all be used to hold specific datetime values -- can all be
+used in the same way -- through accessing a Time property. The
+DateTime class expresses the commonalities among all these
+objects.
+
+The dual role of classes can be confusing, and in practice most classes are designed to
+perform primarily or exclusively in only one of the two possible roles.  Fortunately,
+you will not need to worry too much about it until we start working with objects in a
+more serious way, in a later chapter.
+
+By the way, since class names and variable names are used in similar ways, it might be
+hard to tell which is which. Remember that all the built-in, predefined names in C# follow
+the rule that class names begin with an upper case letter while variable names
+begin with a lower case letter. While this is not a formal syntax rule, I strongly
+recommend that you follow it in your own programming. Method and Property names should
+also begin with upper case letters. This way there is no possibility of confusing a
+variable with a property, since a variables start with lower case and properties with uppercase. 
+
+In other languages, you may run across the terms function and procedure -- in non-OO languages, there
+are no methods, but stand-alone named routines that are called directly, not dotted off of classes
+or objects. A function returns a value, and a procedure does not. In C#, we call them both methods, and put those that do not return values in statements and those that do return values in expressions. If you put a function or method returning a value alone in a statement, then the value that is returned is lost, not captured anywhere.
+
+Java refers to properties as variables; however as we will see when we define classes, C# diverges quite a bit from Java in how it defines properties, making them unique and more powerful than the static and instance variables defined in Java classes.
+
+
+==== The Random class
+
+Some classes are very useful, but do not provide static properties. These require that you generate instances usually for security or multi-processing thread safety. Random gives you the ability to generate random numbers, very useful to simulate behavior in programs, as we will see throughout this text.
+
+However, when you generate a random number, you change the state of the Random object; if you have methods that may run at the same time, you have to be careful that those methods do not attempt to update the same object at the same time. This is referred to as thread safety. C# contains syntax and operations to provide the ability to control object updates, however that is advanced C# programming. We will rely on the fact that our code runs in a single thread, so we can safely create a Random object instance and request numbers from it without being concerned about thread safety.
+
+How do you create an instance of a class? You use the special new expression and invoke a special method on a class called a constructor.  You will store this new object in a variable, like so:
+
+[source,java]
+----
+Random rand = new Random();
+----
+
+Once you have a Random object instance, you have a variety of methods available to you:
+
+|===
+|Method | Description
+| Next()] | Returns a non-negative random integer.
+| Next(i)] | Returns a non-negative random integer that is less than the specified maximum integer i.
+| Next(low, high)] | Returns a random integer that is within a specified range of low..high.
+| NextBytes(Byte[])] | Fills the elements of a specified array of bytes with random numbers.
+| NextDouble()] | Returns a random floating-point number that is greater than or equal to 0.0, and less than 1.0.
+| Sample()] | Returns a random floating-point number between 0.0 and 1.0.
+|===
+
+You would not create a new Random object for each random number you need -- rather, you should create a Random object and reuse it as much as possible within your code.
+
+How random is Random? According to Microsoft, "The chosen numbers are not completely random because a 
+mathematical algorithm is used to select them, but they are sufficiently
+random for practical purposes." Microsoft supplies cryptography classes that are more random, but have
+slower performance. Read more about them here https://msdn.microsoft.com/en-us/library/system.random(v=vs.110).aspx
+
+==== Enums
+
+C# has a very rich type system; it contains not only a significant set of primitive types and object-oriented classes but also the ability to define structs -- simple types that contain only fields; and enums -- simple types that have a limited number of values. As they cannot be directly defined in Web Pages, we will save discussing them until we cover defining classes in C#.
+
+////
+C# comes with many built-in primitive types and a large set of types that
+are defined by classes, such as DateTime.  But even
+this large collection of types is not sufficient to cover all the possible situations
+that a programmer might have to deal with.  So, an essential part of C#, just like
+almost any other programming language, is the ability to create **new** types.  For the
+most part, this is done by defining new classes; you will learn how to do that
+in a later chapter.  But you can define a much simpler type in C#, an enum (short for
+enumerated types).
+
+Technically, an enum is considered to be a special kind of class, but that 
+is not important for now.  In this section, we will look at enums in a simplified
+form.  In practice, most uses of enums will only need the simplified form
+that is presented here.
+
+An enum is a type that has a fixed list of possible values, which is specified
+when the enum is created.  In some ways, an enum is similar to the bool
+data type, which has true and false as its only possible
+values.  However, bool is a primitive type, while an enum is not.
+
+The definition of an enum type has the (simplified) form:
+
+----
+enum enum-type-name { list-of-enum-values };
+----
+
+This definition cannot be inside a method.  The enum-type-name can be any simple identifier.
+This identifier becomes the name of the enum type, in the same way that "bool" is the name of
+the boolean type and "DateTime" is the name of the DateTime type.
+Each value in the list-of-enum-values must be a simple identifier,
+and the identifiers in the list are separated by commas.  For example, here is the definition
+of an enum type named Season whose values are the names of the four seasons of the year:
+
+----
+enum Season { Spring, Summer, Fall, Winter };
+----
+
+By convention, enum values are given names that start with upper case, but that is
+a style guideline and not a syntax rule.  An enum value is a constant; that is,
+it represents a fixed value that cannot be changed.  The possible values of an enum type are usually referred
+to as enum constants.
+
+Note that the enum constants of type Season are considered to be "contained in"
+Season, which means -- following the convention that compound identifiers
+are used for things that are contained in other things -- the names that you actually
+use in your program to refer to them are Season.Spring, Season.Summer, 
+Season.Fall, and Season.Winter.
+
+Once an enum type has been created, it can be used to declare variables in exactly
+the same ways that other types are used.  For example, you can declare a variable
+named vacation of type Season with the statement:
+
+----
+Season vacation;
+----
+
+After declaring the variable, you can assign a value to it using an assignment statement.
+The value on the right-hand side of the assignment can be one of the enum constants of
+type Season.  Remember to use the full name of the constant, including
+"Season"!  For example:
+
+----
+vacation = Season.Summer;
+----
+
+You can print out an enum value stored in a variable. The output value will be the name of the enum value, not qualified by the enum name. If you want its ordinal position, you would typecase it to an int. The ordinal position of the enum value in the enum definition starts at 0. In this case,
+the ordinal value of Summer is 1.
+
+For more about enums see https://msdn.microsoft.com/en-us/library/sbbt4032.aspx and https://msdn.microsoft.com/en-us/library/cc138362.aspx.
+
+Using enums can make a program more readable, since you can use meaningful names for the values.
+And it can prevent certain types of errors, since a compiler can check that the values assigned
+to an enum variable are in fact legal values for that variable. In particular, enums can be used in switch statements.
+
+However, we will in fact use enums only occasionally in this book.  For now, you should just appreciate
+them as the first example of an important concept: creating new types.
+Here is a little example that shows enums being used in a complete program:
+
+.EnumDemo.cshtml
+[source,java]
+----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Enum Demo</title>
+    <meta name="viewport" content="width=device-width" />
+</head>
+<body>
+@{
+//not working because these can't be here. must be in separate .cs files with classes....
+    enum Day { Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday }
+
+    enum Month { Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec }
+
+    Day tgif = Day.Friday;     // Declare a variable of type Day.
+    Month libra = Month.Oct;  // Declare a variable of type Month.
+
+//    tgif = Day.Friday;    // Assign a value of type Day to tgif.
+ //   libra = Month.Oct;    // Assign a value of type Month to libra.
+
+    <p>
+        My sign is libra, since I was born in @libra
+        That's the @((int)libra)-th month of the year.
+        (Counting from 0, of course!)
+    </p>
+    <p>
+        Isn't it nice to get to @tgif.
+        @tgif is the @((int)tgif)-th day of the week.
+    </p>
+}
+</body>
+</html>
+----
+////
+
+=== Types of errors
+
+Three kinds of errors can occur in a program: compile-time errors, run-time errors, and logic errors.
+It is useful to distinguish among them in order to track them down more quickly.
+
+Compile-time errors occur when you violate the syntax rules of the C# language.
+For example, parentheses and braces have to come in matching pairs.
+So ``(1 + 2)`` is legal, but ``8)`` is not.
+In the latter case, the program cannot be compiled, and the compiler displays an error.
+
+Error
+ messages from the compiler usually indicate where in the program the 
+error occurred, and sometimes they can tell you exactly what the error 
+is.
+As an example, let’s take a simple web page body named Hello.cshtml:
+
+.Hello.cshtml
+[source,java]
+----
+@{
+   var message = "Hello, World";
+  }
+  
+<p>@message</p>
+----
+
+If you forget the semicolon at the end of the variable declaration, you might get an error message like this:
+
+[source,java]
+----
+Hello.cshtml(7,33): error CS1002: ; expected
+----
+
+That’s pretty good: the location of the error is correct, and the error message tells you what’s wrong.
+
+But error messages are not always easy to understand.
+Sometimes the compiler reports the place in the program where the error was detected, not where it actually occurred.
+And sometimes the description of the problem is more confusing than helpful.
+
+For example, if you leave out the closing brace at the end of the Razor block, you may get an error like this:
+
+[source,java]
+----
+Hello.cshtml(6): Build (web): The code block is missing a closing "}" character.  Make sure you have a matching "}" character for all the "{" characters within this block, and that none of the "}" characters are being interpreted as markup.  
+----
+
+There are two problems here.
+First, the error message is written from the compiler’s point of view, not yours.
+Parsing is the process of reading a
+ program before translating; if the compiler gets to the end of the file
+ while still parsing, that means something was omitted.
+But the compiler doesn’t know what.
+It also doesn’t know where.
+The compiler discovers the error at the end of the program (line 6), but
+ the missing brace should be 2 lines above that.
+
+Error messages contain useful information, so you should make an effort to read and understand them.
+But don’t take them too literally.
+
+During the first few weeks of your programming career, you will probably spend a lot of time tracking down compile-time errors.
+But as you gain experience, you will make fewer mistakes and find them more quickly.
+
+The second type of error is a run-time error, so-called because it does not appear until after the program has started running.
+In C#, these errors occur while the interpreter is executing byte code and something goes wrong.
+These errors are also called “exceptions” because they usually indicate that something exceptional (and bad) has happened.
+
+Run-time
+ errors are rare in the simple programs you will see in the first few 
+chapters, so it might be a while before you encounter one.
+When a run-time error occurs, the interpreter displays an error message 
+that explains what happened and where.
+
+For example, if you accidentally divide by zero you will get a message like this in Visual Studio:
+
+[source,java]
+----
+An exception of type 'System.DivideByZeroException' occurred in App_Web_zst0xju3.dll but was not handled in user code
+
+Additional information: Attempted to divide by zero.
+----
+
+Some parts of this output are useful for debugging.
+The first line includes the name of the exception, ``System.DivideByZeroException'``, and a message that indicates more specifically what happened, ``Attempted to divide by zero``.
+If you look into the detail of the error (click View Detail...), and then open the exception up, you will see the file where the error occurred in the Stack Trace:
+
+[source,java]
+----
+   at ASP._Page_Hello_cshtml.Execute() in Hello.cshtml:line 13
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy(IEnumerable`1 executors)
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+----
+
+It also reports the line number where the error occurred, ``13``. The other  items listed in the stack trace show the internal handling of your web page by the web server, and are unlikely to have caused the issue.
+
+Error messages sometimes contain additional information that won’t make sense yet.
+So one of the challenges is to figure out where to find the useful parts without being overwhelmed by extraneous information.
+Also, keep in mind that the line where the page crashed may not be the line that needs to be corrected.
+
+The third type of error is the logic error.
+If your program has a logic error, it will compile and run without 
+generating error messages, but it will not do the right thing.
+Instead, it will do exactly what you told it to do.
+For example, here is a version of the hello world program with a logic 
+error:
+
+[source,java]
+----
+@{ hours = 11;
+   minutes = 30;
+ }
+ 
+<p>The portion of the hour taken up is @(minutes/60)</p>
+----
+
+This program compiles and runs just fine, but the output is:
+
+[source,java]
+----
+<p>The portion of the hour taken up is 0</p>
+----
+
+Assuming that we wanted the value 0.5, this is not correct.
+The problem is that the math is integer division, when double precision was desired.
+
+Identifying
+ logic errors can be hard because you have to work backwards, looking at
+ the output of the program, trying to figure out why it is doing the 
+wrong thing, and how to make it do the right thing.
+Usually the compiler and the interpreter can’t help you, since they 
+don’t know what the right thing is.
+
+Remember to re-read Chapter 1, to review some of our favorite debugging advice.
+It refers to language features we haven’t talked about yet, so you might want to re-read it from time to time.
+
+=== Data types in C#
+
+|====================================
+|*type* | *description* | *range of values* | *literal*
+|byte | 8-bit unsigned integer | 0 - 255 | whole number in range
+|sbyte | 8-bit signed integer | -128 - 127 | whole number in range
+|short | 16-bit signed integer | -32,768 - 32,767 | whole number in range
+|ushort | 16-bit unsigned integer | 0 - 65,535 | whole number in range
+|int | 32-bit signed integer | - 2,147,483,648 - 2,147,483,647 | whole number i.e. 452
+| uint | 32-bit unsigned integer |  0 - 4,294,967,295 | whole number in range
+| long | 64-bit signed integer | -9,223,372,036,854,775,808 .. 9,223,372,036,854,775,807 | whole number with l sufficx, i.e. 452l
+| ulong | 64-bit unsigned integer | 0 .. 18,446,744,073,709,551,615 | ul suffix
+| float | 32-bit floating point (7 digits) | ±1.5e−45 to ±3.4e38 | decimal number with f suffix
+| double | 64-bit floating point (15 digits) |  ±5.0e−324 to ±1.7e308 | decimal number with optional d suffix 
+| decimal | 128-bit, 28 digits of precision | -79228162514264337593543950335 .. 79228162514264337593543950335 | decimal number with m suffix
+| char | 16-bit Unicode character | U+0000 - U+FFFF | single quotes around one character
+| string | sequence of Unicode characters | | double quotes around 0 or more characters
+| bool | Boolean value | true or false | true or false
+| object | An object |  | new creates one; null (more on this later)
+|====================================
+
+Implicit type conversion will occur when a loss of significant digits will not occur. For example, a byte will be implicitly converted to an int (exactly) and even to a double (though the exact value may be lost on the conversion) since the range of the double will fit the range of the byte.
+
+|====
+| *From* | *To*
+| sbyte | **short**, **int**, **long**, **float**, **double**, or **decimal**
+| byte | **short**, **ushort**, **int**, **uint**, **long**, **ulong**, **float**, **double**, or **decimal**
+| short | **int**, **long**, **float**, **double**, or **decimal**
+| ushort | **int**, **uint**, **long**, **ulong**, **float**, **double**, or **decimal**
+| int | **long**, **float**, **double**, or **decimal**
+| uint | **long**, **ulong**, **float**, **double**, or **decimal**
+| long | **float**, **double**, or **decimal**
+| char | **ushort**, **int**,** uint**,** long**, **ulong**,** float**,** double**, or **decimal**
+| float | **double**
+| ulong | **float**,** double**, or **decimal**
+|====
+
+
+*   Precision but not magnitude might be lost in the conversions from **int**, **uint**,  **long**, or **ulong** to **float** and from **long** or **ulong** to **double**.
+
+*   There are no implicit conversions to the **char** type. But note that char is treated as a numeric that can convert to many other types.
+
+*   There are no implicit conversions between floating-point types and the **decimal** type. This is because decimal is an exact numeric but the floating-point types are approximate numeric types.
+
+*   A constant expression of type **int** can be converted to **sbyte**, **byte**, **short**, **ushort**, **uint**, or **ulong**, provided the value of the constant expression is within the range of the destination type.
+
+* There are no implicit conversions with boolean.
+
+Explicit converstion can be done with the cast operator, like so:
+
+[source,java]
+----
+double val = (double)42;
+----
+
+The type of the cast is put in parentheses in front of the expression being converted.
+
+Notes on explicit conversions from https://msdn.microsoft.com/en-us/library/yht2cx7b.aspx[Microsoft]:
+
+*   The explicit numeric conversion may cause loss of precision or result in throwing exceptions.
+*   When you convert a **decimal**
+ value to an integral type, this value is rounded towards zero to the
+nearest integral value. If the resulting integral value is outside therange of the destination type, an *OverflowException* is thrown.
+*   When you convert from a **double** or **float**
+ value to an integral type, the value is truncated. If the resulting
+integral value is outside the range of the destination value, the result
+ depends on the overflow checking context. In a checked context, an **OverflowException** is thrown, while in an unchecked context, the result is an unspecified value of the destination type.
+
+*   When you convert **double** to **float**, the **double** value is rounded to the nearest **float** value. If the **double** value is too small or too large to fit into the destination type, the result will be zero or infinity.
+
+*   When you convert **float** or **double** to **decimal**, the source value is converted to **decimal**
+ representation and rounded to the nearest number after the 28th decimal
+ place if required. Depending on the value of the source value, one of
+the following results may occur:
+
+    **  If the source value is too small to be represented as a **decimal**, the result becomes zero.
+
+    **   If the source value is NaN (not a number), infinity, or too large to be represented
+    as a **decimal**, an **OverflowException** is thrown.
+    
+*   When you convert **decimal** to **float** or **double**, the **decimal** value is rounded to the nearest **double** or **float** value.
+
+There is another type of conversion, a user-defined conversion. An example of this are the .AsInt(), AsBoolean(), and other methods supplied on the string type which are used to convert the string to a value of the other type. The rules are defined in the method as to how the conversion is done.
+
+
+=== Namespaces
+
+Every class in C# is contained in something called a namespace.
+Classes that are not explicitly  put into a  namespace are in the "default" namespace.
+Almost all the examples in this textbook are in the default namespace, and I will not
+even discuss namespaces in any depth until we look at classes and objects in detail in a later chapter.  However,
+the classes we use from ASP.NET will come from a variety of namespaces, so we will take a look at them now.
+
+Namespaces are a way of grouping classes, identifying them as filling a common purpose and keeping them separate from classes with a different purpose. They use the dot notation we are already familiar with from accessing properties and methods. You can define a namespace as a top-level namespace or within another namespace.  ASP.NET defines a top-level System namespace; the classes that we use from ASP.NET are actually in the System namespace, which is "always available" no matter what your current namespace is.
+
+To use classes from other namespaces, you have to make them visible to your web page with a @using statement:
+
+[source,java]
+----
+@using System.Collections
+----
+
+This makes the classes in the namespace System.Collection visible. We will be using collections quite a bit when we look at databases in a later chapter.
+
+Our Web Pages (.cshtml files) reside in the default namespace. We can do the same with our C# classes, or place them into namespaces to keep them apart and organize them in groups based on their use. C# classes will also include using statements to make classes in other namespaces visible to them.
+
+
+=== Further Reading
+
+* C# Succinctly Chapter 2 https://www.syncfusion.com/resources/techportal/ebooks/csharp (requires account)
+* https://msdn.microsoft.com/en-us/library/cs7y5x0x(v=vs.90).aspx Data types
+* https://msdn.microsoft.com/en-us/library/wew5ytx4(v=vs.90).aspx Variables
+* https://msdn.microsoft.com/en-us/library/x53a06bb.aspx Keyword List
+* https://msdn.microsoft.com/en-us/library/bb384061.aspx var declarations
+* https://msdn.microsoft.com/en-us/library/y5b434w4.aspx implicit conversion
+* https://msdn.microsoft.com/en-us/library/yht2cx7b.aspx explicit conversion
+* https://msdn.microsoft.com/en-us/library/ms173105.aspx casting and conversions
+* https://msdn.microsoft.com/en-us/library/ff926074.aspx coding conventions
+* https://msdn.microsoft.com/en-us/library/system.string_methods(v=vs.110).aspx string methods
+* https://msdn.microsoft.com/en-us/library/system.web.webpages.stringextensions(v=vs.111).aspx string extensions
+* https://msdn.microsoft.com/en-us/library/sbbt4032.aspx enum reference
+https://msdn.microsoft.com/en-us/library/cc138362.aspx enum programming guide
+
+
+
+===  Exercises
+
+
+1. Find a partner and play “Stump the Newbie”:
++
+Start with a 
+web page that compiles and displays correctly.
+One player looks away while the other player adds an error to the 
+program.
+Then the first player tries to find and fix the error.
+You get two points if you find the error without compiling the program, 
+one point if you find it using the compiler, and your opponent gets a 
+point if you don’t find it.
+
+
+2. The point of this exercise is (1) to use string concatenation to display values with different types (``int`` and ``string``), and (2) to practice developing applications gradually by adding a few statements at a time.
++
+..  Create a new page named Date.cshtml.
+Copy or type in something like the hello world program and make sure you can compile and run it.
+
+..  Following the example in the text, write a program that creates variables named ``day``, ``date``, ``month``, and ``year``.
+The variable ``day`` will contain the day of the week (like Friday), and ``date`` will contain the day of the month (like the 13th).
+What type is each variable?
+Assign values to those variables that represent today’s date.
+
+..  Display the value of each variable on a line by itself.
+This is an intermediate step that is useful for checking that everything is working so far.
+Compile and run your page before moving on.
+
+.. Modify the program so that it displays the date in standard American format, for example: Thursday, July 16, 2015.
+
+.. Modify the program so it also displays the date in European format.
+The final output should be:
++
+[source,java]
+----
+American format: Thursday, July 16, 2015
+
+European format: Thursday 16 July 2015
+----
+
+[start=3]
+. The
+ point of this exercise is to (1) use some of the arithmetic operators, 
+and (2) start thinking about compound entities (like time of day) that 
+are represented with multiple values.
+..  Create a new page called Time.cshtml.
+From now on, we won’t remind you to start with a small, working program, but you should.
+..  Following the example program in this chapter, create variables named ``hour``, ``minute``, and ``second``.
+Assign values that are roughly the current time.
+Use a 24-hour clock so that at 2pm the value of ``hour`` is 14.
+..  Make the program calculate and display the number of seconds since midnight.
+..  Calculate and display the number of seconds remaining in the day.
+..  Calculate and display the percentage of the day that has passed.
+You might run into problems when computing percentages with integers, so consider using floating-point.
+..  Change the values of ``hour``, ``minute``, and ``second`` to reflect the current time using DateTime.Now.Hour, DateTime.Now.Minute, and DateTime.Now.Second.
+Then write code to compute the elapsed time since you started working on this exercise.
+Hint: You might want to use additional variables to hold values during the computation.
+Variables that are used in a computation but never displayed are sometimes called “intermediate” or “temporary” variables.
+
+.  Write a Web Page that
+simulates rolling a pair of dice. You can simulate rolling one die by choosing
+one of the integers 1, 2, 3, 4, 5, or 6 at random. The number you pick
+represents the number on the die after it is rolled. As pointed out in this chapter, the expression
+`rand.NextInt(6) + 1` does the computation to select a random integer between 1 and 6 if rand holds an instance of the class Random.
+You can assign this value to a variable to represent one of the dice that are
+being rolled. Do this twice and add the results together to get the total roll.
+The content of the <body> should all be generated in a Razor code block.
+Your Web Page should report the number showing on each die as well as the total
+roll. For example:
++
+[source,java]
+----
+The first die comes up 3
+The second die comes up 5
+Your total roll is 8
+----
+
+. Write a Web Page that asks
+the user's name, and then takes them to a new page that greets the user by name. Before outputting the user's
+name, convert it to upper case letters. For example, if the user's name is
+Fred, then the program should respond "Hello, FRED, nice to meet you!". This should be two pages, with the form on the first page and the output on a separate page.
+
+. Write a Web Page that helps
+the user count his change. The program should ask how many quarters, dimes, nickels, and pennies
+the user has. Then
+the program should tell the user how much money he has, expressed in
+dollars. Do this as a single page application, and show the values in the fields when you display the result. This will require putting a Razor code block before the form, and using an inline expression
+to output the answer after the form. HTML forms will display values using the `value` attribute on the form field elements.
+
+. If you have N
+eggs, then you have N/12 dozen eggs, with N%12 eggs left
+over. (This is essentially the definition of the / and %
+operators for integers.) Write a Web Page that asks the user how many eggs she
+has and then tells the user how many dozen eggs she has and how many extra eggs
+are left over.
++
+A gross of eggs is equal to 144 eggs. Extend your Web Page so that it will
+tell the user how many gross, how many dozen, and how many left over eggs she
+has. For example, if the user says that she has 1342 eggs, then your program
+would respond with
++
+[source,java]
+----
+Your number of eggs is 9 gross, 3 dozen, and 10
+----
++
+since 1342 is equal to 9*144 + 3*12 + 10.
++
+Implement this as a single page web application, and provide the user with an appropriate message
+if the input value is not an integer.
+
+. This exercise asks you to write a Web Page that tests
+some of the built-in subroutines for working with strings.
+The program should ask the user to enter their first name and their last name, separated
+by a space, in one form field.
+Break the input string up into two strings, one containing the first name
+and one containing the last name.  You can do that by using the IndexOf()
+subroutine to find the position of the space, and then using Substring()
+to extract each of the two names.  Also output the number of characters in each 
+name, and output the user's initials.  (The initials are the first letter of
+the first name together with the first letter of the last name.)
+ A sample output with the input "Mary Smith" should look something like this:
++
+[source,java]
+----
+Your first name is Mary, which has 4 characters
+Your last name is Smith, which has 5 characters
+Your initials are MS
+----
+
+
+=== Lab
+
+One feature you may be using in your project is Geolocation, which is available in browsers as shown here http://www.w3schools.com/html/html5_geolocation.asp.
+
+http://apress.jensimmons.com/v5/pro-html5-programming/ch5.html a very thorough overview of HTML5 geolocation with the distance formula shown below (which was found on stack overflow).
+
+It's pretty easy to find distance-between calculations in JavaScript, however you will need to do the computation on the server side as you work through a large (potentially) database of locations relative to the user's current location. You don't want to copy all the data to the client, so you will need to do it on the server.
+
+Write a web page that takes the user's current location in a form, and then computes (on the same page, like we did in the simple calculator in Chapter 3) the distance between the user's location and a fixed location of your choosing. Put that fixed location into constant(s) in your code, do not hard code them.
+
+http://stackoverflow.com/questions/365826/calculate-distance-between-2-gps-coordinates proposes this code, among others:
+
+----
+Number.prototype.toRad = function() { return this * (Math.PI / 180); }
+
+var R = 6371.0; // Earth's radius in kilometers
+var Rm = 6378137.0; // meters
+var Rft = Rm * 100.0/2.54/12.0; // feet
+var Rmi = Rft/5280.0; // miles
+
+var dLat = (lat2-lat1).toRad();
+var dLon = (lon2-lon1).toRad();
+var lat1 = lat1.toRad();
+var lat2 = lat2.toRad();
+
+var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+var d = R * c; // km results, use the other vars for their results
+----
+
+(why yes, your C# code will look quite similar...)
+          
+
+http://www.movable-type.co.uk/scripts/latlong.html a bit too nerdy but interesting explanation
+
+
+https://msdn.microsoft.com/en-us/library/system.math_methods(v=vs.110).aspx C#'s Math class contains the PI property and the methods needed. You will have to repeat the code to convert values to radians many times as we have not yet discussion functions, and there is no toRad function in ASP.NET.

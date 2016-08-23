@@ -1,0 +1,4052 @@
+== C# Statements, Arrays, and Objects
+
+__This material is derived from Chapter 3 in  Introduction to Programming Using Java__ 
+
+The basic building blocks of programs -- variables,
+expressions, assignment statements, and subroutine call statements -- were
+covered in the previous chapter. Starting with this chapter, we look at how
+these building blocks can be put together to build complex programs with more
+interesting behavior.
+
+Since we are still working on the level of "programming in the small" in
+this chapter, we are interested in the kind of complexity that can occur within
+a small block of code. On this level, complexity is provided by control structures. 
+The two types of control structures, loops
+and branches, can be used to repeat a sequence of statements over and over or
+to choose among two or more possible courses of action. C# includes several
+control structures of each type, and we will look at each of them in some
+detail.
+
+Program complexity can be seen not just in control structures but also in
+data structures.  A data structure is an organized collection 
+of data, chunked together so that it can be treated as a unit.  
+We will end this chapter with an introduction to one of the most common data structures:
+arrays.
+
+=== Blocks, Loops, and Branches
+
+
+The ability of a computer to perform complex tasks
+is built on just a few ways of combining simple commands into control
+structures. In Java, there are just six such structures that are used to determine the normal
+flow of control in a program -- and, in fact, just
+three of them would be enough to write programs to perform any task. The six
+control structures are: the block, the
+while loop, the do..while loop, the 
+for loop, the if statement, and the 
+switch statement.  Each of these structures is considered to be a single
+"statement," but a **structured** statement that
+can contain one or more other statements inside itself.
+
+
+==== Blocks
+
+The block is the simplest type of structured
+statement. Its purpose is simply to group a sequence of statements into a
+single statement. The format of a block is:
+
+[source,java]
+----
+{
+     statements
+}
+----
+
+That is, it consists of a sequence of statements enclosed between a pair of
+braces, "{" and "}". In fact, it is possible for a block to contain no
+statements at all; such a block is called an empty block, 
+and can actually be useful at times. An empty block consists of
+nothing but an empty pair of braces. Block statements usually occur inside
+other statements, where their purpose is to group together several statements
+into a unit. However, a block can be legally used wherever a statement can
+occur. There is one place where a block is required: As you might have already
+noticed in the case of the main subroutine of a program, the
+definition of a subroutine is a block, since it is a sequence of statements
+enclosed inside a pair of braces.
+
+I should probably note again at this point that C# is what is called a
+free-format language. There are no syntax rules about how the language has to
+be arranged on a page. So, for example, you could write an entire block on one
+line if you want. But as a matter of good programming style, you should lay out
+your program on the page in a way that will make its structure as clear as
+possible. In general, this means putting one statement per line and using
+indentation to indicate statements that are contained inside control
+structures. This is the format that I will generally use in my examples.
+
+Here are two examples of blocks:
+
+[source,java]
+----
+{
+   intro="The answer is ";
+   message=intro+ans;
+}
+
+{  // This block exchanges the values of x and y
+   int temp;      // A temporary variable for use in this block.
+   temp = x;      // Save a copy of the value of x in temp.
+   x = y;         // Copy the value of y into x.
+   y = temp;      // Copy the value of temp into y.
+}
+----
+
+In the second example, a variable, temp, is declared inside the
+block. This is perfectly legal, and it is good style to declare a variable
+inside a block if that variable is used nowhere else but inside the block. A
+variable declared inside a block is completely inaccessible and invisible from
+outside that block. When the computer executes the variable declaration
+statement, it allocates memory to hold the value of the variable. When the
+block ends, that memory is discarded (that is, made available for reuse). The
+variable is said to be local to the block. There
+is a general concept called the "scope" of an identifier. The scope 
+of an identifier is the part of the program in which
+that identifier is valid. The scope of a variable defined inside a block is
+limited to that block, and more specifically to the part of the block that
+comes after the declaration of the variable.
+
+==== The Basic While Loop
+
+The block statement by itself really doesn't affect the flow of control in a
+program. The five remaining control structures do. They can be divided into two
+classes: loop statements and branching statements. You really just need one
+control structure from each category in order to have a completely
+general-purpose programming language. More than that is just convenience. In
+this section, I'll introduce the while loop and the if
+statement. I'll give the full details of these statements and of the other
+three control structures in later sections.
+
+A while loop is used to repeat a given
+statement over and over. Of course, it's not likely that you would want to keep
+repeating it forever. That would be an infinite loop, which is 
+generally a bad thing. (There is an old story about
+computer pioneer Grace Murray Hopper, who read instructions on a bottle of
+shampoo telling her to "lather, rinse, repeat." As the story goes, she claims
+that she tried to follow the directions, but she ran out of shampoo. (In case
+you don't get it, this is a joke about the way that computers mindlessly follow
+instructions.))
+
+To be more specific, a while loop will repeat a statement over and
+over, but only so long as a specified condition remains true. A while
+loop has the form:
+
+[source,java]
+----
+while (boolean-expression)
+     statement
+
+----
+
+Since the statement can be, and usually is, a block, most while
+loops have the form:
+
+[source,java]
+----
+while (boolean-expression) {
+    statements
+}
+----
+
+Some programmers think that the braces should always be included as a matter
+of style, even when there is only one statement between them, but I don't always
+follow that advice myself.
+
+[WARNING]
+====
+C# in Razor requires the braces on the body of the while statement -- even when it is a single statement. It also requires them on the body of an if statement and the other looping statements of the language.
+====
+
+The semantics of the while statement go like this: When the computer comes to a
+while statement, it evaluates the boolean-expression, 
+which yields either true or
+false as its value. If the value is false, the computer skips
+over the rest of the while loop and proceeds to the next command in
+the program. If the value of the expression is true, the computer
+executes the statement or block of statements inside the loop. Then it returns to the
+beginning of the while loop and repeats the process. That is, it
+re-evaluates the boolean-expression, ends the
+loop if the value is false, and continues it if the value is
+true. This will continue over and over until the value of the
+expression is false when the computer evaluates it; if that never happens, then there will be an
+infinite loop.
+
+Here is an example of a while loop that simply prints out the
+numbers 1, 2, 3, 4, 5:
+
+[source,java]
+----
+string message = ""; // build up a message
+int number;   // The number to be tracked.
+number = 1;   // Start with 1.
+while ( number < 6 ) {  // Keep going as long as number is < 6.
+    message= message+" "+number;
+    number = number + 1;  // Go on to the next number.
+}
+//value in message is "1 2 3 4 5".
+----
+
+The variable number is initialized with the value 1. So 
+when the computer evaluates the
+expression "number < 6" for the first time, 
+it is asking whether 1 is less than 6, which is
+true. The computer therefore proceeds to execute the two statements
+inside the loop. The first statement adds " 1" to message. The second statement adds
+1 to number and stores the result back into the variable
+number; the value of number has been changed to 2. The
+computer has reached the end of the loop, so it returns to the beginning and
+asks again whether number is less than 6. Once again this is true, so
+the computer executes the loop again, this time adding " 2" to the message and then changing the value of number to 3. It
+continues in this way until eventually number becomes equal to 6. At
+that point, the expression "number < 6" evaluates to false. So, the
+computer jumps past the end of the loop to the next statement after the loop. Note that when the loop ends, the value of number
+is 6, but the last value that was put into message was 5.
+
+By the way, you should remember that you'll never see a while loop
+standing by itself in a real program. It will always be inside a web page or C# method
+which is itself defined inside some class. As an example of a while
+loop, here is a little program that computes the
+interest on an investment over several years. 
+
+.InvestmentValue.cshtml
+[source,java]
+----
+@{
+      double principal;  // The value of the investment.
+      double rate;       // The annual interest rate.
+      string message="";
+
+      /* Get the initial investment and interest rate from the user. */
+      if (IsPost) {
+        principal = (double) Request["principal"].AsDecimal(); <1>   
+
+        rate = (double) Request["rate"].AsDecimal();
+
+        /* Simulate the investment for 5 years. */
+
+        int years;  // Counts the number of years that have passed.
+
+        years = 0;
+        while (years < 5) {
+           double interest;  // Interest for this year.
+           interest = principal * rate;
+           principal = principal + interest;     // Add it to principal.
+           years = years + 1;    // Count the current year.
+           message = "The value of the investment after "+years
+               + " years is $" + String.Format("{0:0.00}",principal); <2>
+        } // end of while loop
+
+      }
+}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Add Numbers</title>
+    
+    <style type="text/css">
+      body {background-color: beige; font-family: Verdana, Arial;
+            margin: 50px; }
+      form {padding: 10px; border-style: solid; width: 250px;}
+    </style>
+  </head>
+
+  <body>
+  <p>Enter two numbers and then click <strong>Calculate</strong>.</p>
+  <form action="" method="post"> 
+    <p><label for="principal">Initial investment:</label>
+       <input type="text" name="principal" />
+    </p>
+    <p><label for="rate">Interest rate (decimal, not percentage):</label>
+      <input type="text" name="rate" />
+    </p>
+    <p><input type="submit" value="Calculate" /></p>
+  </form>
+
+  <p>@message</p>
+  </body>
+</html>
+
+----
+
+You should study this program, and make sure that you understand what the
+computer does step-by-step as it executes the while loop.
+
+<1> Note the use of .AsDecimal() and the typecast to (double) -- this is required because there is no .AsDouble() method available on strings. We could choose, instead, to keep all of our numbers as decimals and avoid the typecast. 
+
+<2> The raw double value gives all the digits, but since we are dealing with money we want to display it in a shorter form showing just the money-relevant digits. There is a system String object (which is also a class -- more on this later in this text) that provides a Format method for creating the string representation of the double value. Format's input is quite rich, this is just a first example. See https://msdn.microsoft.com/en-us/library/system.string.format(v=vs.110).aspx for details on using this.
+
+[TIP]
+====
+Go ahead and modify our page to use just decimals and avoid the typecast to double. This may take some debugging -- more than just principal and rate need to be changed. Consider why  all of the changes were necessary.
+====
+
+[TIP]
+====
+Modify the page so that the value is displayed in the form after the POST request, so that the user can see their values when the results are displayed. Put the numbers in the form fields directly. Consider why you can do this -- and in future pages, consider revisitng this and how the code on the page has to change to make it work.
+====
+
+==== The Basic If Statement
+
+An if statement tells the computer to take one
+of two alternative courses of action, depending on whether the value of a given
+boolean-valued expression is true or false. It is an example of a "branching"
+or "decision" statement. An if statement has the form:
+
+[source,java]
+----
+if ( boolean-expression )
+    statement1
+else
+    statement2
+
+----
+
+[CAUTION]
+====
+Remember, Razor will require that the statements in the if and else always have braces, even if there is just a single statement within it.
+====
+
+When the computer executes an if statement, it evaluates the
+boolean expression. If the value is true, the computer executes the
+first statement and skips the statement that follows the "else". If
+the value of the expression is false, then the computer skips the
+first statement and executes the second one. Note that in any case, one and
+only one of the two statements inside the if statement is executed.
+The two statements represent alternative courses of action; the computer
+decides between these courses of action based on the value of the boolean
+expression.
+
+In many cases, you want the computer to choose between doing something and
+not doing it. You can do this with an if statement that omits the
+else part:
+
+[source,java]
+----
+if ( boolean-expression )
+    statement
+
+----
+
+To execute this statement, the computer evaluates the expression. If the
+value is true, the computer executes the statement that is contained inside the if
+statement; if the value is false, the computer skips over that statement.  In either
+case, the computer then continues with whatever follows the if statement in the program.
+
+Sometimes, novice programmers confuse while statements with simple
+if statements (with no else part), although their meanings are
+quite different.  The statement in an if is executed at most once,
+while the statement in a while can be executed any number of times.
+It can be helpful to look at diagrams of the the flow of control for while and
+simple if statements:
+
+image::images/while-and-if-flow-control.png[Control flow diagrams for while and simple if]
+
+In these diagrams, the arrows represent the flow of time as the statement is executed.
+Control enters the diagram at the top and leaves at the bottom.
+Similarly, a flow control diagram for an if..else statement makes it clear
+that exactly one of the two nested statements is executed:
+
+image::images/if-else-flow-control.png[Control flow diagram for if..else statement]
+
+'''
+
+Of course, either or both of the statements
+in an if statement can be a block, and again many programmers
+prefer to add the braces even when they contain just a single statement.
+So an if statement often looks like:
+
+[source,java]
+----
+if ( boolean-expression ) {
+    statements
+}
+else {
+    statements
+}
+----
+
+or:
+
+[source,java]
+----
+if ( boolean-expression ) {
+    statements
+}
+----
+
+As an example, here is an if statement that exchanges the value of
+two variables, x and y, but only if x is greater
+than y to begin with. After this if statement has been
+executed, we can be sure that the value of x is definitely less than
+or equal to the value of y:
+
+[source,java]
+----
+if ( x > y ) {
+    int temp;      // A temporary variable for use in this block.
+    temp = x;      // Save a copy of the value of x in temp.
+    x = y;         // Copy the value of y into x.
+    y = temp;      // Copy the value of temp into y.
+}
+----
+
+Finally, here is an example of an if statement that includes an
+else part. See if you can figure out what it does, and why it would be
+used:
+
+[source,java]
+----
+if ( years > 1 ) {  // handle case for 2 or more years
+    message="The value of the investment after "
+     + years + " years is $";
+}
+else {  // handle case for 1 year
+    message="The value of the investment after 1 year is $";
+}  // end of if statement
+message += principal;  // this is done in any case
+----
+
+I'll have more to say about control structures later in this chapter. But
+you already know the essentials. If you never learned anything more about
+control structures, you would already know enough to perform any possible
+computing task. Simple looping and branching are all you really need!
+
+==== Definite Assignment
+
+I will finish this introduction to control structures with a somewhat technical
+issue that you might not fully understand the first time you encounter it.
+Consider the following two code segments, which seem to be entirely equivalent:
+
+[source,java]
+----
+int y;                          int y;
+if (x < 0) {                    if (x < 0) {
+    y = 1;                           y = 1;
+}                               }
+else {                          if (x >= 0) {
+    y = 2;                           y = 2;
+}                               }
+message = "answer is "+y;       message = "answer is "+y;    
+----
+
+In the version on the left, y is assigned the value 1 if x < 0
+and is assigned the value 2 otherwise, that is, if x >= 0.  Exactly the same is true of the
+version on the right.  However, there is a subtle difference.  In fact, the Java compiler will report
+an error for the final statement in the code on the right, while the
+code on the left is perfectly fine!  
+
+The problem is that in the code on the right, the computer can't tell that the
+variable y has definitely been assigned a value.  When an if
+statement has no else part, the statement inside the if
+might or might not be executed, depending on the value of the condition.  The compiler can't
+tell whether it will be executed or not, since the condition will only be evaluated when
+the program is running.  For the code on the right above, as far as the compiler is concerned,
+it is possible that **neither** statement, y = 1 or y = 2,
+will be evaluated, so it is possible that the output statement is trying to print an undefined value.
+The compiler considers this to be an error.  The value of a variable can only be used if the
+compiler can **verify** that the variable will have been assigned a value at that point when the
+program is running.  This is called definite assignment.  (It doesn't matter
+that **you** can tell that y will always be assigned a value in this example.
+The question is whether the compiler can tell.)
+
+Note that in the code on the left above, y is definitely assigned a value,
+since in an if..else statement, one of the two alternatives will be executed
+no matter what the value of the condition in the if.  
+It is important that you understand that there is a 
+difference between an if..else statement and a pair of plain if statements.
+Here is another pair of code segments that might seem to do the same thing,
+but don't.  What's the value of x after each code segment is executed?
+
+[source,java]
+----
+int x;                             int x;
+x = -1;                            x = -1;
+if (x < 0)                         if (x < 0)
+    x = 1;                             x = 1;
+else                               if (x >= 0)
+    x = 2;                             x = 2;
+
+----
+
+After the code on the left is executed, x is 1; after the code on the
+right, x is 2.
+
+'''
+
+
+=== Algorithm Development
+
+
+Programming is difficult (like many activities that
+are useful and worthwhile -- and like most of those activities, it can also be
+rewarding and a lot of fun). When you write code, you have to tell the
+computer every small detail of what to do. And you have to get everything
+exactly right, since the computer will blindly follow your code exactly as
+written. How, then, do people write any but the most simple programs? It's not
+a big mystery, actually. It's a matter of learning to think in the right
+way.
+
+A program is an expression of an idea. A programmer starts with a general
+idea of a task for the computer to perform. Presumably, the programmer has some
+idea of how to perform the task by hand, at least in general outline. The
+problem is to flesh out that outline into a complete, unambiguous, step-by-step
+procedure for carrying out the task. Such a procedure is called an "algorithm."
+(Technically, an algorithm is an unambiguous,
+step-by-step procedure that always terminates after a finite number of steps. We don't
+want to count procedures that might go on forever.) An algorithm is not the same as a
+program. A program is written in some particular programming language. An
+algorithm is more like the **idea** behind the program, but it's the idea of
+the **steps** the program will take to perform its task, not just the idea
+of the **task** itself. When describing an algorithm, the steps 
+don't necessarily have to be specified in complete detail, 
+as long as the steps are unambiguous and it's clear that
+carrying out the steps will accomplish the assigned task. An algorithm can be
+expressed in any language, including English. Of course, an algorithm can only
+be expressed as an actual program if all the details have been filled in.
+
+So, where do algorithms come from? Usually, they have to be developed, often
+with a lot of thought and hard work. Skill at algorithm development is
+something that comes with practice, but there are techniques and guidelines
+that can help. I'll talk here about some techniques and guidelines that are
+relevant to "programming in the small," and I will return to the subject
+several times in later chapters.
+
+==== Pseudocode and Stepwise Refinement 
+
+When programming in the small, you have a few basics to work with:
+variables, assignment statements, and input/output. You might also
+have some routines, objects, or other building blocks that have already been
+written by you or someone else. (ASP.NET libraries and their routines fall into this class.)
+You can build sequences of these basic instructions, and you can also combine
+them into more complex control structures such as while loops and
+if statements.
+
+Suppose you have a task in mind that you want the computer to perform. One
+way to proceed is to write a description of the task, and take that description
+as an outline of the algorithm you want to develop. Then you can refine and
+elaborate that description, gradually adding steps and detail, until you have a
+complete algorithm that can be translated directly into programming language.
+This method is called stepwise refinement, and it
+is a type of top-down design. As you proceed through the stages of stepwise
+refinement, you can write out descriptions of your algorithm in 
+pseudocode -- informal instructions that imitate the structure
+of programming languages without the complete detail and perfect syntax of
+actual program code.
+
+[TIP]
+====
+The informal description is not written in a programming language, but is expressed in **pseudocode**, which can be a mix of simple English statements and some programming terminology as you will see in our examples here. There is no 'standard' pseudocode language -- simply write out the text in a way that is understandable to you and should be understandable to a peer as well.
+====
+
+As an example, let's see how one might develop the application from the previous
+section, which computes the value of an investment over five years. The task
+that you want the application to perform is: "Compute and display the value of an
+investment for each of the next five years, where the initial investment and
+interest rate are to be specified by the user." You might then write -- or more likely
+just think -- that this can be expanded as:
+
+[source,java]
+----
+Get the user's input
+Compute the value of the investment after 1 year
+Display the value
+Compute the value after 2 years
+Display the value
+Compute the value after 3 years
+Display the value
+Compute the value after 4 years
+Display the value
+Compute the value after 5 years
+Display the value
+----
+
+This is correct, but rather repetitive. And seeing that repetition, you
+might notice an opportunity to use a loop. A loop would take less typing. More
+important, it would be more **general**: Essentially the same loop
+will work no matter how many years you want to process. So, you might rewrite
+the above sequence of steps as:
+
+[source,java]
+----
+Get the user's input
+while there are more years to process:
+    Compute the value after the next year
+    Display the value
+----
+
+Following this algorithm would certainly solve the problem, but
+for a computer we'll have to be more explicit about how to "Get the
+user's input," how to "Compute the value after the next year," and what it
+means to say "there are more years to process." We can expand the step, "Get
+the user's input" into
+
+[source,java]
+----
+Ask the user for the initial investment
+Read the user's response
+Ask the user for the interest rate
+Read the user's response
+----
+
+[TIP]
+====
+Remember, we are working with a web page, so we "ask" with a form and "read response" with the POST request using the Response object available to us there.
+====
+
+To fill in the details of the step "Compute the value after the next year,"
+you have to know how to do the computation yourself. (Maybe you need to ask
+your boss or professor for clarification?) Let's say you know that the value is
+computed by adding some interest to the previous value. Then we can refine the
+while loop to:
+
+[source,java]
+----
+while there are more years to process:
+    Compute the interest
+    Add the interest to the value
+    Display the value
+----
+
+As for testing whether there are more years to process, the only way that we
+can do that is by counting the years ourselves. This displays a very common
+pattern, and you should expect to use something similar in a lot of programs:
+We have to start with zero years, add one each time we process a year, and stop
+when we reach the desired number of years.  This is sometimes called a counting loop.
+So the while loop
+becomes:
+
+[source,java]
+----
+years = 0
+while years < 5:
+    years = years + 1
+    Compute the interest
+    Add the interest to the value
+    Display the value
+----
+
+We still have to know how to compute the interest. Let's say that the
+interest is to be computed by multiplying the interest rate by the current
+value of the investment. Putting this together with the part of the algorithm
+that gets the user's inputs, we have the complete algorithm:
+
+[source,java]
+----
+Ask the user for the initial investment <1>
+Read the user's response <2>
+Ask the user for the interest rate <1>
+Read the user's response <2>
+years = 0
+while years < 5: <3>
+    years = years + 1
+    Compute interest = value * interest rate
+    Add the interest to the value
+    Display the value <4>
+----
+
+The numbers above correspond the the number markers in the finished code below.
+
+Finally, we are at the point where we can translate pretty directly into
+proper programming-language syntax. We still have to choose names for the
+variables, decide exactly what we want to say to the user, and so forth. Having
+done this, we could express our algorithm in C# as:
+
+.InvestmentValue2.cshtml
+[source,java]
+----
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Compute Investment Value</title>
+    
+    <style type="text/css">
+      body {background-color: beige; font-family: Verdana, Arial;
+            margin: 50px; }
+      form {padding: 10px; border-style: solid; width: 250px;}
+    </style>
+  </head>
+
+  <body>
+  <p>Enter two numbers and then click <strong>Calculate</strong>.</p>
+  <form action="" method="post"> <1>
+    <p><label for="principal">Initial investment:</label>
+       <input type="text" name="principal" />
+    </p>
+    <p><label for="rate">Interest rate (decimal, not percentage):</label>
+      <input type="text" name="rate" />
+    </p>
+    <p><input type="submit" value="Calculate" /></p>
+  </form>
+
+  @{
+      double principal;  // The value of the investment.
+      double rate;       // The annual interest rate.
+      string message="";
+
+      /* Get the initial investment and interest rate from the user. */
+      if (IsPost) {
+        principal = Request["principal"].AsDouble(); <2>     
+
+        rate = Request["rate"].AsDouble();
+
+        /* Simulate the investment for 5 years. */
+
+        int years;  // Counts the number of years that have passed.
+
+        years = 0;
+        while (years < 5) { <3>
+           double interest;  // Interest for this year.
+           interest = principal * rate;
+           principal = principal + interest;     // Add it to principal.
+           years = years + 1;    // Count the current year.
+           <p>@years : @principal</p> <4>
+        } // end of while loop
+
+      }
+  }
+  </body>
+</html>
+----
+
+This still needs to be wrapped inside a complete website, it still needs to
+be commented, and it really needs to print out more information in a nicer format for the user.
+But it's essentially the same application as the one in the previous section. (Note
+that the pseudocode algorithm used indentation to show which statements are
+inside the loop. In C#, indentation is completely ignored by the computer, so
+you need a pair of braces to tell the computer which statements are in the
+loop. If you leave out the braces, the only statement inside the loop would be
+"double interest;". The other statements would only be executed
+once, after the loop ends. The nasty thing is that the computer won't notice
+this error for you, like it would if you left out the parentheses around
+"(years < 5)". The parentheses are required by the syntax of the
+while statement. The braces are only required semantically. The
+computer can recognize syntax errors but not semantic errors.)
+
+One thing you should have noticed here is that my original specification of
+the problem -- "Compute and display the value of an investment for each of the
+next five years" -- was far from being complete. Before you start writing a
+program, you should make sure you have a complete specification of exactly what
+the application is supposed to do. In particular, you need to know what information
+the application is going to input and output and what computation it is going to
+perform. Here is what a reasonably complete specification of the problem might
+look like in this example:
+
+"Write an application that will compute and display the value of an investment
+for each of the next five years. Each year, interest is added to the value. The
+interest is computed by multiplying the current value by a fixed interest rate.
+Assume that the initial value and the rate of interest are to be input by the
+user when the program is run."
+
+====  The 3N+1 Problem
+
+Let's do another example, working this time with a program that you haven't
+already seen. The assignment here is an abstract mathematical problem that is
+one of my favorite programming exercises. This time, we'll start with a more
+complete specification of the task to be performed:
+
+"Given a positive integer, N, define the '3N+1' sequence starting from N as
+follows: If N is an even number, then divide N by two; but if N is odd, then
+multiply N by 3 and add 1. Continue to generate numbers in this way until N
+becomes equal to 1. For example, starting from N = 3, which is odd, we multiply
+by 3 and add 1, giving N = 3*3+1 = 10. Then, since N is even, we divide by 2,
+giving N = 10/2 = 5. We continue in this way, stopping when we reach 1.
+The complete sequence is: 3, 10, 5, 16, 8, 4, 2, 1.
+
+"Write a program that will read a positive integer from the user and will
+print out the 3N+1 sequence starting from that integer. The program should also
+count and print out the number of terms in the sequence."
+
+A general outline of the algorithm for the program we want is:
+
+[source,java]
+----
+   Get a positive integer N from the user.
+   Compute, print, and count each number in the sequence.
+   Output the number of terms.
+----
+
+The bulk of the program is in the second step. We'll need a loop, since we
+want to keep computing numbers until we get 1. To put this in terms appropriate
+for a while loop, we need to know when to **continue** the
+loop rather than when to stop it: We want to continue as long as the number is
+**not** 1. So, we can expand our pseudocode algorithm to:
+
+[source,java]
+----
+Get a positive integer N from the user;
+while N is not 1:
+    Compute N = next term;
+    Output N;
+    Count this term;
+Output the number of terms;
+----
+
+In order to compute the next term, the computer must take different actions
+depending on whether N is even or odd. We need an if statement to
+decide between the two cases:
+
+[source,java]
+----
+Get a positive integer N from the user;
+while N is not 1:
+    if N is even:
+       Compute N = N/2;
+    else
+       Compute N = 3 * N + 1;
+    Output N;
+    Count this term;
+Output the number of terms;
+----
+
+We are almost there. The one problem that remains is counting. Counting
+means that you start with zero, and every time you have something to count, you
+add one. We need a variable to do the counting. The variable must be set
+to zero once, **before** the loop starts, and it must be incremented
+within the loop.  (Again, this is a common
+pattern that you should expect to see over and over.) With the counter added,
+we get:
+
+[source,java]
+----
+Get a positive integer N from the user;
+Let counter = 0;
+while N is not 1:
+    if N is even:
+       Compute N = N/2;
+    else
+       Compute N = 3 * N + 1;
+    Output N;
+    Add 1 to counter;
+Output the counter;
+----
+
+We still have to worry about the very first step. How can we get a
+**positive** integer from the user? If we just read in a number,
+it's possible that the user might type in a negative number or zero. If you
+follow what happens when the value of N is negative or zero, you'll see that
+the program will go on forever, since the value of N will never become equal to
+1. This is bad. In this case, the problem is probably no big deal, but in
+general you should try to write programs that are foolproof. One way to fix
+this is to keep reading in numbers until the user types in a positive
+number:
+
+[source,java]
+----
+Ask user to input a positive number;
+Let N be the user's response;
+while N is not positive:
+   Print an error message;
+   Read another value for N;
+Let counter = 0;
+while N is not 1:
+    if N is even:
+       Compute N = N/2;
+    else
+       Compute N = 3 * N + 1;
+    Output N;
+    Add 1 to counter;
+Output the counter;
+----
+
+Getting input on a web page can be checked on the client-side in JavaScript to avoid sending the value to the server until it is valid. However, the value would still need to be checked on the server in case a user turned off JavaScript. So we need to think about how that works:
+
+. Give the user a form to fill out
+. Accept the submitted form
+. Check the values
+. If the values are not valid, return to step 1
+
+In pseudocode, we can express this as a while, however in actual code we will be re-displaying the form and requesting valid data without using an explicit loop; the web page does it for us.
+
+So, the first loop will end only when N is a positive number, as
+required. (A common beginning programmer's error is to use an if
+statement instead of a while statement here: "If N is not positive,
+ask the user to input another value." The problem arises if the second number
+input by the user is also non-positive. The if statement is only
+executed once, so the second input number is never tested, and the program
+proceeds into an infinite loop. With the
+loop, after the second number is input, the computer jumps back
+to the beginning of the loop and tests whether the second number is positive.
+If not, it asks the user for a third number, and it will continue asking for
+numbers until the user enters an acceptable input.  After the input loop ends, we
+can be absolutely sure that N is a positive number.)
+
+Here is the C#  implementing this algorithm. It uses the operators
++<=+ to mean "is less than or equal to" and != to mean "is
+not equal to." To test whether N is even, it uses "N % 2 == 0". All
+the operators used here were discussed in the previous chapter.
+
+.ThreeNPlusOne.cshtml
+[source,java]
+----
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>3N+1 sequence</title>
+    
+    <style type="text/css">
+      body {background-color: beige; font-family: Verdana, Arial;
+            margin: 50px; }
+      form {padding: 10px; border-style: solid; width: 250px;}
+    </style>
+  </head>
+
+  <body>
+  <p>Enter a numbers and then click <strong>Show</strong>.</p>
+  <form action="" method="post"> 
+    <p><label for="principal">Number:</label>
+       <input type="text" name="num" />
+    </p>
+    <p><input type="submit" value="Show" /></p>
+  </form>
+
+  @{
+      int num;  // The value of the investment.
+
+      /* Get the initial number from the user. */
+      if (IsPost) {
+        num = Request["num"].AsInt();      
+
+        if (num <= 0) { <1>
+          <p>Number must be &gt; 0, try again.</p>
+        } else {
+         // At this point, we know that N > 0
+         
+         /**  
+          * This  prints out a 3N+1 sequence starting from a positive 
+          * integer specified by the user.  It also counts the number of 
+          * terms in the sequence, and prints out that number.
+          */
+
+          int counter = 0;
+          while (num != 1) { <2>
+             if (num % 2 == 0) {
+                num = num / 2;
+             }
+             else {
+                num = 3 * num + 1;
+             }
+             <p>@num</p>
+             counter = counter + 1;
+          }
+         
+          <p>There were @counter terms in the sequence.</p>
+        } // end num > 0
+
+      } // end IsPost
+  }
+  </body>
+</html>
+----
+
+<1> As you can see, this is written as a simple if statement; however it leaves us on the web page, so the form is available and the user can re-enter data and try again. Notice that web pages give users another, unspoken, option as well: they can choose not to continue and move on to another page. This is actually quite powerful; in a stand-alone application, you would have to explicitly give users a way to quit the program at any input step.
+
+<2> The second loop remains a loop -- it is generating output as it executes.
+
+Two final notes on this program: First, you might have noticed that the
+first term of the sequence -- the value of N input by the user -- is not
+printed or counted by this program. Is this an error? It's hard to say. Was the
+specification of the program careful enough to decide? This is the type of
+thing that might send you back to the boss/professor for clarification. The
+problem (if it is one!) can be fixed easily enough. Just add the following lines after ``int counter = 0;`` and before the while loop:
+
+[source,java]
+----
+<p>@num</p> @* print out initial term *@
+counter = 1;       // and count it
+----
+
+Second, there is the question of why this problem might be interesting.
+Well, it's interesting to mathematicians and computer scientists because of a
+simple question about the problem that they haven't been able to answer: Will
+the process of computing the 3N+1 sequence finish after a finite number of
+steps for all possible starting values of N? Although individual sequences are
+easy to compute, no one has been able to answer the general question. To put
+this another way, no one knows whether the process of computing 3N+1 sequences
+can properly be called an algorithm, since an algorithm is required to
+terminate after a finite number of steps!  (Note: This discussion 
+really applies to integers, not to values of type int!  That is, it
+assumes that
+the value of N can take on arbitrarily large integer values, which
+is not true for a variable of type int in a C# program.
+When the value of N in the program becomes too large to be
+represented as a 32-bit int, the values output by the program
+are no longer mathematically correct.  So the program does not compute
+the correct 3N+1 sequence if N becomes too large.  
+
+==== Coding, Testing, Debugging
+
+It would be nice if, having developed an algorithm for your program, you
+could relax, press a button, and get a perfectly working program.
+Unfortunately, the process of turning an algorithm into Java source code
+doesn't always go smoothly. And when you do get to the stage of a working
+program, it's often only working in the sense that it does **something**.
+Unfortunately not what you want it to do.
+
+After program design comes coding: translating the design into a program
+written in C# or some other language. Usually, no matter how careful you are,
+a few syntax errors will creep in from somewhere, and the C# compiler will
+reject your program with some kind of error message. Unfortunately, while a
+compiler will always detect syntax errors, it's not very good about telling you
+exactly what's wrong. Sometimes, it's not even good about telling you where the
+real error is. A spelling error or missing "{" on line 45 might cause the
+compiler to choke on line 105. You can avoid lots of errors by making sure that
+you really understand the syntax rules of the language and by following some
+basic programming guidelines. For example, I never type a "{" without typing
+the matching "}". Then I go back and fill in the statements between the braces.
+A missing or extra brace can be one of the hardest errors to find in a large
+program. Always, always indent your program nicely. If you change the program,
+change the indentation to match. It's worth the trouble. Use a consistent
+naming scheme, so you don't have to struggle to remember whether you called
+that variable interestrate or interestRate. In general, when
+the compiler gives multiple error messages, don't try to fix the second error
+message from the compiler until you've fixed the first one. Once the compiler
+hits an error in your program, it can get confused, and the rest of the error
+messages might just be guesses. Maybe the best advice is: Take the time to
+understand the error before you try to fix it. Programming is not an
+experimental science.
+
+When your code compiles without error, you are still not done. You have
+to test the code to make sure it works correctly. Remember that the goal is
+not to get the right output for the two sample inputs that the professor gave
+in class. The goal is code that will work correctly for all **reasonable
+inputs**. Ideally, when faced with an unreasonable input, it should respond by
+gently chiding the user rather than by crashing. Test your program on a wide
+variety of inputs. Try to find a set of inputs that will test the full range of
+functionality that you've coded into your program. As you begin writing larger
+programs, write them in stages and test each stage along the way. You might
+even have to write some extra code to do the testing -- for example to call a
+routine that you've just written. You don't want to be faced, if you can
+avoid it, with 500 newly written lines of code that have an error in there
+somewhere.
+
+[CAUTION]
+====
+What is a __reasonable input__? Any value that the user could reasonably type in or provide as input. On an HTML form, for example, any key (__any key__) on the keyboard that produces a character can be used to put a value into a form field: they are strings. So when you need a number, you need to consider how your program will behave when the user types in "balloon" instead of "5".
+
+Go ahead and see how your web page behaves with input like this; ask yourself if it is reasonable, or if further checks and meaningful.
+====
+
+The point of testing is to find bugs -- semantic 
+errors that show up as incorrect behavior rather than as compilation
+errors. And the sad fact is that you will probably find them. Again, you can
+minimize bugs by careful design and careful coding, but no one has found a way
+to avoid them altogether. Once you've detected a bug, it's time for
+debugging. You have to track down the cause of the
+bug in the program's source code and eliminate it. Debugging is a skill that,
+like other aspects of programming, requires practice to master. So don't be
+afraid of bugs. Learn from them. One essential debugging skill is the ability
+to read source code -- the ability to put aside preconceptions about what you
+think it does and to follow it the way the computer does -- mechanically, 
+step-by-step -- to see what it really does. This is hard. I can
+still remember the time I spent hours looking for a bug only to find that a
+line of code that I had looked at ten times had a "1" where it should have had
+an "i", or the time when I wrote a subroutine named WindowClosing
+which would have done exactly what I wanted except that the computer was
+looking for windowClosing (with a lower case "w"). Sometimes it can
+help to have someone who doesn't share your preconceptions look at your
+code.
+
+Often, it's a problem just to find the part of the program that contains the
+error. Most programming environments come with a debugger, 
+which is a program that can help you find bugs.
+Typically, your program can be run under the control of the debugger. The
+debugger allows you to set "breakpoints" in your program. A breakpoint is a
+point in the program where the debugger will pause the program so you can look
+at the values of the program's variables. The idea is to track down exactly
+when things start to go wrong during the program's execution. The debugger will
+also let you execute your program one line at a time, so that you can watch
+what happens in detail once you know the general area in the program where the
+bug is lurking.
+
+I will confess that I only occasionally use debuggers myself. A more traditional
+approach to debugging is to insert debugging statements into your program. 
+These are output statements that print out
+information about the state of the program. Typically, a debugging statement
+would say something like
+
+----
+<p>At start of while loop, num = @num</p>
+----
+
+You need to be able to tell from the output where in your program the output is
+coming from, and you want to know the value of important variables. Sometimes,
+you will find that the computer isn't even getting to a part of the program
+that you think it should be executing. Remember that the goal is to find the
+first point in the program where the state is not what you expect it to be.
+That's where the bug is.
+
+And finally, remember the golden rule of debugging: If you are absolutely
+sure that everything in your program is right, and if it still doesn't work,
+then one of the things that you are absolutely sure of is wrong.
+
+
+
+'''
+
+
+=== The while and do..while Statements
+
+<big>S</big>tatements in Java can be either simple statements
+or compound statements. Simple statements, such as assignment statements and
+subroutine call statements, are the basic building blocks of a program.
+Compound statements, such as while loops and if statements,
+are used to organize simple statements into complex structures, which are
+called control structures because they control the order in which the
+statements are executed. The next five sections explore the details of
+control structures that are available in Java, starting with the while
+statement and the do..while statement in this section. At the same
+time, we'll look at examples of programming with each control structure and
+apply the techniques for designing algorithms that were introduced in the
+http://math.hws.edu/javanotes/c3/s2.html[previous section].
+
+
+=== The while statement
+
+The while statement was already introduced earlier in this chapter.
+A while loop has the form
+
+[source,java]
+----
+while ( boolean-expression )
+   statement
+
+----
+
+The statement can, of course, be a block
+statement consisting of several statements grouped together between a pair of
+braces. This statement is called the body of the loop. 
+The body of the loop is repeated as long as the boolean-expression is true. This boolean expression is
+called the continuation condition, or more simply
+the test, of the loop. There are a few points that
+might need some clarification. What happens if the condition is false in the
+first place, before the body of the loop is executed even once? In that case,
+the body of the loop is never executed at all. The body of a while loop can be
+executed any number of times, including zero. What happens if the condition is
+true, but it becomes false somewhere in the **middle** of the loop
+body? Does the loop end as soon as this happens? It doesn't, because the
+computer continues executing the body of the loop until it gets to the end.
+Only then does it jump back to the beginning of the loop and test the
+condition, and only then can the loop end.
+
+__ this section from Think Java Chapter 7__
+Let's look at a typical use of while loops in web pages: generating a table.
+Our problem will be to display a number of bits and the maximum value it can be used to store as an unsigned binary value.  For example, with 2 bits, we can represent 0, 1, 2, 3, and 4.  For a given value __x__, the maximum binary value we can store in x bits is _2^x^_.
+We want to display this value for all x from 1 to 16.
+
+Here is a pseudocode algorithm for the program:
+
+[source,java]
+----
+Let start = 1   // our first value
+start the table
+while start <= 16
+    compute 2^start
+    display a table row
+end the table
+----
+
+Notice we have a terminal value, 16. This is a "magic value". Good programming practice is to put such magic values in constants so that the constant name documents the purpose of the value. We will keep this in mind when we write the actual code.
+
+Notice the +<=+ there as well -- if you checked only <, the loop would stop one step before you wanted to. Such so-called off-by-one errors 
+are very common. Counting turns out to be
+harder than it looks!)
+
+It is quite typical to just use a < comparison on loops like this, which means the terminal test needs to compare the value to 17, not 16, in our example. So be careful to check both your terminal test value and operator if you have an off-by-one error.
+
+We can easily turn the algorithm into a complete program. Note that the
+code is going to integrate HTML with Razor, since the table is an HTML construct.
+
+Here is the full source code for the program:
+
+.BitMax.cshtml
+[source,java]
+----
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BitMax</title>
+  </head>
+
+  <body>
+    <table>
+    <tr><th># Bits</th><th>Maximum Value</th></tr>
+    @{
+       /*
+        * print out the values 1-16 and the maximum binary value storable in the
+        * corresponding number of bits.
+        */
+        int numBits = 1;  
+        const int maxBits = 16;
+
+        while (numBits <= maxBits) {
+        
+            <tr><td>@numBits</td><td>@Math.Pow(2,numBits)</td></tr> <1>
+        
+             numBits++; <2>
+        }
+    }
+    </table>
+  </body>
+</html>
+----
+
+<1> Notice that we use the system Math object to compute the exponent value 2^numBits^. Also be careful: there is no @ before the numbits argument, because we are already in an inline expression.
+
+<2> numBits++ increments the value in numBits. This is considered better form than writing out the expression ``numBits = numbits + 1;`` -- you are more likely to see ``numBits++`` in code, and probably already have if you are using StackOverflow.
+
+[TIP]
+====
+Your turn: modify this page to take the terminal value from the user rather than as a hard-coded constant. What will you need to check to ensure the page works correctly?
+====
+
+Consider what you would need to check if the user is inputting both start and stop values. What happens if start is more than stop?
+
+Your while loop would still look like this:
+[source,java]
+----
+        while (numBits <= maxBits) {
+        
+            <tr><td>@numBits</td><td>@Math.Pow(2,numBits)</td></tr> 
+        
+             numBits++; 
+        }
+----
+
+But incrementing numBits would never bring it closer to maxBits. Rather, it would move it further away. This is called an **infinite loop**. In Razor, your web page would never display, because the Razor engine would keep generating the output HTML until the server's resources were exhausted.
+
+Whenever you are getting values from the user, consider not only what they may input, but also how the values need to relate to one another and to other values in your code.
+
+==== The do..while Statement
+
+Sometimes it is more convenient to test the continuation condition at the
+end of a loop, instead of at the beginning, as is done in the while
+loop. The do..while statement is very similar to the while
+statement, except that the word "while," along with the condition that it
+tests, has been moved to the end. The word "do" is added to mark the beginning
+of the loop. A do..while statement has the form
+
+[source,java]
+----
+do
+    statement
+while ( boolean-expression );
+----
+
+or, since, as usual, the statement can be a
+block,
+
+[source,java]
+----
+do {
+    statements
+} while ( boolean-expression );
+----
+
+Note the semicolon, ';', at the very  end. This semicolon is part of the
+statement, just as the semicolon at the end of an assignment statement or
+declaration is part of the statement. Omitting it is a syntax error. (More
+generally, **every** statement in C# ends either with a
+semicolon or a right brace, '}'.)
+
+To execute a do loop, the computer first executes the body of the
+loop -- that is, the statement or statements inside the loop -- and then it
+evaluates the boolean expression. If the value of the expression is
+true, the computer returns to the beginning of the do loop and repeats
+the process; if the value is false, it ends the loop and continues
+with the next part of the program. Since the condition is not tested until the
+end of the loop, the body of a do loop is always executed at least once.
+
+For example, consider our previous while loop.
+The do loop makes sense here instead of a while loop because
+with the do loop, you know there will be at least one time through the loop.
+
+[source,java]
+----
+do {
+    <tr><td>@numBits</td><td>@Math.Pow(2,numBits)</td></tr> 
+    numBits++;
+} while ( numBits <= maxBits );
+----
+
+This is safe in our example because we know that numBits will always be less than maxBits at the start. If you have user input, that may not be the case.
+
+Although a do..while statement is sometimes more convenient than a
+while statement, having two kinds of loops does not make the language
+more powerful. Any problem that can be solved using do..while loops
+can also be solved using only while statements, and vice versa. In
+fact, if doSomething represents any block of
+program code, then
+
+[source,java]
+----
+do {
+    doSomething
+} while ( boolean-expression );
+----
+
+has exactly the same effect as
+
+[source,java]
+----
+doSomething
+while ( boolean-expression ) {
+    doSomething
+}
+----
+
+Similarly,
+
+[source,java]
+----
+while ( boolean-expression ) {
+    doSomething
+} 
+----
+
+can be replaced by
+
+[source,java]
+----
+if ( boolean-expression ) {
+   do {
+       doSomething
+   } while ( boolean-expression );
+}
+----
+
+without changing the meaning of the program in any way.
+
+
+====   break and continue
+
+The syntax of the while and do..while loops allows you to
+test the continuation condition at either the beginning of a loop or at the
+end. Sometimes, it is more natural to have the test in the middle of the loop,
+or to have several tests at different places in the same loop. C# provides a
+general method for breaking out of the middle of any loop. It's called the
+break statement, which takes the form
+
+[source,java]
+----
+break;
+----
+
+When the computer executes a break statement in a loop (or, as we will see later, a switch statement also), it will
+immediately jump out of the loop or switch. It then continues on to whatever follows the
+loop in the program. Consider this version of our previous while loop for example:
+
+[source,java]
+----
+while (true) {  // looks like it will run forever!
+
+  <tr><td>@numBits</td><td>@Math.Pow(2,numBits)</td></tr> 
+        
+  numBits++;
+
+  if (numBits > maxBits) {   // time to go
+    break;
+  }
+
+}
+// continue here after break
+----
+
+The test to exit the loop is no longer in the while expression, but instead is embedded in the loop.
+
+The first line of this loop, "while (true)" might look a bit
+strange, but it's perfectly legitimate. The condition in a while loop
+can be any boolean-valued expression. The computer evaluates this expression
+and checks whether the value is true or false. The boolean
+literal "true" is just a boolean expression that always evaluates to
+true. So "while (true)" can be used to write an infinite loop, or one
+that will be terminated by a break statement.
+
+A break statement terminates the loop that immediately encloses the
+break statement. It is possible to have nested loops, 
+where one loop statement is contained inside
+another. If you use a break statement inside a nested loop, it will
+only break out of that loop, not out of the loop that contains the nested loop. 
+There is something called a labeled break statement that allows you to
+specify which loop you want to break. This is not very common, so I will go over it quickly.
+Labels work like this:  You can put a label in
+front of any loop.  A label consists of a simple identifier followed
+by a colon.  For example, a while with a label might
+look like "mainloop: while...".  Inside
+this loop you can use the labeled break statement "break mainloop;"
+to break out of the labeled loop.  For example, here is a code segment that checks
+whether two strings, s1 and s2, have a character in common.
+If a common character is found, the value of the flag variable nothingInCommon
+is set to false, and a labeled break is used to end the processing
+at that point:
+
+[source,java]
+----
+boolean nothingInCommon;
+nothingInCommon = true;  // Assume s1 and s2 have no chars in common.
+int i,j;  // Variables for iterating through the chars in s1 and s2.
+
+i = 0;
+bigloop: while (i < s1.length()) {
+   j = 0;
+   while (j < s2.length()) {
+      if (s1.charAt(i) == s2.charAt(j)) { // s1 and s2 have a common char.
+          nothingInCommon = false;
+          break bigloop;  // break out of BOTH loops
+      }
+      j++;  // Go on to the next char in s2.
+   }
+   i++;  //Go on to the next char in s1.
+}
+----
+
+[CAUTION]
+====
+It is not considered good style to use a break when a while expression could be used; so our first example is not good programming -- use break with caution, and only when you cannot otherwise write a loop to do what you need it to.
+====
+
+The continue statement is related to break, but less
+commonly used. A continue statement tells the computer to skip the
+rest of the current iteration of the loop. However, instead of jumping out of
+the loop altogether, it jumps back to the beginning of the loop and continues
+with the next iteration (including evaluating the loop's continuation condition to
+see whether any further iterations are required).  As with break,
+when a continue is in a nested loop, it will continue the loop
+that directly contains it; a "labeled continue" can be used to continue
+the containing loop instead.
+
+break and continue can be used in while loops and
+do..while loops. They can also be used in for loops, which
+are covered in the next section. 
+Later, we'll see that break can also be used to
+break out of a switch statement.   A break can occur
+inside an if statement, but only if the if statement
+is nested inside a loop or inside a switch statement.
+In that case, it does **not** mean
+to break out of the if.  Instead, it breaks out of the loop or
+switch statement that contains the if statement.
+The same consideration applies to continue statements inside ifs.
+
+[CAUTION]
+====
+There is one other control flow statement that you will find in the C# reference manual but will not be discussed further here: the goto statement. It, too, uses labeled statements, and causes the flow of control to be immediately moved from the goto statement to the labeled statement. This is never recommended, and is not necessary given the other control flow statements in the language. 
+
+On the other hand, with just if and goto, you can program loops and so have a complete language without ever using a loop; you would use if and goto to code loops. But don't do it. It's terrible practice and the code written that way is unreadable.
+====
+
+
+'''
+
+=== The for Statement
+
+
+We turn in this section to another type of loop,
+the for statement. Any for loop is equivalent to some
+while loop, so the language doesn't get any additional power by having
+for statements. But for a certain type of problem, a for loop
+can be easier to construct and easier to read than the corresponding
+while loop. It's quite possible that in real programs, for
+loops actually outnumber while loops.
+
+==== For Loops
+
+The for statement makes a common type of while loop easier to
+write. Many while loops have the general form:
+
+[source,java]
+----
+initialization
+while ( continuation-condition ) {
+    statements
+    update
+}
+----
+
+For example, consider this example from earlier in the chapter:
+
+[source,java]
+----
+    years = 0;  // initialization
+    while (years < 5) { //continuation condition
+
+       interest = principal * rate; // compute interest for this year
+       principal += interest;       // add it to principal.
+       <p>@principal</p>            // display the principal for the year
+
+       years++; // update to the next year
+    }
+----
+
+This loop can be written as the following equivalent for
+statement:
+
+[source,java]
+----
+for ( years = 0;  years < 5;  years++ ) {
+       interest = principal * rate; // compute interest for this year
+       principal += interest;       // add it to principal.
+       <p>@principal</p>            // display the principal for the year
+}
+----
+
+The initialization, continuation condition, and updating have all been
+combined in the first line of the for loop. This keeps everything
+involved in the "control" of the loop in one place, which helps make the loop
+easier to read and understand. The for loop is executed in exactly the
+same way as the original code: The initialization part is executed once, before
+the loop begins. The continuation condition is executed before each execution
+of the loop, and the loop ends when this condition is false. The
+update part is executed at the end of each execution of the loop, just before
+jumping back to check the condition.
+
+The formal syntax of the for statement is as follows:
+
+[source,java]
+----
+for ( initialization; continuation-condition; update )
+     statement
+
+----
+
+or, using a block statement:
+
+[source,java]
+----
+for ( initialization; continuation-condition; update ) {
+     statements
+}
+----
+
+The continuation-condition must be a
+boolean-valued expression. The initialization
+is usually a declaration or an assignment statement, but it
+can be any expression that would be allowed as a statement in a program.
+The update can be any simple statement, but is usually
+an increment, a decrement, or an assignment statement. Any
+of the three parts can be empty. If the continuation condition is empty, it is
+treated as if it were "true," so the loop will be repeated forever or
+until it ends for some other reason, such as a break statement. (Some
+people like to begin an infinite loop with "for (;;)" instead of
+"while (true)".)  Here's a flow control diagram for a for
+statement:
+
+image::images/for-loop-flow-control.png[control diagram for a for loop]
+
+Usually, the initialization part of a for statement assigns a value
+to some variable, and the update changes the value of that variable with an
+assignment statement or with an increment or decrement operation. The value of
+the variable is tested in the continuation condition, and the loop ends when
+this condition evaluates to false. A variable used in this way is
+called a loop control variable. In the
+example given above, the loop control variable was years.
+
+Certainly, the most common type of for loop is the counting loop, 
+where a loop control variable takes on all
+integer values between some minimum and some maximum value. A counting loop has
+the form
+
+[source,java]
+----
+for ( variable = min;  variable <= max; variable++ ) {
+     statements
+}
+----
+
+where min and max are integer-valued expressions (usually constants). The
+variable takes on the values min, min+1, 
+min+2, ..., max. The value
+of the loop control variable is often used in the body of the loop. The
+for loop at the beginning of this section is a counting loop in which
+the loop control variable, years, takes on the values 1, 2, 3, 4, 5.
+Here is an even simpler example, in which the numbers 1, 2, ..., 10 are
+displayed :
+
+[source,java]
+----
+for (int i = 1 ;  i <= 10 ;  i++ ) {
+   <p>@i</p>
+}
+----
+
+[NOTE]
+====
+One-letter variables are usually frowned upon in code; one exception is for-loop variables, where we will often see i or j used as simple counters. If there is more reason than simply counting, give your for-loop variable a meaningful name.
+====
+
+For various reasons, Java programmers like to start counting at 0 instead of
+1, and they tend to use a "<" in the condition, rather than a
+"<=". The following variation of the above loop prints out the ten
+numbers 0, 1, 2, ..., 9:
+
+[source,java]
+----
+for (int i = 0 ;  i < 10 ;  i++ ) {
+   <p>@i</p>
+}
+----
+
+Using < instead of +<=+ in the test, or vice versa, is
+a common source of off-by-one errors in programs. You should always stop and
+think, Do I want the final value to be processed or not?
+
+It's easy to count down from 10 to 1 instead of counting up. Just start with
+10, decrement the loop control variable instead of incrementing it, and
+continue as long as the variable is greater than or equal to one.
+
+[source,java]
+----
+for (int i = 10 ;  i >= 1 ;  i-- ) {
+   <p>@i</p>
+}
+----
+
+Now, in fact, the official syntax of a for statement actually
+allows both the initialization part and the update part to consist of several
+expressions, separated by commas. So we can even count up from 1 to 10 and
+count down from 10 to 1 at the same time!
+
+[source,java]
+----
+for ( i=1, j=10;  i <= 10;  i++, j-- ) {
+   <pre>@System.format("{0,5}{1,5}", i, j)</pre>  // i and j each get 5 character fields (use pre to keep space)
+}
+----
+
+As a final introductory example, let's say that we want to use a for loop that
+prints out just the even numbers between 2 and 20, that is: 2, 4, 6, 8, 10, 12,
+14, 16, 18, 20. There are several ways to do this. Just to show how even a very
+simple problem can be solved in many ways, here are four different solutions
+(three of which would get full credit):
+
+[source,java]
+----
+ (1)   // There are 10 numbers to print.           
+       // Use a for loop to count 1, 2,            
+       // ..., 10.  The numbers we want            
+       // to print are 2*1, 2*2, ... 2*10.         
+
+       for (int i = 1; i <= 10; i++) {              
+          <text>@(2*i) </text>                
+       }
+
+ (2)   // Use a for loop that counts
+       // 2, 4, ..., 20 directly by
+       // adding 2 to N each time through
+       // the loop.
+
+       for (int i = 2; i <= 20; i += 2) {
+          <text>@i </text>                
+       }
+
+ (3)   // Count off all the numbers    
+       // 2, 3, 4, ..., 19, 20, but                
+       // only print out the numbers               
+       // that are even.                           
+
+       for (int i = 2; i <= 20; i++) {               
+          if ( i % 2 == 0 )  { // is i even?           
+              <text>@i </text>                
+           }
+       } 
+
+ (4)   // Irritate the professor with
+       // a solution that follows the
+       // letter of this silly assignment
+       // while making fun of it.
+
+       for (int i = 1; i <= 1; i++) {
+          <text>2 4 6 8 10 12 14 16 18 20</text>
+       }
+
+----
+
+Perhaps it is worth stressing one more time that a for statement,
+like any statement except for a variable declaration, never occurs on its own in a real program. A statement must
+be inside the main routine of a program or inside some other
+subroutine.  And that subroutine must be defined inside a class. (In ASP.NET, the code you put in Razor code blocks are put into a generated class for the page.)
+
+I should also
+remind you that every variable must be declared before it can be used, and that
+includes the loop control variable in a for statement. In all the
+examples that you have seen so far in this section, the loop control variables
+should be declared to be of type int. It is not required that a loop
+control variable be an integer. Here, for example, is a for loop in
+which the variable, ch, is of type char, using
+the fact that the ++ operator can be applied to characters as
+well as to numbers:
+
+[source,java]
+----
+@* Print out the alphabet on one line of output. *@
+<p>
+@for ( char ch = 'A';  ch <= 'Z';  ch++ ) {
+    <text>@ch </text>
+}
+</p>
+----
+
+Here I show another use of Razor -- any of the loop and conditional statements can be directly placed in your web page with a @ prefix before the keyword for, while, do, if, or switch. This lets you put all of the contents within a single paragraph as the example shows.
+
+'''
+
+==== Example: Counting Divisors
+
+Let's look at a less trivial problem that can be solved with a for
+loop. If N and D are positive integers, we say that
+D is a divisor of N if the
+remainder when D is divided into N is zero. (Equivalently, we
+could say that N is an even multiple of D.) In terms of C#
+programming, D is a divisor of N if N % D is
+zero.
+
+Let's write a program that inputs a positive integer, N, from the
+user and computes how many different divisors N has. The numbers that
+could possibly be divisors of N are 1, 2, ..., N. To compute
+the number of divisors of N, we can just test each possible divisor of
+N and count the ones that actually do divide N evenly. In
+pseudocode, the algorithm takes the form
+
+[source,java]
+----
+Get a positive integer, N, from the user
+Let divisorCount = 0
+for each number, testDivisor, in the range from 1 to N:
+    if testDivisor is a divisor of N:
+        Count it by adding 1 to divisorCount
+Output the count
+----
+
+This algorithm displays a common programming pattern that is used when some,
+but not all, of a sequence of items are to be processed. The general pattern
+is
+
+[source,java]
+----
+for each item in the sequence:
+   if the item passes the test:
+       process it
+----
+
+The for loop in our divisor-counting algorithm can be translated
+into Java code as
+
+[source,java]
+----
+for (testDivisor = 1; testDivisor <= N; testDivisor++) {
+   if ( N % testDivisor == 0 )
+      divisorCount++;
+}
+----
+
+On a modern computer, this loop can be executed very quickly. It is not
+impossible to run it even for the largest legal int value, 2147483647.
+(If you wanted to run it for even larger values, you could use variables of
+type long rather than int.) However, it does take a
+significant amount of time for very large numbers. So when I implemented this
+algorithm, I decided to output a dot every time the computer has tested one
+million possible divisors. In the improved version of the program, there are
+two types of counting going on. We have to count the number of divisors and we
+also have to count the number of possible divisors that have been tested. So
+the program needs two counters. When the second counter reaches 1000000, the program
+outputs a '.' and resets the counter to zero so that we can start counting the
+next group of one million. Reverting to pseudocode, the algorithm now looks
+like
+
+[source,java]
+----
+Get a positive integer, N, from the user
+Let divisorCount = 0  // Number of divisors found.
+Let numberTested = 0  // Number of possible divisors tested
+                      //       since the last period was output.
+for each number, testDivisor, in the range from 1 to N:
+    if testDivisor is a divisor of N:
+        Count it by adding 1 to divisorCount
+    Add 1 to numberTested
+    if numberTested is 1000000:
+        print out a '.'
+        Reset numberTested to 0
+Output the count
+----
+
+Finally, we can translate the algorithm into a complete Java program:
+
+.CountDivisors.cshtml
+[source,java]
+----
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Count Divisors</title>
+    
+    <style type="text/css">
+      body {background-color: beige; font-family: Verdana, Arial;
+            margin: 50px; }
+      form {padding: 10px; border-style: solid; width: 250px;}
+    </style>
+  </head>
+
+  <body>
+  <p> This page counts how many divisors the number has and prints the result.</p>
+
+  <p>Enter a numbers and then click <strong>Count Divisors</strong>.</p>
+  <form action="" method="post"> 
+    <p><label for="principal">Number:</label>
+       <input type="text" name="num" />
+    </p>
+    <p><input type="submit" value="Count Divisors" /></p>
+  </form>
+  <br/>
+
+  @{
+      int num;  // A positive integer entered by the user.
+              // Divisors of this number will be counted.
+
+      int testDivisor;  // A number between 1 and N that is a
+                        // possible divisor of N.
+
+      int divisorCount;  // Number of divisors of N that have been found.
+
+      int numberTested;  // Used to count how many possible divisors
+                         // of N have been tested.  When the number
+                         // reaches 1000000, a period is output and
+                         // the value of numberTested is reset to zero.
+
+      /* Get the initial number from the user. */
+      if (IsPost) {
+        num = Request["num"].AsInt();      
+
+        if (num <= 0) {
+          <p>@num is not positive.  Please try again.</p>
+        } else {
+         // At this point, we know that num > 0
+         
+        /* Count the divisors, printing a "." after every 1000000 tests. */
+
+        divisorCount = 0;
+        numberTested = 0;
+
+        for (testDivisor = 1; testDivisor <= num; testDivisor++) {
+           if ( num % testDivisor == 0 ) {
+              divisorCount++;
+           }
+           numberTested++;
+           if (numberTested == 1000000) {
+            <text>.</text>
+            numberTested = 0;
+          }
+        }
+
+        /* Display the result. */
+        <text><br /></text>
+        <p>The number of divisors of @num is @divisorCount.</p>
+         
+        } // end num > 0
+
+      } // end IsPost
+  }
+  </body>
+</html>
+
+----
+
+Note that because the whole web page is displayed only once its HTML is generated by the Razor processor, all of the .'s display at once, after the computation completes. This kind of progress meter would be displayable during the execution of the computation only with a more complex call-back in place, beyond the scope of our work.
+
+'''
+
+==== Nested For Loops
+
+Control structures in Java are statements that contain other, simpler statements. In
+particular, control structures can contain control structures. You've already
+seen several examples of if statements inside loops, and one example of
+a while loop inside another while, but any
+combination of one control structure inside another is possible. We say that
+one structure is nested inside another. You can
+even have multiple levels of nesting, such as a while loop inside an
+if statement inside another while loop. The syntax of Java
+does not set a limit on the number of levels of nesting. As a practical matter,
+though, it's difficult to understand a program that has more than a few levels
+of nesting.
+
+Nested for loops arise naturally in many algorithms, and it is
+important to understand how they work. Let's look at a couple of examples.
+First, consider the problem of printing out a multiplication table like this
+one:
+
+[source,java]
+----
+ 1   2   3   4   5   6   7   8   9  10  11  12
+ 2   4   6   8  10  12  14  16  18  20  22  24
+ 3   6   9  12  15  18  21  24  27  30  33  36
+ 4   8  12  16  20  24  28  32  36  40  44  48
+ 5  10  15  20  25  30  35  40  45  50  55  60
+ 6  12  18  24  30  36  42  48  54  60  66  72
+ 7  14  21  28  35  42  49  56  63  70  77  84
+ 8  16  24  32  40  48  56  64  72  80  88  96
+ 9  18  27  36  45  54  63  72  81  90  99 108
+10  20  30  40  50  60  70  80  90 100 110 120
+11  22  33  44  55  66  77  88  99 110 121 132
+12  24  36  48  60  72  84  96 108 120 132 144
+----
+
+The data in the table are arranged into 12 rows and 12 columns, so we should generate an HTML table. The process
+of printing them out can be expressed in a pseudocode algorithm as
+
+[source,java]
+----
+start a table
+for each rowNumber = 1, 2, 3, ..., 12:
+   start a row
+   Print the first twelve multiples of rowNumber on one line
+   end the row
+end the table
+----
+
+The first step in the for loop can itself be expressed as a
+for loop.  We can expand "Print the first twelve multiples of rowNumber 
+on one line" as:
+
+[source,java]
+----
+for N = 1, 2, 3, ..., 12:
+   Print N * rowNumber
+----
+
+so a refined algorithm for printing the table has one for loop
+nested inside another:
+
+[source,java]
+----
+start a table
+for each rowNumber = 1, 2, 3, ..., 12:
+   start a row
+   for N = 1, 2, 3, ..., 12:
+      Print N * rowNumber
+   end the row
+end the table
+----
+
+We want to print the output in neat columns, with each output number
+taking up four spaces. This can be done using formatted output with format specifier %4d.
+Assuming that rowNumber and N have been declared to be
+variables of type int, the algorithm can be expressed in Java as
+
+[source,java]
+----
+<table>
+@for ( int rowNumber = 1;  rowNumber <= 12;  rowNumber++ ) {
+   // start a row in the table
+   @: <tr>
+   for ( int N = 1;  N <= 12;  N++ ) {
+        // print in columns
+        <td align="right">@( N * rowNumber )</td>  
+   }
+   //end the current row in the table
+   @: </tr> 
+}
+</table>
+----
+
+[NOTE]
+====
+Note the use of @: to mark the HTML-only rows. This is needed for the </tr> since it is just a closing tag on its own. For consistency, I've used it on the <tr> as well -- consistency makes the code easier to read.
+====
+
+This section has been weighed down with lots of examples of numerical
+processing. For our next example, let's do some text processing. Consider the
+problem of finding which of the 26 letters of the alphabet occur in a given
+string. For example, the letters that occur in "Hello World" are D, E, H, L, O,
+R, and W. More specifically, we will write a program that will list all the
+letters contained in a string and will also count the number of different
+letters. The string will be input by the user. Let's start with a pseudocode
+algorithm for the program.
+
+[source,java]
+----
+Ask the user to input a string
+Read the response into a variable, text
+Let count = 0  (for counting the number of different letters)
+for each letter of the alphabet:
+   if the letter occurs in text:
+      Print the letter
+      Add 1 to count
+Output the count
+----
+
+
+This follows our form model very well, since forms' input come to us as strings already.
+The line of the algorithm
+that reads "for each letter of the alphabet" can be expressed as "for
+(letter='A'; letter<='Z'; letter++)". But the if statement inside the for
+loop needs still more thought before we can write the program. How do we check whether the given letter,
+letter, occurs in str? One idea is to look at each character in
+the string in turn, and check whether that character is equal to letter.
+We can get the i-th character of text with an index into the string like so: text[i],
+where i ranges from 0 to str.Length - 1.
+
+One more difficulty: A letter such as 'A' can occur in str in
+either upper or lower case, 'A' or 'a'. We have to check for both of these. But
+we can avoid this difficulty by converting str to upper case before
+processing it. Then, we only have to check for the upper case letter. We can
+now flesh out the algorithm fully:
+
+[source,java]
+----
+Ask the user to input a string
+Read the response into a variable, text
+Convert text to upper case
+Let count = 0
+for letter = 'A', 'B', ..., 'Z':
+    for i = 0, 1, ..., text.Length-1:
+        if letter == text[i]:
+            Print letter
+            Add 1 to count
+            break  // jump out of the loop, to avoid counting letter twice
+Output the count
+----
+
+Note the use of break in the nested
+for loop. It is required to avoid printing or counting a given letter
+more than once (in the case where it occurs more than once in the string). 
+The break statement breaks out of the inner
+for loop, but not the outer for loop.  Upon executing the
+break, the computer continues the outer loop with the next value of
+letter.  You should try to figure out exactly what count
+would be at the end of this program, if the break statement were omitted.
+Here is the complete program:
+
+.ListLetters.cshtml
+[source,java]
+----
+<!DOCTYPE html>
+<html>
+<head>
+    <title>List Letters</title>
+
+    <style type="text/css">
+        body {
+            background-color: beige;
+            font-family: Verdana, Arial;
+            margin: 50px;
+        }
+
+        form {
+            padding: 10px;
+            border-style: solid;
+            width: 250px;
+        }
+    </style>
+</head>
+
+<body>
+    <p>Enter a line and I'll tell you what letters it has, and
+       how many different letters there are.</p>
+
+    <p>Enter your line and then click <strong>List Letters</strong>.</p>
+    <form action="" method="post">
+        <p>
+            <label for="principal">Text:</label>
+            <input type="text" name="text" />
+        </p>
+        <p><input type="submit" value="List Letters" /></p>
+    </form>
+    <br />
+
+@{
+   if (IsPost) {
+      string text;  // Line of text entered by the user.
+      int count=0;  // Number of different letters found in str.
+
+      text = Request["text"].ToUpper();
+
+      <p>Your input contains the following letters: </p>
+
+      @: <p>
+      for (char letter = 'A'; letter <= 'Z'; letter++ ) {
+          int i;  // Position of a character in str.
+          for ( i = 0; i < text.Length; i++ ) {
+              if ( letter == text[i] ) {
+                  <text>@letter </text>
+                  count++;
+                  break;
+              }
+          }
+      }
+      @: </p>
+
+      <p>There were @count different letters.</p>
+   } // end IsPost
+}
+</body>
+</html>
+
+----
+
+In fact, there is actually an easier way to determine whether a given letter occurs
+in a string, str. The built-in function str.IndexOf(letter)
+will return -1 if letter does **not** occur in
+the string. It returns a number greater than or equal to zero if it does occur.
+So, we could check whether letter occurs in str simply by
+checking "if (str.IndexOf(letter) >= 0)". If we used this technique
+in the above program, we wouldn't need a nested for loop. This gives
+you a preview of how subroutines can be used to deal with complexity.
+
+[TIP]
+====
+It is a good idea to get familiar with the common methods such as those on string so that you avoid re-writing code that is available to you in ASP.NET already.
+====
+
+
+...
+
+=== The if Statement
+
+The first of the two branching statements in Java
+is the if statement, which you have already seen. It takes the form
+
+[source,java]
+----
+if (boolean-expression)
+     statement-1
+else
+     statement-2
+
+----
+
+As usual, the statements inside an if statement can be blocks. The
+if statement represents a two-way branch. The else part of an
+if statement -- consisting of the word "else" and the statement that
+follows it -- can be omitted.
+
+This section delves into complex uses of if statements and how to consider what can go wrong with them.
+
+==== The Dangling else Problem
+
+[NOTE]
+====
+Since Razor requires {}'s on all bodies of if statements, these types of issues can only occur in your C# class files' code. They will not occur in your .cshtml files. 
+====
+
+Now, an if statement is, in particular, a statement. This means
+that either statement-1 or statement-2 in the above if statement can itself
+be an if statement. A problem arises, however, 
+if statement-1 is an if statement that has no
+else part. This special case is effectively forbidden by the syntax of
+C#. Suppose, for example, that you type
+
+[source,java]
+----
+if ( x > 0 )
+    if (y > 0)
+       msg="First case";
+else
+    msg="Second case";
+----
+
+Now, remember that the way you've indented this doesn't mean anything at all
+to the computer. You might think that the else part is the second half
+of your "if (x > 0)" statement, but the rule that the computer
+follows attaches the else to "if (y > 0)", which is
+closer. That is, the computer reads your statement as if it were formatted:
+
+[source,java]
+----
+if ( x > 0 )
+    if (y > 0)
+       msg="First case";
+    else
+        msg="Second case";
+----
+
+You can force the computer to use the other interpretation by enclosing the
+nested if in a block:
+
+[source,java]
+----
+if ( x > 0 ) {
+    if (y > 0)
+       msg="First case";
+}
+else
+    msg="Second case";
+----
+
+These two if statements have different meanings: In the case when x +<=+ 0, the
+first statement doesn't set msg to anything, but the second statement sets it to "Second
+case".
+
+==== Multiway Branching
+
+Much more interesting than this technicality is the case where statement-2, 
+the else part of the if
+statement, is itself an if statement. The statement would look like
+this (perhaps without the final else part):
+
+[source,java]
+----
+if (boolean-expression-1)
+     statement-1
+else
+     if (boolean-expression-2)
+         statement-2
+     else
+         statement-3
+
+----
+
+However, since the computer doesn't care how a program is laid out on the
+page, this is almost always written in the format:
+
+[source,java]
+----
+if (boolean-expression-1)
+     statement-1
+else if (boolean-expression-2)
+     statement-2
+else
+     statement-3
+
+----
+
+You should think of this as a single statement representing a three-way
+branch. When the computer executes this, one and only one of the three
+statements -- statement-1, statement-2, or statement-3 -- will 
+be executed. The computer starts by evaluating boolean-expression-1. If it is true, the computer
+executes statement-1 and then jumps all the way
+to the end of the outer if statement, skipping the other two statements. If boolean-expression-1 
+is false, the computer skips
+statement-1 and executes the second, nested if
+statement. To do this, it tests the value of boolean-expression-2 and uses it to decide between
+statement-2 and statement-3.
+
+Here is an example that will print out one of three different messages,
+depending on the value of a variable named temperature:
+
+[source,java]
+----
+if (temperature < 50) {
+   <p>It's cold.</p>
+} else if (temperature < 80) {
+   <p>It's nice.</p>
+} else {
+   <p>It's hot.</p>
+}
+----
+
+[TIP]
+====
+Notice the brace placement above: Razor allows you to not put braces between the else and if, it reads "else if"  as a unit.
+====
+
+If temperature is, say, 42, the first test is true. The
+computer prints out the message "It's cold", and skips the rest -- without even
+evaluating the second condition. For a temperature of 75, the first test is
+false, so the computer goes on to the second test. This test is
+true, so the computer prints "It's nice" and skips the rest. If the
+temperature is 173, both of the tests evaluate to false, so the
+computer says "It's hot" (unless its circuits have been fried by the heat, that
+is).
+
+You can go on stringing together "else-if's" to make multi-way branches with
+any number of cases:
+
+[source,java]
+----
+if (test-1)
+     statement-1
+else if (test-2)
+     statement-2
+else if (test-3)
+     statement-3
+  .
+  . // (more cases)
+  .
+else if (test-N)
+     statement-N
+else
+     statement-(N+1)
+
+----
+
+The computer evaluates the tests, which are boolean expressions, one after the other until it
+comes to one that is true. It executes the associated statement and
+skips the rest. If none of the boolean expressions evaluate to true,
+then the statement in the else part is executed. This statement is
+called a multi-way branch because one and only one of the statements will be executed.
+The final else part can be omitted. In that case, if all the boolean
+expressions are false, none of the statements are executed. Of course, each of
+the statements can be a block, consisting of a number of statements enclosed
+between { and }. Admittedly, there is lot of syntax here; as you study and
+practice, you'll become comfortable with it.  It might be useful to look at a 
+flow control diagram for the general "if..else if" statement shown above:
+
+image::images/multiway-if-flow-control.png[Flow control diagram for a multiway if statement]
+
+'''
+
+==== If Statement Examples
+
+As an example of using if statements, let's suppose that x,
+y, and z are variables of type int, and that each
+variable has already been assigned a value. Consider the problem of printing
+out the values of the three variables in increasing order. For example, if the
+values are 42, 17, and 20, then the output should be in the order 17, 20,
+42.
+
+One way to approach this is to ask, where does x belong in the
+list? It comes first if it's less than both y and z. It comes
+last if it's greater than both y and z. Otherwise, it comes
+in the middle. We can express this with a 3-way if statement, but we
+still have to worry about the order in which y and z should
+be printed. In pseudocode,
+
+[source,java]
+----
+if (x < y && x < z) { // && is the boolean operator, logical and.
+    output x, followed by y and z in their correct order
+}
+else if (x > y && x > z) {
+    output y and z in their correct order, followed by x
+}
+else {
+    output x in between y and z in their correct order
+}
+----
+
+Determining the relative order of y and z requires another
+if statement, so this becomes
+
+[source,java]
+----
+if (x < y && x < z) {        // x comes first
+    if (y < z) {
+       <p>@x @y @z</p>
+    } else {
+       <p>@x @z @y</p>
+    }
+}
+else if (x > y && x > z) {   // x comes last
+    if (y < z) {
+       <p>@y @z @x</p>
+    } else {
+       <p>@z @y @x</p>
+    }
+}
+else {                       // x in the middle
+    if (y < z) {
+       <p>@y @x @z</p>
+    } else {
+       <p>@z @x @y</p>
+    }
+}
+----
+
+You might check that this code will work correctly even if some of the
+values are the same. If the values of two variables are the same, it doesn't
+matter which order you print them in.
+
+Note, by the way, that even though you can say in English "if x is less than
+y and z," you can't say in C# "if (x < y && z)". The
+&& operator can only be used between boolean values, so you
+have to make separate tests, x<y and x<z, and then
+combine the two tests with &&.
+
+There is an alternative approach to this problem that begins by asking,
+"which order should x and y be printed in?" Once that's
+known, you only have to decide where to stick in z. This line of
+thought leads to different Java code:
+
+[source,java]
+----
+if ( x < y ) {  // x comes before y
+   if ( z < x ) {  // z comes first
+      <p>@z @x @y</p>
+   } else if ( z > y ) {  // z comes last
+      <p>@x @y @z</p>
+   } else {   // z is in the middle
+      <p>@x @z @y</p>
+   }
+} else {          // y comes before x
+   if ( z < y ) {  // z comes first
+      <p>@z @y @x</p>
+   } else if ( z > x ) {  // z comes last
+      <p>@y @x @z</p>
+   } else {  // z is in the middle
+      <p>@y @z @x</p>
+   }
+}
+----
+
+Once again, we see how the same problem can be solved in many different
+ways. The two approaches to this problem have not exhausted all the
+possibilities. For example, you might start by testing whether x is
+greater than y. If so, you could swap their values. Once you've done
+that, you know that x should be printed before y.
+
+'''
+
+Finally, let's write a complete program that uses an if statement
+in an interesting way. I want a program that will convert measurements of
+length from one unit of measurement to another, such as miles to yards or
+inches to feet. So far, the problem is extremely under-specified. Let's say
+that the program will only deal with measurements in inches, feet, yards, and
+miles. It would be easy to extend it later to deal with other units. The user
+will type in a measurement in one of these units, such as "17 feet" or "2.73
+miles". The output will show the length in terms of **each** of
+the four units of measure. (This is easier than asking the user which units to
+use in the output.) An outline of the process is
+
+[source,java]
+----
+Read the user's input measurement and units of measure
+Express the measurement in inches, feet, yards, and miles
+Display the four results
+----
+
+TWe will read the input from a form and convert the value to a double. The conversion into
+different units of measure can be simplified by first converting the user's
+input into inches. From there, the number of inches can easily be converted into feet, yards, and miles.
+Before converting into inches, we have to test the input to determine which unit of measure the user has
+specified:
+
+[source,java]
+----
+Let measurement = Request["measurement"]
+Let units = Request["units"]
+if the units are inches
+   Let inches = measurement
+else if the units are feet
+   Let inches = measurement * 12         // 12 inches per foot
+else if the units are yards
+   Let inches = measurement * 36         // 36 inches per yard
+else if the units are miles
+   Let inches = measurement * 12 * 5280  // 5280 feet per mile
+else
+   The units are illegal!
+   Print an error message and stop processing
+Let feet = inches / 12.0
+Let yards = inches / 36.0
+Let miles = inches / (12.0 * 5280.0)
+Display the results
+----
+
+We can use HTML to limit the user to only the units of measure we currently support.
+However, since HTML POST requests could be made without the form, we will check for not
+only the allowed values but also illegal values, just in case.
+
+Also, the magic values 12, 36, and 5280 are coded as constants to document what they are.
+
+Here's the complete program:
+
+.LengthConverter.cshtml
+[source,java]
+----
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Length Converter</title>
+
+    <style type="text/css">
+        body {
+            background-color: beige;
+            font-family: Verdana, Arial;
+            margin: 50px;
+        }
+
+        form {
+            padding: 10px;
+            border-style: solid;
+            width: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <p>Enter your measurement and units and then click <strong>Convert</strong> 
+    to see it in other units.<br/>
+    I will convert your input into the other units
+    of measure.</p>
+    <form action="" method="post">
+        <p>
+            <label for="measurement">Measurement:</label>
+            <input type="text" name="measurement" />
+        </p>
+        <p>
+            <label for="units">Units:</label>
+            <select name="units">
+                <option value="inches">inches</option>
+                <option value="feet">feet</option>
+                <option value="yards">yards</option>
+                <option value="miles">miles</option>
+            </select>
+        </p>
+        <p><input type="submit" value="Convert" /></p>
+    </form>
+    <br />
+
+    @{
+   if (IsPost) {
+       double measurement;  // Numerical measurement, input by user.
+       string units;        // The unit of measure for the input, also
+                            //    specified by the user.
+
+       double inches, feet, yards, miles;  // Measurement expressed in
+                                           //   each possible unit of
+                                           //   measure.
+
+       const int inchesInFeet = 12; // constants for conversions
+       const int inchesInYard = 36;
+       const int feetInMile = 5280;
+
+       /* Get the user's input, and convert units to lower case. */
+       measurement = (double)Request["measurement"].AsDecimal();
+       units = Request["units"].ToLower();
+
+       /* Convert the input measurement to inches. */
+       if (units.Equals("inches")) {
+           inches = measurement;
+       }
+       else if (units.Equals("feet")) {
+           inches = measurement * inchesInFeet;
+       }
+       else if (units.Equals("yards")) {
+           inches = measurement * inchesInYard;
+       }
+       else if (units.Equals("miles")) {
+           inches = measurement * inchesInFeet * feetInMile;
+       }
+       else {
+           // in case the form is submitted incorrectly
+           <p>Sorry, but I don't understand @units. Will assume inches.</p>
+           inches = measurement;
+       }
+
+       /* Convert measurement in inches to feet, yards, and miles. */
+       feet = inches / inchesInFeet;
+       yards = inches / inchesInYard;
+       miles = inches / (inchesInFeet*feetInMile);
+
+       /* Output measurement in terms of each unit of measure. */
+       <p>That's equivalent to:</p>
+       <p>@inches inches</p>
+       <p>@feet feet</p>
+       <p>@yards yards</p>
+       <p>@miles miles</p>
+   } // end IsPost
+}
+</body>
+</html>
+
+----
+
+Here you can see we have really taken advantage of the web experience to tailor the user's selection. Consider how you would write this in a Java application, where you would also have to request the units from the user rather than provide them with a limited number of choices.
+
+'''
+
+==== The Empty Statement
+
+As a final note in this section, I will mention one more type of statement
+in C#: the empty statement. This is a statement
+that consists simply of a semicolon and which tells the computer to
+do nothing. The existence of the empty statement makes
+the following legal, even though you would not ordinarily see a semicolon after
+a } :
+
+[source,java]
+----
+if (x < 0) {
+    x = -x;
+};
+----
+
+The semicolon is legal after the }, but the computer considers it to be an
+empty statement, not part of the if statement. Occasionally, you might
+find yourself using the empty statement when what you mean is, in fact, "do
+nothing." For example, the rather contrived if statement
+
+[source,java]
+----
+if ( done )
+   ;  // Empty statement
+else
+   message="Not done yet.";
+----
+
+does nothing when the boolean variable done is true,
+and sets message to "Not done yet" when it is false. You can't just leave out the semicolon
+in this example, since Java syntax requires an actual statement between the if
+and the else.   I prefer, though, to use an empty block, consisting 
+of { and } with nothing between, for such cases. (So does Razor, which requires the { } instead of the ; here.)
+
+Occasionally, stray empty statements can cause annoying, hard-to-find errors
+in a program. For example, the following program segment sets message to "Hello", rather than "Hello Hello Hello Hello Hello":
+
+[source,java]
+----
+for (int i = 0; i < 5; i++);
+    message+="Hello ";
+----
+
+Why? Because the ";" at the end of the first line is a statement, and it is
+this empty statement that is executed ten times. The assignment
+statement is not really inside the for statement at all, so it is
+executed just once, after the for loop has completed.  The
+for loop just does nothing, ten times!
+
+(In Razor, it would fail to compile, requesting that you use {}s after the for loop.)
+
+
+
+=== The switch Statement
+
+
+The second branching statement in C# is the
+switch statement, which is introduced in this section. The
+switch statement is used far less often than the if statement, but it
+is sometimes useful for expressing a certain type of multiway branch.
+
+
+====  The Basic switch Statement
+
+A switch statement allows you to test the value of an expression and,
+depending on that value, to jump directly to some location within the switch statement.
+Only expressions of certain types can be used.  The value of the expression
+can be one of the primitive integer types int,
+short, or byte.
+It can be the primitive char or bool types.  
+It can be string.
+Or it can be an enum type (we are not covering C# enums in this book, see https://msdn.microsoft.com/en-us/library/sbbt4032.aspx for information on this type).  
+In particular, note that the expression **cannot** be a double, 
+float, or decimal value.  
+
+The positions within a switch statement to which it
+can jump are marked with case labels that take the form: 
+"case constant:".  The constant here is a literal of
+the same type as the expression in the switch.
+A case label marks the position the
+computer jumps to when the expression evaluates to the given constant value. 
+As the final case in a switch statement you can,
+optionally, use the label "default:", which provides a default jump point that
+is used when the value of the expression is not listed in any case label.
+
+A switch statement, as it is most often used, has the form:
+
+[source,java]
+----
+switch (expression) {
+   case constant-1:
+      statements-1
+      break;
+   case constant-2:
+      statements-2
+      break;
+      .
+      .   // (more cases)
+      .
+   case constant-N:
+      statements-N
+      break;
+   default:  // optional default case
+      statements-(N+1)
+} // end of switch statement
+----
+
+This has exactly the same effect as the following multiway if statement,
+but the switch statement can be more efficient because the computer
+can evaluate one expression and jump directly to the correct case, 
+whereas in the if statement, the
+computer must evaluate up to N expressions before it knows which set of
+statements to execute:
+
+[source,java]
+----
+if (expression == constant-1) { // but use .equals for String!!
+    statements-2
+} 
+else if (expression == constant-2) { 
+    statements-3
+} 
+else
+    .
+    .
+    .
+else if (expression == constant-N) { 
+    statements-N
+} 
+else {
+    statements-(N+1)
+}
+----
+
+The break statements in the switch are technically optional. However, does require that execution not continue to the next switch case: it has to end with a break, throw, return, or other statement that interrupts the flow of control.
+The effect of a
+break is to make the computer jump past the end of the switch statement,
+skipping over all the remaining cases.
+If you leave out the break statement, you will get a compilation error.
+
+Note that you can leave out one of the groups of statements entirely
+(including the break). You then have two case labels in a row,
+containing two different constants. This just means that the computer will jump
+to the same place and perform the same action for each of the two
+constants.
+
+Here is an example of a switch statement. This is not a useful example, but
+it should be easy for you to follow. Note, by the way, that the constants in
+the case labels don't have to be in any particular order, but they must
+all be different:
+
+[source,java]
+----
+switch ( N ) {   // (Assume N is an integer variable.)
+   case 1:
+      message="The number is 1.";
+      break;
+   case 2:
+   case 4:
+   case 8:
+      message="The number is 2, 4, or 8.";
+      message+="(That's a power of 2!)";
+      break;
+   case 3:
+   case 6:
+   case 9:
+      message="The number is 3, 6, or 9.";
+      message+="(That's a multiple of 3!)";
+      break;
+   case 5:
+      message="The number is 5.";
+      break;
+   default:
+      message="The number is 7 or is outside the range 1 to 9.";
+}
+----
+
+The switch statement is pretty primitive as control structures go, and it's
+easy to make mistakes when you use it. C# has addressed a key issue that exists
+in other languages by requiring that the switch be exited at the end of a case block.
+
+
+==== Lists and switch Statements
+
+One application of switch statements is in processing list selections. A form can have a drop-down
+list of options. The user selects one of the options. The computer has to
+respond to each possible choice in a different way. The value of chosen option can be used in a
+switch statement to select the proper response.
+
+Here is an example that could be used in a variation of the
+LengthConverter example from the previous
+section:
+
+.LengthConverter2.cshtml
+[source,java]
+----
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Length Converter</title>
+
+    <style type="text/css">
+        body {
+            background-color: beige;
+            font-family: Verdana, Arial;
+            margin: 50px;
+        }
+
+        form {
+            padding: 10px;
+            border-style: solid;
+            width: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <p>Enter your measurement and units and then click <strong>Convert</strong> 
+    to see it in other units.<br/>
+    I will convert your input into the other units
+    of measure.</p>
+    <form action="" method="post">
+        <p>
+            <label for="measurement">Measurement:</label>
+            <input type="text" name="measurement" />
+        </p>
+        <p>
+            <label for="units">Units:</label>
+            <select name="units">
+                <option value="inches">inches</option>
+                <option value="feet">feet</option>
+                <option value="yards">yards</option>
+                <option value="miles">miles</option>
+            </select>
+        </p>
+        <p><input type="submit" value="Convert" /></p>
+    </form>
+    <br />
+
+                @{
+   if (IsPost) {
+       double measurement;  // Numerical measurement, input by user.
+       string units;        // The unit of measure for the input, also
+                            //    specified by the user.
+
+       double inches, feet, yards, miles;  // Measurement expressed in
+                                           //   each possible unit of
+                                           //   measure.
+
+       const int inchesInFeet = 12; // constants for conversions
+       const int inchesInYard = 36;
+       const int feetInMile = 5280;
+
+       /* Get the user's input, and convert units to lower case. */
+       measurement = (double)Request["measurement"].AsDecimal();
+       units = Request["units"].ToLower();
+
+       /* Convert the input measurement to inches. */
+       switch(units) { <1>
+       case "inches":
+           inches = measurement;
+           break;
+       case "feet":
+           inches = measurement * inchesInFeet;
+           break;
+       case "yards":
+           inches = measurement * inchesInYard;
+           break;
+       case "miles":
+           inches = measurement * inchesInFeet * feetInMile;
+           break;
+       default:           // in case the form is submitted incorrectly
+           <p>Sorry, but I don't understand @units. Will assume inches.</p>
+           inches = measurement;
+           break;
+       }
+
+       /* Convert measurement in inches to feet, yards, and miles. */
+       feet = inches / inchesInFeet;
+       yards = inches / inchesInYard;
+       miles = inches / (inchesInFeet*feetInMile);
+
+       /* Output measurement in terms of each unit of measure. */
+       <p>That's equivalent to:</p>
+       <p>@inches inches</p>
+       <p>@feet feet</p>
+       <p>@yards yards</p>
+       <p>@miles miles</p>
+   } // end IsPost
+}
+</body>
+</html>
+----
+
+<1> This is the new code, using a switch instead of a series of if tests.
+
+
+==== Definite Assignment and switch Statements
+
+As a somewhat more realistic example, the following switch statement
+makes a random choice among three possible alternatives.  The
+value of the expression ``rand.Next(3)`` is one of the
+integers 0, 1, or 2, selected at random with equal probability, so the
+switch statement below will assign one of the values
+"Rock", "Paper", "Scissors" to computerMove,
+with probability 1/3 for each case:
+
+[NOTE]
+====
+Random is a useful ASP.NET class, with an interesting collection of methods available on it for our use: see https://msdn.microsoft.com/en-us/library/system.random(v=vs.110).aspx. We haven't introduced objects yet; ``Random rand = new Random();`` is creating an object based on the Random class so that we can access the object's methods. Why didn't ASP.NET just provide a Random object? this has to do with thread safety and how random numbers are generated: it's up to an application to ensure that only one thread at a time accesses the Random objects it manages. Don't worry, we only have one thread of execution in our Web Pages.
+====
+
+[source,java]
+----
+String computerMove;
+Random rand = new Random();
+switch ( rand.Next(3) ) {
+   case 0:
+      computerMove = "Rock";
+      break;
+   case 1:
+      computerMove = "Paper";
+      break;
+   case 2:
+      computerMove = "Scissors";
+      break;
+}
+----
+
+Now, this switch statement is perfectly OK, but suppose that we use it in the
+following code segment:
+
+[source,java]
+----
+String computerMove;
+Random rand = new Random();
+switch ( rand.Next(3) ) {
+   case 0:
+      computerMove = "Rock";
+      break;
+   case 1:
+      computerMove = "Paper";
+      break;
+   case 2:
+      computerMove = "Scissors";
+      break;
+}
+<p>The computer's move is @computerMove</p>
+----
+
+Now there is a subtle error on the last line!  The problem here is due to
+definite assignment, the idea that the Java compiler must be able to determine
+that a variable has definitely been assigned a value before its value is used.
+Definite assignment was discussed earlier in this chapter.
+In this example, it's true that the three cases in the switch
+cover all the possibilities, but the compiler is not smart enough to figure
+that out; it just sees that there is an integer-valued expression in the switch
+but not all possible integer values are covered by the given cases.
+
+A simple solution is to replace the final case in the switch
+statement with default.  With a default case, all
+possible values of the expression in the switch are certainly covered,
+and the compiler knows that computerMove is definitely assigned
+a value:
+
+[source,java]
+----
+String computerMove;
+Random rand = new Random();
+switch ( rand.Next(3) ) {
+   case 0:
+      computerMove = "Rock";
+      break;
+   case 1:
+      computerMove = "Paper";
+      break;
+   default:
+      computerMove = "Scissors";
+      break;
+}
+<p>The computer's move is @computerMove</p> 
+----
+
+
+===  Introduction to Exceptions and try..catch
+
+In addition to the control structures that
+determine the normal flow of control in a program, C# has a way to deal
+with "exceptional" cases that throw the flow of control off its normal
+track.  When an error occurs during the execution of a program, the default
+behavior is to terminate the program and to print an error message.  However,
+C# makes it possible to "catch" such errors and program a response different
+from simply letting the program crash.  This is done with the
+try..catch statement.  In this section, we will
+take a preliminary and incomplete look the try..catch statement,
+leaving out a lot of the rather complex syntax of this statement.
+Error handling is a complex topic, which we will return to in
+a later chapter, and we will cover the full syntax
+of try..catch at that time.
+
+==== Exceptions
+
+The term exception is used to refer to the type of
+error that one might want to handle with a try..catch.  An
+exception is an exception to the normal flow of control in the program.
+The term is used in preference to "error" because in some cases,
+an exception might not be considered to be an error at all.  You can
+sometimes think of an exception as just another way to organize
+a program.
+
+Exceptions in C# are represented as objects of type Exception.
+Actual exceptions are usually defined by subclasses of Exception.
+Different subclasses represent different types of exceptions.  We will look at only
+three types of exception in this section:  FormatException,
+ ArgumentException, and DivideByZeroException.
+
+A FormatException can occur when an attempt
+is made to convert a a value with String.Format but the value and format specifier are not compatible.
+Consider the function call String.Format("The cost is {0:Q2}.", 15.32m).
+Q2 is not a valid format for decimals, so this will receive a FormatException.
+If C2 had been specified, then the call would work and return "The cost is $15.32".
+  If nothing is done
+to handle the exception, the web page will not render but the exception will be displayed instead.
+
+An ArgumentException can occur when an illegal
+value is passed as an argument to a method.  For example, if a method
+requires that a parameter be greater than or equal to zero, an ArgumentException
+might occur when a negative value is passed to the subroutine.
+How to respond to the illegal value is up to the person who wrote the code, 
+so we can't simply say that every illegal parameter value will result in an
+ArgumentException.  However, it is a common response.
+
+A DivideByZeroException occurs when a value is divided by zero. This is caught at compile-time when there is a literal 0, but a computed divisor won't be known until run-time.
+
+
+==== try..catch
+
+When an exception occurs, we say that the exception is "thrown".
+For example, we say that String.Format(formatString,val) throws
+an exception of type FormatException when a format in the formatString is illegal.  When an exception is thrown, it is possible
+to "catch" the exception and prevent it from crashing the program.  This is
+done with a try..catch statement.  In simplified
+form, the syntax for a try..catch can be:
+
+[source,java]
+----
+try {
+   statements-1
+}
+catch ( exception-class-name  variable-name ) {
+   statements-2
+}
+----
+
+The exception-class-name could be FormatException,
+ArgumentException, or some other exception class.
+When the computer executes this try..catch statement, 
+it executes the statements in the try
+part.  If no exception occurs during the execution of statements-1, then the computer
+just skips over the catch part and proceeds with the rest of the program.
+However, if an exception of type exception-class-name occurs during the
+execution of statements-1, the computer immediately jumps from the point where the
+exception occurs to the
+catch part and executes statements-2, skipping any remaining statements in
+statements-1.  
+Note that only one type of exception is caught; if some other type of exception occurs
+during the execution of statements-1, it will crash the program as usual.
+
+[TIP]
+====
+Actually, it may not crash the program -- what an uncaught exception does is interrupt the flow of control; the computer will look for a try/catch in a larger scope (the calling method) if it cannot find one in the current method. So, at any point in a program, any layer could choose to handle an exception generated lower down in the stack.
+====
+
+During the execution of statements-2, the
+variable-name represents the exception object, so that you can, for example,
+print it out.  The exception object contains information about the cause of the exception.
+This includes an error message, which will be displayed if you print out the exception object.
+
+After the end of the
+catch part, the computer proceeds with the rest of the program;
+the exception has been caught and handled and does not crash the program.
+
+By the way, note that the braces, { and }, are part of the syntax of the
+try..catch statement.  They are required even if there is only one
+statement between the braces.  This is different from the other statements we
+have seen, where the braces around a single statement are optional.
+
+As an example, suppose that you are computing a value that involves division.  Then we could say:
+
+[source,java]
+----
+
+double y;
+bool success;
+try {
+   y = Math.PI/x; //x's value previously set by other computations
+   success = true;
+}
+catch ( DivideByZeroException e ) {
+   y = Double.NaN;
+   success = false;
+}
+----
+
+If an error is thrown by the division then the
+second statement in the try part is skipped, and the statements in the
+catch part are executed.  (In this example, I set z to be
+the value Double.NaN when an exception occurs.  Double.NaN
+is the special "not-a-number" value for type double.)
+
+It's **not** always a good idea to catch exceptions and continue with the program.  Often
+that can just lead to an even bigger mess later on, and it might be better just to let
+the exception crash the program at the point where it occurs.  However, sometimes it's
+possible to recover from an error.
+
+For example, the AsInt() method on strings does not throw ArgumentException when the string value is not a valid integer value; instead it simply returns a 0. Similarly, if you can take a reasonable default action rather than throw an exception, you might code your web pages and methods accordingly.
+
+'''
+
+=== Introduction to Arrays
+
+There is another control structure in C# that requires at least a brief introduction to arrays to be useful.
+This structure will turn out to be extremely useful when we visit collections in a later chapter.
+
+This section
+is an introduction to arrays.  Arrays are a basic and very commonly used
+data structure, and array processing is often an exercise in using control
+structures.
+
+
+==== Creating and Using Arrays
+
+A data structure consists of a number of data items
+chunked together so that they can be treated as a unit.  An array is
+a data structure in which the items are arranged as a numbered sequence,
+so that each individual item can be referred to by its position number.
+In C# all the items must 
+be of the same type, and the numbering always starts at zero.
+You will need to learn several new terms to talk about arrays:
+The number of items in an array is called the
+*length* of the array. 
+The type of the individual items in an array is called the 
+*base type* of the array. And the position number of an
+item in an array is called the *index* of that item.
+
+Suppose that you want to write a program that will process the names of, say, one thousand people.
+You will need a way to deal with all that data.  Before you knew about arrays,
+you might have thought that the program would need a thousand variables to hold
+the thousand names, and if you wanted to print out all the names, you would need
+a thousand print statements.  Clearly, that would be ridiculous!  In reality,
+you can put all the names into an array.  The array is a represented by a single
+variable, but it holds the entire list of names.  The length of the array would
+be 1000, since there are 1000 individual names.  The base type of the array
+would be string since the items in the array are
+strings.  The first name would be at index 0 in the array, the second name
+at index 1, and so on, up to the thousandth name at index 999.
+
+The base type of an array can be any C# type, but for now, we will stick to
+arrays whose base type is string or one of the other primitive
+types.   If the base type of an
+array is int, it is referred to as an "array of ints." An
+array with base type string is referred to as an "array of
+strings." However, an array is not, properly speaking, a list of
+integers or strings or other **values**. It is better thought of
+as a list of **variables** of type int, or a list of variables of type
+string, or of some other type. As always, there is some potential for
+confusion between the two uses of a variable: as a name for a memory location
+and as a name for the value stored in that memory location. Each position in an
+array acts as a variable. Each position can hold a value of a specified type
+(the base type of the array), just as a variable can hold a value.
+The value can be changed at any time, just as the value of a variable can be
+changed.  The items in an array -- really, the individual variables that make up the
+array -- are more often referred to as the elements 
+of the array.
+
+As I mentioned above, when you use an array in a program, you can use a variable
+to refer to array as a whole.  But you often need to refer to the individual elements
+of the array.  The name for an element of an array is based on the name for the array
+and the index number of the element.  The syntax for referring to an element
+looks, for example, like this:  namelist[7].  Here, namelist
+is the variable that names the array as a whole, and namelist[7] refers to the
+element at index 7 in that array.   That is, to refer to an element of an array,
+you use the array name, followed by element index enclosed in square brackets.
+An element name of this form can be used like any other variable: You can assign
+a value to it, print it out, use it in an expression.
+
+[NOTE]
+====
+If this looks familiar, it's because we already saw indexing when we wanted to
+look inside a string value at individual characters: a string behaves like an array
+of characters in this respect. One of the quirks of a primitive type is that the compiler
+can choose to handle special cases related to the primitives. Indexing does not work on numbers, that is, you cannot pull out the i^th^ digits of an int x using x[i].
+====
+
+An array also has a Length property representing its length.  For example,
+you can refer to the length of the array namelist as namelist.Length.
+However, you cannot assign a value to namelist.Length, since the length of an
+array cannot be changed.
+
+Before you can use a variable to refer to an array, that
+variable must be declared, and it must
+have a type.  For an array of strings, for example,
+the type for the array variable would be string[], and
+for an array of ints, it would be int[].
+In general, an array type consists of the base type of the array followed
+by a pair of empty square brackets.  Array types can be used to declare
+variables; for example,
+
+[source,java]
+----
+string[] nameList;
+int[] a;
+double[] prices;
+
+----
+
+and variables declared in this way can refer to arrays.  However, declaring
+a variable does not make the actual array.  Like all variables, an array variable has
+to be assigned a value before it can be used.  In this case, the value is
+an array.  Arrays have to be created using a special syntax.  (The syntax
+is related to the fact that arrays in C# are actually objects, but that doesn't
+need to concern us here.)  Arrays are created with an operator named new.
+Here are some examples:
+
+[source,java]
+----
+nameList = new string[1000];
+a = new int[5];
+prices = new double[100];
+----
+
+The general syntax is
+
+----
+array-variable = new base-type[array-length];
+----
+
+The length of the array can be given as either an integer or an integer-valued
+expression.  For example, after the assignment statement
+"a = new int[5];", a is an array
+containing the five integer elements a[0], a[1], a[2], 
+a[3], and a[4].  Also, a.length would have
+the value 5.  It's useful to have a picture in mind:
+
+image::images/array-of-ints.png[illustration of an array of 5 ints]
+
+When you create an array of int, each element of the array is
+automatically initialized to zero.  Any array of numbers is filled with zeros
+when it is created.  An array of boolean is filled with the
+value false.  And an array of char is filled
+with the character that has Unicode code number zero.  (For an array of
+string, the initial value is null,
+a special value used for objects that we won't encounter officially until
+a later chapter.)
+
+You assign a value into an array item by referencing the item on the left-hand side of an assignment statement, like so:
+
+[source,java]
+----
+a[0] = 1;
+----
+
+There is another form of initialization that both allocates the array space and assigns values, like so:
+
+[source,java]
+----
+int[] a = { 2, 4, 6, 8 };
+----
+
+This initializes a to have 4 elements with the initial values 2, 4, 6, and 8, respectively. It is equivalent to saying:
+
+[source,java]
+----
+int[] a = new int[4];
+a[0] = 2;
+a[1] = 4;
+a[2] = 6;
+a[3] = 8;
+----
+
+
+
+==== Arrays and For Loops
+
+A lot of the real power of arrays comes from the fact that
+the index of an element can be given by an integer variable or
+even an integer-valued expression.  For example, if list
+is an array and i is a variable of type int,
+then you can use list[i] and even list[2*i+1]
+as variable names.  The meaning of list[i] depends on
+the value of i.  This becomes especially useful when we want to
+process all the elements of an array, since that can be
+done with a for loop.  For example, to print out
+all the items in an array, list, we can just
+write
+
+[source,java]
+----
+for (int i = 0; i < list.Length; i++) {
+    <p>@list[i]</p>
+}
+----
+
+The first time through the loop, i is 0, and list[i]
+refers to list[0]. So, it is the value stored in the variable
+list[0] that is printed. The second time through the loop, i
+is 1, and the value stored in list[1] is printed. The loop ends after
+printing the value of list[4], when i becomes equal to 5 and
+the continuation condition "i < list.Length" is no longer true. This
+is a typical example of using a loop to process an array.
+
+[NOTE]
+====
+Notice what is going on here: because arrays count elements starting from zero, 
+the length is always one more than the highest index. So, for loops compare the index to be < the length.
+You might try changing this to +<=+ the length and see how it behaves. In fact, you will be walking off the end of the array, and should expect an exception to be thrown. C# and Java added this protection -- in earlier languages such as C, you could walk off the end of an array and look at memory you didn't actually have access to.
+====
+
+Let's look at a few more examples.  Suppose that A is an array
+of double, and we want to find the average of all the elements of
+the array.  We can use a for loop to add up the numbers, and then
+divide by the length of the array to get the average:
+
+[source,java]
+----
+double total;    // The sum of the numbers in the array.
+double average;  // The average of the numbers.
+total = 0;
+for ( int i = 0; i < A.Length; i++ ) {
+    total = total + A[i];  // Add element number i to the total.
+}
+average = total / A.Length;  // A.length is the number of items
+----
+
+Another typical problem is to find the largest number in the array A. The
+strategy is to go through the array, keeping track of the largest number found
+so far. We'll store the largest number found so far in a variable called
+max. As we look through the array, whenever we find a number larger
+than the current value of max, we change the value of max to
+that larger value. After the whole array has been processed, max is
+the largest item in the array overall. The only question is, what should the
+original value of max be? One possibility is to start with
+max equal to A[0], and then to look through the rest of the
+array, starting from A[1], for larger items:
+
+[source,java]
+----
+double max;  // The largest number seen so far.
+max = A[0];   // At first, the largest number seen is A[0].
+int i;
+for ( i = 1; i < A.length; i++ ) {
+    if (A[i] > max) {
+       max = A[i];
+    }
+}
+// at this point, max is the largest item in A
+----
+
+Sometimes, you only want to process some elements of the array.  In that
+case, you can use an if statement inside the for
+loop to decide whether or not to process a given element.  Let's look
+at the problem of averaging the elements of an array, but this time,
+suppose that we only want to average the non-zero elements.  In this case,
+the number of items that we add up can be less than the length of the array,
+so we will need to keep a count of the number of items added to the sum:
+
+[source,java]
+----
+double total;    // The sum of the non-zero numbers in the array.
+int count;       // The number of non-zero numbers.
+double average;  // The average of the non-zero numbers.
+total = 0;
+count = 0;
+for (int i = 0; i < A.length; i++ ) {
+    if ( A[i] != 0 ) {
+        total +=  A[i];  // Add element to the total
+        count++;         // and count it.
+    }
+}
+if (count == 0) {
+    <p>There were no non-zero elements.</p>
+}
+else {
+    average = total / count;  // Divide by number of items
+    <p>Average of @count elements is @average</p>
+}
+----
+
+
+==== Random Access
+
+So far, my examples of array processing have used sequential access. 
+That is, the elements of the array were
+processed one after the other in the sequence in which they occur in the array.
+But one of the big advantages of arrays is that they allow random access. 
+That is, every element of the array is equally accessible at any given time.
+
+As an example, let's look at a well-known problem called the birthday
+problem: Suppose that there are N people in a room. What's the chance
+that there are two people in the room who have the same birthday? (That is,
+they were born on the same day in the same month, but not necessarily in the
+same year.) Most people severely underestimate the probability. We will actually
+look at a different version of the question:  Suppose you choose people at random
+and check their birthdays. How many people will you check before you find one
+who has the same birthday as someone you've already checked? Of course, the
+answer in a particular case depends on random factors, but we can simulate the
+experiment with a computer program and run the program several times to get an
+idea of how many people need to be checked on average.
+
+To simulate the experiment, we need to keep track of each birthday that we
+find. There are 365 different possible birthdays. (We'll ignore leap years.)
+For each possible birthday, we need to keep track of whether or not we
+have already found a person who has that birthday.
+The answer to this question is a boolean value, true or false. To hold the data
+for all 365 possible birthdays, we can
+use an array of 365 boolean values:
+
+[source,java]
+----
+bool[] used; 
+used = new bool[365];
+----
+
+For this problem, the days of the year are numbered from 0 to 364. The value of
+used[i] is true if someone has been selected whose birthday is day
+number i. Initially, all the values in the array are
+false. (Remember that this is done automatically when the array is created.)
+When we select someone whose birthday is day number i, we first
+check whether used[i] is true. If it is true, then this is the second person
+with that birthday. We are done. On the other hand, if used[i] is false, we set
+used[i] to be true to record the fact that we've encountered someone
+with that birthday, and we go on to the next person. Here is a program that
+carries out the simulated experiment (of course, in the program, there are
+no simulated people, only simulated birthdays):
+
+[source,java]
+----
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Duplicate Birthdays</title>
+    <style type="text/css">
+        body {
+            background-color: beige;
+            font-family: Verdana, Arial;
+            margin: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <p>We simulate choosing people at random and checking the day of 
+    the year they were born on.  If the birthday is the same as one that 
+    was seen previously, stop, and output the number of people who were checked.
+    </p>
+@{
+       boolean[] used = new boolean[365];
+                        // For recording the possible birthdays
+                        //   that have been seen so far.  A value
+                        //   of true in used[i] means that a person
+                        //   whose birthday is the i-th day of the
+                        //   year has been found.
+                        // Initially, all entries are false.
+
+       int count = 0;   // The number of people who have been checked.
+
+       Random rand = new Random(); // for generating random numbers.
+
+       while (true) {
+             // Select a birthday at random, from 0 to 364.
+             // If the birthday has already been used, quit.
+             // Otherwise, record the birthday as used.
+
+          int birthday;  // The selected birthday.
+          birthday = rand.Next(365);
+          count++;
+
+          <p>Person @count has birthday number @birthday.</p>
+
+          if ( used[birthday] ) {
+                // This day was found before; it's a duplicate.  We are done.
+             break;
+          }
+
+          used[birthday] = true;
+
+       } // end while
+
+       <p>duplicate birthday was found after @count tries.</p>
+}
+</body>
+</html>
+----
+
+You should study the program to understand how it works and how
+it uses the array.  Also,
+try it out!  You will probably find that a duplicate
+birthday tends to occur sooner than you expect.
+
+
+==== Partially Full Arrays
+
+Consider an application where the number of items that we want to store in
+an array changes as the program runs. Since the size of the array can't
+be changed, a separate counter variable must be used to keep track of
+how many spaces in the array are in use. (Of course, every space in the array
+has to contain something; the question is, how many spaces contain useful or
+valid items?)
+
+Consider, for example, a program that reads positive integers entered by the
+user and stores them for later processing. The program stops reading when the
+user inputs a number that is less than or equal to zero. The input numbers can
+be kept in an array, numbers, of type int[]. Let's say that
+no more than 100 numbers will be input. Then the size of the array can be fixed
+at 100. But the program must keep track of how many numbers have actually been
+read and stored in the array. For this, it can use an integer variable.
+Each time a number is stored in the array, we have to count it;
+that is, value of the counter variable must be incremented by one. 
+One question is, when we add a new item to the array, where do we put
+it?  Well, if the number of items is count, then they would
+be stored in the array in positions number 0, 1, ..., (count-1).
+The next open spot would be position number count, so that's
+where we should put the new item.
+
+As a rather silly example, let's write a program that
+will read the numbers input by the user and then print them in the reverse of the
+order in which they were entered.  We will provide the user with a form, and then
+use an empty field to determine where the numbers stop.
+(This is, at least, a processing task that requires that the numbers be saved
+in an array. Note that many types of processing, such as finding the sum or
+average or maximum of the numbers, can be done without saving the individual
+numbers.)
+
+[source,java]
+----
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reverse Numbers</title>
+
+    <style type="text/css">
+        body {
+            background-color: beige;
+            font-family: Verdana, Arial;
+            margin: 50px;
+        }
+        form {
+            padding: 10px;
+            border-style: solid;
+            width: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <p>Enter up to 10 numbers and I will print them out in reverse order
+    after you click Reverse. I stop looking at numbers after the first blank entry.</p>
+    <form action="" method="post">
+        <p>
+            <input type="text" name="a" />
+            <input type="text" name="b" />
+            <input type="text" name="c" />
+            <input type="text" name="d" />
+            <input type="text" name="e" />
+            <input type="text" name="f" />
+            <input type="text" name="g" />
+            <input type="text" name="h" />
+            <input type="text" name="i" />
+            <input type="text" name="j" />
+        </p>
+        <p><input type="submit" value="Reverse" /></p>
+    </form>
+    <br />
+
+    @{
+   if (IsPost) {
+     int[] numbers = new int[10];  // An array for storing the input values.
+     int count = 0;      // The number of numbers saved in the array.
+     int i=0;
+     for (char c='a';c<'k';c++,i++) {
+         if (Request[c.ToString()].IsInt()) {
+             numbers[i] = Request[c.ToString()].AsInt();
+             count++;
+         } else {
+             break; // stop at first non-integer
+         }
+     }
+
+     <p>Your numbers in reverse order are:</p>
+     @: <ul>
+     for (i = count - 1; i >= 0; i--) {
+        <li> @numbers[i] </li>
+     }
+     @: </ul>
+   } // end IsPost
+}
+</body>
+</html>
+----
+
+It is especially important to note how the variable count plays a
+dual role. It is the number of items that have been entered into the array.
+But it is also the index of the next available spot in the array.
+
+ When the time comes to print
+out the numbers in the array, the last occupied spot in the array is location
+count - 1, so the for loop prints out values starting from
+location count - 1 and going down to 0.  This is also a nice
+example of processing the elements of an array in reverse order.
+
+[TIP]
+====
+Note that the page says it stops at the first blank -- IsInt will return false on a blank, so that satisfies it. However, what other values will cause IsInt to return false? Consider how to inform the user in those situations - take ReverseNumbers.cshtml and modify it to make this change.
+====
+
+'''
+
+You might wonder what would happen in this program if our array was not large enough for the expected
+number of values.  The result would be an error that would crash the
+program.  When the processing attempts to store a number beyond the end of the array,
+ there is
+no such array element.   The attempt to use an index past the end of the array
+generates an exception of type IndexOutOfBoundsException.
+Exceptions of this type are a common source of run-time errors in programs that use arrays.
+
+'''
+
+
+==== Two-dimensional Arrays
+
+The arrays that we have considered so far are "one-dimensional."  This means that the
+array consists of a sequence of elements that can be thought of as being laid out along a line.
+It is also possible to have two-dimensional arrays, where the elements can
+be laid out in a rectangular grid.  We consider them only briefly here.
+
+In a two-dimensional, or "2D," array, the elements can be
+arranged in rows and columns.  Here, for example, is a 2D array of int
+that has five rows and seven columns:
+
+image::images/two-d-array.png[an array of its with 5 rows and 7 columns]
+
+This 5-by-7 grid contains a total of 35 elements.
+The rows in a 2D array are numbered 0, 1, 2, ..., up to the number of rows minus one.
+Similarly, the columns are numbered from zero up to the number of columns minus one.  Each individual
+element in the array can be picked out by specifying its row number and its column number.
+(The illustration shown here is not what the array actually looks like in the computer's
+memory, but it does show the logical structure of the array.)
+
+In C#, the syntax for two-dimensional arrays is similar to the syntax for one-dimensional
+arrays, except that an extra index is involved, since picking out an element requires both
+a row number and a column number.  For example, if A is a 2D array of int, then
+A[3][2] would be the element in row 3, column 2.  That would pick out the
+number 17 in the array shown above.  The type for A
+would be given as int[][], with two pairs of empty brackets.  To declare the
+array variable and create the array, you could say,
+
+[source,java]
+----
+int[][]  A;
+A  =  new int[5][7];
+----
+
+The second line creates a 2D array with 5 rows and 7 columns.  Two-dimensional arrays
+are often processed using nested for loops.  For example, the following code 
+segment will print out the elements of A in a table:
+
+[source,java]
+----
+<table>
+@for (int row = 0; row < 5; row++ ) {
+    @:<tr>
+    for (int col = 0; col < 7; col++ ) {
+        <td> A[row][col] </td>
+    }
+    @:</tr>
+}
+</table>
+----
+
+The base type of a 2D array can be anything, so you can have arrays of type
+double[][], String[][], and so on.
+
+There are some natural uses for 2D arrays.  For example,
+a 2D array can be used to store the contents of the board in a game such as
+chess or checkers.  Tables in databases are natural two-dimensional arrays, but with more complex types. 
+But sometimes 
+two-dimensional arrays are used in problems in which the grid is
+not so visually obvious. Consider a company that owns 25 stores. Suppose that
+the company has data about the profit earned at each store for each month in
+the year 2014. If the stores are numbered from 0 to 24, and if the twelve
+months from January 2014 through December 2014 are numbered from 0 to 11, then
+the profit data could be stored in an array, profit, created as
+follows:
+
+[source,java]
+----
+double[][]  profit;
+profit  =  new double[25][12];
+----
+
+profit[3][2] would be the amount of profit earned at store number 3
+in March, and more generally, profit[storeNum][monthNum] would be the
+amount of profit earned in store number storeNum in month number
+monthNum (where the numbering, remember, starts from zero).
+
+Let's assume that the profit array has already been filled with
+data. This data can be processed in a lot of interesting ways. For example, the
+total profit for the company -- for the whole year from all its stores -- can
+be calculated by adding up all the entries in the array:
+
+[source,java]
+----
+double totalProfit;  // Company's total profit in 2014.
+int store, month;  // variables for looping through the stores and the months
+totalProfit = 0;
+for ( store = 0; store < 25; store++ ) {
+   for ( month = 0; month < 12; month++ ) {
+      totalProfit += profit[store][month];
+   }
+}
+----
+
+Sometimes it is necessary to process a single row or a single column of an
+array, not the entire array. For example, to compute the total profit earned by
+the company in December, that is, in month number 11, you could use the
+loop:
+
+[source,java]
+----
+double decemberProfit;
+int storeNum;
+decemberProfit = 0.0;
+for ( storeNum = 0; storeNum < 25; storeNum++ ) {
+   decemberProfit += profit[storeNum][11];
+}
+----
+
+Two-dimensional arrays are sometimes useful, but they are much less common
+than one-dimensional arrays.  Java actually allows arrays of even higher dimension,
+but they are only rarely encountered in practice.
+
+==== For-each Loops
+
+
+Arrays are often processed using for loops.  A for
+loop makes it easy to process each element in an array from beginning to end.  For
+example, if nameList is an array of strings, 
+then all the values in the list can be printed using
+
+[source,java]
+----
+for (int i = 0; i < nameList.Length; i++) {
+    <p>nameList[i]</p>
+}
+----
+
+This type of processing is so common that there is an alternative form of
+the for loop that makes it easier to write.  The alternative
+is called a for-each loop.   It is probably easiest to
+start with an example.  Here is a for-each loop for printing all the values
+in an array of Strings:
+
+[source,java]
+----
+foreach ( string name in nameList ) {
+    <p>name</p>
+}
+----
+
+The meaning of "foreach (string name in nameList)" is
+"for each string, name, in the array, nameList, do the following".  The effect
+is that the variable name takes on each of the values in nameList
+in turn, and the body of the loop is executed for each of those values.  Note that
+there is no array index in the loop.  The loop control variable, name,
+represents one of the values in the array, not the index of one of the values.
+
+The for-each loop is meant specifically for processing all the values
+in a data structure, and we will see later that it applies to other
+data structures besides arrays.  The for-each loop makes it possible to process the
+values without even knowing the details of how the data is structured.  In the
+case of arrays, it lets you avoid the complications of using array indices.
+
+A for-each loop
+will perform the same operation for each value that is stored
+in an array.  
+If itemArray is an array of type BaseType[],
+then a for-each loop for anArray has the form:
+
+[source,java]
+----
+foreach ( BaseType item in itemArray ) {
+   .
+   .  // process the item
+   .
+}
+----
+
+As usual, the braces are optional if there is only one statement inside the loop, except in Razor.
+In this loop, item is the loop control variable.  It is
+declared as a variable of type BaseType, where
+BaseType is the base type of the array.  (In a
+for-each loop, the loop control variable **must** be declared in the
+loop; it cannot be a variable that already exists outside the loop.)  
+When this loop is executed, each value from the array is assigned
+to item in turn and the body of the loop is executed for each
+value.  Thus, the above loop is exactly equivalent to:
+
+[source,java]
+----
+for ( int index = 0; index < itemArray.Length; index++ ) {
+   BaseType item;
+   item = itemArray[index];  // Get one of the values from the array
+     .
+     .  // process the item
+     .  
+}
+----
+
+For example, if A is an array of type int[], then
+we could print all the values from A with the for-each loop:
+
+[source,java]
+----
+foreach ( int item in A ) {
+   <p> item </p>
+}
+----
+
+and we could add up all the positive integers in A with:
+
+[source,java]
+----
+int sum = 0;   // This will be the sum of all the positive numbers in A
+foreach ( int item in A ) {
+   if (item > 0) {
+      sum = sum + item;
+   }
+}
+----
+
+The for-each loop is not always appropriate.  For example, there is no
+simple way to use it to process the items in just a part of an array, or to
+process the elements in reverse order.
+However, it does make the code a little simpler when you do want to process all the values, in order.
+since it eliminates any need to use array indices.
+
+It's important to note that a for-each loop processes the **values** in
+the array, not the **elements** (where an element means the actual memory
+location that is part of the array).  For example, consider the following
+incorrect attempt to fill an array of integers with 17's:
+
+[source,java]
+----
+int[] intList = new int[10];
+foreach ( int item in intList ) {   // INCORRECT! DOES NOT MODIFY THE ARRAY!
+   item = 17;
+}
+----
+
+The assignment statement item = 17 assigns the value 17 to
+the loop control variable, item.  However, this has nothing to
+do with the array.  When the body of the loop is executed, the
+value from one of the elements of the array is copied into item.
+The statement item = 17 replaces that copied value
+but has no effect on the array element from which it was copied; the
+value in the array is not changed.  The loop is equivalent to
+
+[source,java]
+----
+int[] intList = new int[10];
+for ( int i = 0; i < intList.length; i++ ) {
+   int item = intList[i];
+   item = 17; // Doesn't change intList[i]!
+}
+----
+
+which certainly does not change the value of any element in the array.
+
+In order to change the items in the array, you have to use a for loop, like so:
+[source,java]
+----
+int[] intList = new int[10];
+for ( int i = 0; i < intList.length; i++ ) {
+   intList[i] = 17; // OK!
+}
+----
+
+
+=== Further Reading
+
+* https://msdn.microsoft.com/en-us/library/system.string.format(v=vs.110).aspx String.Format
+* C# Succinctly Chapter 2  https://www.syncfusion.com/resources/techportal/ebooks/csharp (requires account)
+
+=== Exercises
+
+. Now that you know more C#, you can come up with even more inventive "Stump the Newbie" problems. 
+Start with a 
+web page that compiles and displays correctly.
+One player looks away while the other player adds an error to the 
+program.
+Then the first player tries to find and fix the error.
+You get two points if you find the error without compiling the program, 
+one point if you find it using the compiler, and your opponent gets a 
+point if you don’t find it.
+
+. Consider the following code:
++
+[source,java]
+----
+    int n = 10;
+    int i = n;
+    while (i > 1) {
+        <p>@i</p>
+        if (i % 2 == 0) {
+            i = i / 2;
+        } else {
+            i = i + 1;
+        }
+    }
+----
++
+.. Draw a table that shows the value of the variables ``i`` and ``n`` during the execution of ``loop``.
+The table should contain one column for each variable and one line for each iteration.
+.. What is the output of this program?
+.. Can you provide an explanation that this loop will terminate for any positive value of ``n``?
+
+. How many times do you have
+to roll a pair of dice before they come up snake eyes? You could do the
+experiment by rolling the dice by hand. Write a web page that simulates
+the experiment, using C# for your algorithm. 
+The page should report the number of rolls that it makes
+before the dice come up snake eyes. (Note: "Snake eyes" means that both dice
+show a value of 1.) Simulate rolling a pair of dice. You can simulate rolling one die by choosing
+one of the integers 1, 2, 3, 4, 5, or 6 at random. The number you pick
+represents the number on the die after it is rolled. The expression 
+`rand.Next(6)+1`
+does the computation to select a random integer between 1 and 6.
+You can assign this value to a variable to represent one of the dice that are
+being rolled. Do this twice and add the results together to get the total roll.
+
+. Which integer between 1
+and 10000 has the largest number of divisors, and how many divisors does it
+have? Write a Web Page to find the answers using Razor and C# for your algorithm and display the results. It is
+possible that several integers in this range have the same, maximum number of
+divisors. Your program only has to print out one of them.  The example CountDivisors.cshtml in this chapter discussed divisors. +
++
+You might need some hints about how to find a maximum value. The basic idea
+is to go through all the integers, keeping track of the largest number of
+divisors that you've seen so far. Also, keep track of the integer that
+had that number of divisors.
+
+. Write a Web Page application that will
+evaluate simple expressions such as 17 + 3 and 3.14159 * 4.7. The expressions
+are to be typed in by the user. The input always consists of a number, followed
+by an operator, followed by another number. The operators that are allowed are
++, -, *, and /. Have the user put the values in a form with 3 fields: the left operand, the operation, and the right operand. Allow decimal values in the operands and use a select list for the operators.
+You should report an error if either value is not a number.
+Your program should print out the expression and the result after the user clicks Compute.
+The form should be available for the user to enter a new expression: make this a one-page Web Page application.
+
+. Write a Web Page application that reads
+one line of input text and breaks it up into words. Your page should give the user a text input so the user can only input one line; however, that line can be as long as they want it to be.
+The words should be output
+one per line. A word is defined to be a sequence of letters. Any characters in
+the input that are not letters should be discarded. For example, if the user
+inputs the line `He said, "That's not a good idea."` 
+then the output of the program should be +
++
+[source,java]
+----
+He
+said
+That
+s
+not
+a
+good
+idea
+----
++
+An improved version of the program would list "that's" as a single word. An
+apostrophe can be considered to be part of a word if there is a letter on each
+side of the apostrophe.
++
+To test whether a character is a letter, you might use (ch >= 'a'
+&& ch <= 'z') || (ch >= 'A' && ch <= 'Z').
+However, this only works in English and similar languages. A better choice is
+to call the standard function ch.IsLetter(), which returns a
+boolean value of true if ch is a letter and false if
+it is not. This works for any Unicode character. You might want to look at all of the methods available on char values here: https://msdn.microsoft.com/en-us/library/system.char.aspx to determine if one will help you break up strings and handle punctuation at the same time.
+
+////
+put this in the database chapter... or collections?
+5. Suppose that a file contains information about sales 
+figures for a company in various cities.
+Each line of the file contains a city name, followed by a colon (:) followed by the data for that
+city.  The data is a number of type double.
+However, for some cities, no data was available.  In these lines, the data is replaced by
+a comment explaining why the data is missing.  For example, several lines from the file might
+look like:
++
+[source,java]
+----
+San Francisco:  19887.32
+Chicago:  no report received
+New York: 298734.12
+----
++
+Write a program that will compute and print the total sales from all the cities together. The
+program should also report the number of cities for which data was not available.  The name of the
+file is "sales.dat".
++
+To complete this program, you'll need one fact about file input with TextIO
+that was not covered in http://math.hws.edu/javanotes/c2/s4.html#basics.4.4[Subsection 2.4.4].  Since you don't know in advance how many
+lines there are in the file, you need a way to tell when you have gotten to the end of the file.
+When TextIO is reading from a file, the function TextIO.eof()
+can be used to test for end of file.  This boolean-valued
+function returns true if the file has been entirely read and returns false
+if there is more data to read in the file.  This means that you can read the lines of the
+file in a loop while (TextIO.eof() == false).... The loop will end
+when all the lines of the file have been read.
++
+Suggestion:  For each line, read and ignore characters up to the colon.  Then read the rest
+of the line into a variable of type String.  Try to convert the string
+into a number, and use try..catch to test whether the conversion succeeds.
+////
+
+[start=7]
+. The goal of this exercise is to program a “Guess My Number” game.
+When it’s finished, it will work like this:
++
+[source,java]
+----
+I'm thinking of a number between 1 and 100
+(including both). Can you guess what it is?
+Enter a number: 45 [Submit Guess]
+
+// once submit is clicked, it would output:
+
+Your guess is: 45
+The number I was thinking of is: 14
+You were off by: 31
+----
++
+To choose a random number, use the Random class as shown in the previous chapter, like so:
++
+[source,java]
+----
+    Random rand = new Random();
+    int number = rand.Next(100)+1;
+    ...
+----
++
+The result of ``Next(100)`` is between 0 and 99, including both.
+Adding 1 yields a number between 1 and 100, including both.
++
+Let the user keep playing as much as they want; you generate a new number each time they enter their guess.
+
+
+. An exercise above asked you to find the
+number in the range 1 to 10000 that has the largest number of divisors.  You
+only had to print out one such number.  Revise the program so that it will
+print out **all** numbers that have the maximum number of divisors.  Use an
+array as follows:  As you count the divisors for each number, store each
+count in an array.  Then at the end of the program, 
+you can go through the array and print out all the numbers
+that have the maximum count.  The output on the Web Page should look
+something like this:
++
+[source,java]
+----
+Among integers between 1 and 10000,
+The maximum number of divisors was 64.
+Numbers with that many divisors include:
+   7560
+   9240
+----
+
+. An example in this chapter
+tried to answer the question, How many random people
+do you have to select before you find a duplicate birthday? The source code for
+that web page was given in BirthdayProblem.cshtml.
+Here are some related questions:
++
+-   How many random people do you have to select before you find **three**
+people who share the same birthday? (That is, all three people were born on the
+same day in the same month, but not necessarily in the same year.)
++
+-   Suppose you choose 365 people at random. How many different birthdays will
+they have? (The number could theoretically be anywhere from 1 to 365).
++
+- How many different people do you have to check before you've found at least
+one person with a birthday on each of the 365 days of the year?
++
+Write **three** separate pages to answer these questions and a home page that directs the user to each of the pages. Review the elements of Web Design from chapter 2 in deciding on your flow and the content of each page. Each of your pages should simulate
+choosing people at random and checking their birthdays. (In each case, ignore
+the possibility of leap years.)
+
+=== Lab
+
+Look at your original proposal and layout; introduce functionality with data hard-coded in arrays. We will be conquering databases next, and will replace array accesses with database accesses there.
+
+For example, you might hard-code several GPS locations in an array, and then take the user's location and calculate which of the "stored" locations they are closest to.
+
+
+
+
+
+
