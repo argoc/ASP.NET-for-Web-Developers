@@ -1,6 +1,6 @@
 == C# Statements, Arrays, and Objects
 
-__This material is derived from Chapter 3 in  Introduction to Programming Using Java__ 
+_This material is derived from Chapter 3 in  Introduction to Programming Using Java_ 
 
 The basic building blocks of programs -- variables,
 expressions, assignment statements, and subroutine call statements -- were
