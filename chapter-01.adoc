@@ -26,7 +26,9 @@ You write your application code in Visual Studio, and when it is run within Visu
 
 Web applications can be a bit more disorganized than a typical computer program -- web sites turn into spaghetti really easily. So it is best to do some design up front, with a wire-frame diagram, and lay out that design in your development environment -- use directories to separate portions of your code. You will find that the Visual Studio IDE provides some framework for you, separating different types of files into different directories.
 
-TODO: create a project and review the directories created. Which project type makes a Web Pages project??
+////
+TODO: review VS a little bit here?
+////
 
 === Pobody's nerfect 
 

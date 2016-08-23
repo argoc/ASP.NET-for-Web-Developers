@@ -255,12 +255,167 @@ Remember to review the AppHarber policies. They are there to ensure in part that
 There are limits; your database can only grow to a certain size, and there are likely bandwidth limits for the amount of data going between your application and its users.
 
 
+=== Debugging on the Internet
+
+If you publish to Azure, then there are hooks to let you debug your web application in real time, as described here: https://azure.microsoft.com/en-us/documentation/articles/web-sites-dotnet-troubleshoot-visual-studio/
+
+Since we are using AppHarbor, we have these choices:
+- put output in our web page to show what is happening on the live server
+- use try/catch to trap exceptions so our pages work around the error
+- debug on the local machine (not the live server) with Visual Studio's debugger
+
+==== Put output on a web page
+
+You can gain quite a bit of information about the state of your web server using the object ServerInfo that is available to you.
+
+.ServerInfo.cshtml
+[source,java]
+----
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Server Info</title>
+    </head>
+    <body>
+   @ServerInfo.GetHtml()
+    </body>
+</html>
+----
+
+the GetHTML generates a table that will provide you with information about the state of your server: environment variables, configuration, version, and much more. Do not use this on a production page that casual users can see, as it provides hackers with information they can use to break into the server and your application.
+
+Rather than display global information, pick and choose what you display. You already know how to do this in the HTML and in a Razor code block (this same line works the same way in both):
+
+[source,java]
+----
+<p>@totalServed</p>
+----
+
+This will display the value in the variable totalServed.
+
+There is a shorthand in a Razor code block as well:
+[source,java]
+----
+@{
+  // code here
+  ...
+  
+  @totalServed
+  
+  // code continues
+  ...
+}
+----
+
+This will also display the value, at that point in the code block. The @ tells Razor to put the current value of totalServed into the output stream. Since there is no HTML formatting around it, it is simply put there, so it will show up without formatting on your page.
+
+This works with strings, numbers, and even objects -- the ToString() method of non-strings is called to convert them to string values. Most objects just report on their type, which isn't very useful. ASP.NET provides you with a useful helper, ObjectInfo, which will generate a string containing the type of the expression it is handed and its value.
+
+.DebugDemo.cshtml
+[source,java]
+----
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Debug Demo</title>
+    </head>
+    <body>
+    @{
+      var weekday = DateTime.Now.DayOfWeek;
+      @ObjectInfo.Print(weekday)
+      
+      var message = "Hello, it's" + weekday;
+    }
+    @ObjectInfo.Print(DateTime.Now)
+
+    @ObjectInfo.Print(message)
+
+    </body>
+</html>
+----
+
+The output HTML on a Friday afternoon in August was:
+[source,HTML]
+----
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Debug Demo</title>
+    </head>
+    <body>
+    <p>DayOfWeek Friday<p> <1> <2>
+    <p>DateTime 8/23/2016 2:00:20 PM</p> <3>
+    <p>string "Hello, it's Friday"</p>
+    </body>
+</html>
+----
+
+<1> If you view the Page Source, you will see quite a bit of generated styling using div's, not simple paragraphs. ObjectInfo.Print colorizes its contents to hint at their difference, putting the type name in blue, strings in red, and so on.
+
+<2> DayOfWeek is a C# enum, and Friday is one of its values.
+
+<3> For non-strings, the ToString() is used to get the value for ObjectInfo.Print. The argument passed to it does not have to be a local variable -- it can be a property or method or more complex expression.
+
+You can use ObjectInfo.Print() with some very interesting objects such as Request and Response, like so: `@ObjectInfo.Print(Request)`. They will print out complex information that exposes the internal workings of your website, so use them with caution on a live website.
+
+[WARNING]
+====
+If you start printing out values in a live website, be careful not to give away private information. You must protect data such as passwords and personal information.  When we cover users, you will see how to restrict display to only administrative users, but even that should be done with caution. Once your information is in an HTTP response, anyone can "watch the wire" and see the information, unless you encode it.
+====
+
+==== Use try..catch
+
+When a page hits an exception, the displayed page shows just the exception, not the HTML that was generated before it on the page. Sometimes it helps to be able to see what was happening before the exception was hit; try..catch can be used as a debugging tool to help you do this.
+
+The try..catch block stops ASP.NET from turning the response into just an error message. Instead, you retain control on the page and can add your own error text to provide information that is useful to you.
+
+[source,java]
+----
+@{
+  try {
+    // do a lot of math that you think should work
+    ...
+
+  }
+  catch (DivideByZeroException ex ) {
+    <p>Please report the following information to tech support:</p>
+	<p>ex.Message</p>
+	ObjectInfo.Print(someVar)
+	ObjectInfo.Print(anotherVar)
+	<p>Thank you</p>
+  }
+
+// Other code or markup here ...
+
+}
+----
+
+Now when your page gets a DivideByZeroException, it is not halted, but will add the exception and the values of `someVar` and `anotherVar` to the output to help you determine the cause of the error.
+
+When you use this approach, be careful about how the page behaves should the exception occur -- execution will continue after the catch block, so your local variables need to hold values that will not trigger continued exceptions, or you will still have an exception result rather than a  complete HTML page.
+
+==== The Visual Studio debugger
+
+When you run your web site locally on your development machine, you can debug it in Visual Studio.  Its debugger lets you step through code, line by line, or from breakpoint to breakpoint, and inspect the value of local variables. You can drill into variables to look at their contents when they are complex objects.
+
+you can set breakpoints on any C# code in your page. To do this, click in the gutter to the left of your code on the Visual Studio. If a red circle appears, then you have a "breakpoint". If no red circle appears, then either you didn't hit the correct gutter (on mine it is the grey column left of the code) or the line is not actual C# code. You cannot set breakpoints on HTML-only lines, only those that the Razor Engine will evaluate.
+
+Now, when you run your web site, it will stop at that breakpoint and a debug toolbar will be available to you. You can inspect variables by mousing over them to see their current contents. When you are ready to continue, use the debug tool bar to move to the next statement or to continue running the program until the next breakpoint.
+
+.Visual Studio debug toolbar
+image::images/debugtoolbar.png[]
+
+The "step into" item is highlighted: use that to move to the next statement. Use the "continue" item ( -> ) to have your website run until another break point is hit.
+
+For more information on the Visual Studio debugger, see https://msdn.microsoft.com/en-us/library/sc65sadd.aspx[Debugging in Visual Studio].
+
 === Further Reading
 - https://appharbor.com/page/terms
 - https://appharbor.com/page/how-it-works
 - https://support.appharbor.com/kb/getting-started/deploying-your-first-application-using-git
 - https://git-scm.com/
 - https://try.github.io/levels/1/challenges/1
+- http://www.asp.net/web-pages/overview/testing-and-debugging/aspnet-web-pages-razor-troubleshooting-guide
 
 
 === Exercises
@@ -268,6 +423,7 @@ There are limits; your database can only grow to a certain size, and there are l
 . Pick a previous exercise or lab and deploy it. Visit its pages on the internet.
 . Then deploy a second application and visit it on the internet. 
 . Remove an application and its local git repo. Try to visit its page on the internet -- it will no longer be there.
+. Play "Stump The Newbie" with a classmate: make a page that runs but requires some debugging for your peer to fix. See what steps they take to determine the cause of the problem and how they fix it. Would you have looked for the problem differently, or fixed it differently?
 
 
 === Lab

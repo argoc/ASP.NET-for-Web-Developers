@@ -50,6 +50,8 @@ include::chapter-10.adoc[Validation]
 
 include::chapter-11.adoc[MVC]
 
+include::appendages.adoc[Addenda]
+
 include::bibliography.adoc[]
 
 include::glossary.adoc[]

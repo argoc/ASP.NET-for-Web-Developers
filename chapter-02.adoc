@@ -42,13 +42,13 @@ How does IIS know where to find the root page? It looks in the root directory fo
 You get a bare-bones website if you start in Visual Studio with File -> New -> Web Site -> ASP.NET Web Site (Razor v3). Your bare-bones website will already have six directories and 8 files in the project directory.
 
 ====
-If you choose File -> New -> Web Site -> ASP.NET Empty Web Site, you will get just a single file (Web.config) and no supporting infrastructure to work with.
+If you choose File -> New -> Web Site -> ASP.NET Empty Web Site, you will get just a single file (Web.config) and no supporting infrastructure to work with. We will use that for some of our smaller examples, but want to make use of the template site for our more complete projects.
 
-If you choose File -> New -> Project -> C# ASP.NET Web Application -> Empty, you will not get that infrastructure. There are no templates for Web Pages in the Project menu, only in the Website menu.
+If you choose File -> New -> Project -> C# ASP.NET Web Application -> Empty, you will not get that infrastructure. There are no templates for Web Pages in the Project menu, only in the Web Site menu.
 ====
 
 
-.Website Template Tree
+.Web Site Template Tree
 image::images/VSdirectory.png[]
 ////
 [tree,file="filesystem-tree-viewer.png",height="+200",width="+100"]
@@ -108,6 +108,11 @@ Only the top-level files are discussed here; the ones within the directories are
 
 * `_SiteLayout.cshtml` sets up to use the Web Pages templating convention, complete with a common title bar for user account login/registration and the outer tags of any HTML page. This is a powerful tool, used to give all of your pages a common look and feel.
 
+[TIP]
+====
+We will be making one more file like these two, `_PageStart.cshtml`. This will let us use a common layout among our pages more easily.
+====
+
 * `About.cshtml`, `Contact.cshtml`, and `Default.cshtml` are template pages provided to jump-start your website. You can see that they are not stand-alone HTML pages; they rely on Web Pages integrating it with _SiteLayout.cshtml to become complete web pages.
 
 [TIP]
@@ -158,17 +163,24 @@ Here are the ASP.NET functions used to manage layouts:
 |RenderSection   |@RenderSection("help", required:false)     |Pulls in the named section from the file this template is being applied to; if required is true or not specified, the section must exist.
 |=======================
 
-You get the template by creating a layout file (_SiteLayout.cshtml is the one supplied) and then having all of the .cshtml files in your site refer to that file in their opening lines like so:
+==== Identifying the Template
+
+You get the template by creating a layout file (_SiteLayout.cshtml is the one supplied) and then having all of the .cshtml files in your site refer to that filein their opening lines, like so:
 
 [source,java]
 ----
-@{Layout="~/_SiteLayout.cshtml";}
+@{
+    Layout="~/_SiteLayout.cshtml";
+}
 ----
 
 This is doing several things:
-* @{} embeds a C# code block -  this is our second Razor construct.
-* Layout=... is a C# assignment statement that assigns a value to the page Layout property, which will cause the template to be pulled in and used along with the contents of this file
-* "~/_SiteLayout.cshtml" is a C# string value that will be used to find the template file. This one in particular uses the ASP.NET convention for a file name, using ~ to represent the root directory of the website. You should always use either ~ rooted references or relative references, since your website's location in a particular directory is not guaranteed.
+
+* @{..} embeds a C# code block -  this is our second Razor construct.
+* Layout=... is a C# assignment statement that assigns a value to the page Layout property, which will cause the template to be pulled in and used along with the contents of this file. Layout is a page property, which says what layout to use for the page. That layout file will contain instructions on how to use the rest of the content of your page.
+* "~/_SiteLayout.cshtml" is a C# string value that will be used to find the template file. This one in particular uses the ASP.NET convention for a file name, ~ represents the root directory of the website. You should always use either ~ rooted references or relative references, since your website's location in a particular directory is not guaranteed and will be different in deployment than in development.
+
+==== Identifying a section
 
 You identify a section named help within your .cshtml file like so:
 

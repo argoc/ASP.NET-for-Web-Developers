@@ -327,6 +327,7 @@ One thing our page lacks is error handling; we will see that there are calls we 
 * http://www.asp.net/web-pages/overview/getting-started/aspnet-web-pages-razor-faq
 * http://forums.asp.net/1224.aspx/1?ASP+NET+Web+Pages
 * https://msdn.microsoft.com/en-us/library/gg606533(v=vs.100).aspx
+http://blog.slaks.net/2011/01/dissecting-razor-part-1-pieces-of.html and Slak's other posts on Razor - very informative, something to return to once you've had some time with Razor.
 
 === Lab
 

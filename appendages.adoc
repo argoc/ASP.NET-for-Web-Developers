@@ -1,0 +1,135 @@
+== Addendum A
+
+Razor Quick-Reference
+
+So I thought it might be handy to write up a a really concise quick reference about the Razor syntax.
+
+|====
+| Syntax/Sample | Razor | remarks
+
+| Code Block | ``@{`` +
+ &nbsp;&nbsp; ``    int x = 123;`` + 
+ &nbsp;&nbsp; ``    string y = "because.";`` +
+``}``
+| C# inside the block: case-sensitive, strings require double quotes, and comments are C#-style. Variables have to be declared before they are used in code (variables can be used in a later code block on the same page).
+
+
+| Inline Expression (Html Encoded) | ``<span>@message</span>`` 
+| Razor "knows" where expressions end. Local variables from earlier on the page are visible, as are helpers and system objects.
+
+So ``Hello @title. @name.`` knows the variables are ``title`` and ``name`` since there is whitespace after the .'s
+
+| Expression (Unencoded) | ``<span>@Html.Raw(model.Message)</span>``
+| Html is a Razor Helper (utility that provides methods)
+
+| Combining Control and Text |  ``@foreach(var item in items) {`` +
+`` <span>@item.Prop</span> `` +
+``}``
+|  You can "break out" of Razor with a simple HTML tag, as long as it is closed to end the HTML block. Within that, use @ to go back into Razor.
+
+All of the C# control structures can be used this way: for, foreach, else, while, do..while, and switch.
+
+| Mixing code and Plain text |  ``@if (test) {`` +
+&nbsp;&nbsp;``  <text>Hello `` +
+&nbsp;&nbsp;``    There</text>`` +
+``}``
+| if you don't have HTML tags, you can use <text> ... </text>
+
+| Mixing code and plain text (alternate) |         
+``@if (test) {`` +
+&nbsp;&nbsp;``  @:num's value is @num`` +
+``}``
+| Same as <text> but can only be one line. Notice you can slip back into Razor with an embedded @ inline expression.
+
+| Using block |         
+``@using (Html.BeginForm()) {`` +
+&nbsp;&nbsp;``  <input type="text" `` +
+&nbsp;&nbsp;&nbsp;&nbsp;``value="input here">`` +
+``}``
+| makes Html.BeginForm's returned HTML form element embed the contents of the block. That is, the <form> and </form> will wrap completely around the HTML generated within the block.         
+
+
+| Email Addresses |         
+``Hi you@example.com``
+| Razor recognizes basic email format and is smart enough not to treat the @ as a code delimiter
+
+| Explicit Expression |         
+``<span>ISBN@(isbnNumber)</span>``
+| In this case, we need to be explicit about the expression by using parentheses, since otherwise Razor may think it is part of an email address (notice there is no space before the @).
+
+| Escaping the @ sign |         
+``<span>tag me as @@argoc</span>``
+ | @@ renders a single @ in the response.
+
+| Server side Comment |         
+``@* `` +
+&nbsp;&nbsp;``This is a server side `` +
+&nbsp;&nbsp;``multiline comment `` +
+``*@``
+|  These comments do not appear on the generated HTML; they can be done in a single line as well.
+
+| Calling a  method |         
+``@MyClass.MyMethod(arg1,arg2)`` +
+| Notice the arguments can be expressions, and do not need @'s before them.
+
+| Calling a generic method |         
+``@(MyClass.MyMethod<AType>())`` +
+| Use parentheses so that the <AType> is not seen as an HTML tag. Generic methods are advanced C#.
+
+| Adding to the page class (functions and properties) |
+``@functions { `` +
+`` // put class variable, property, and method definitions here. `` +
+``}``
+| the functions and properties defined this way are available anywhere on the page (they can be used on the page before they are defined). They cannot contain embedded HTML (use a helper for that)
+
+| Creating a Helper |
+``@helper DoSomethingRepetitive(string content, int num) {`` +
+&nbsp;&nbsp;``    <li> @num. @content</li>`` +
+``}``
+
+       | Generates a helper that you can call from within Razor as an inline expression. Helpers don't return values, but generate HTML for the resulting HTML page.
+
+| Conditional attributes |         
+``<div class="@className"></div>``
+| When ``className = null`` this generates ``<div></div>``
+
+When ``className = ""``  this generates ``<div class=""></div>``
+
+When ``className = "my-class"`` this generates ``<div class="my-class"></div>``
+
+There can be other values in the class value as well. Any non-null will still appear, so ``<div class="@className foo bar"></div>`` will be
+``<div class="foo bar"></div>`` when className is null or the empty string.
+
+Attributes with data- prefixes are always rendered even if their values are variables that are null. data- is a special attribute name prefix used to hold data attributes in HTML pages. 
+
+| Boolean attributes |         
+
+``<input type="checkbox"  checked="@isChecked" />``
+| When isChecked is true, generates 
+``<input type="checkbox" checked="checked" />``
+
+When isChecked is false, generates
+``<input type="checkbox" />``
+
+| URL Resolution with tilde | 
+``<script src="~/myscript.js">`` +
+``</script>``
+| When the app is at ``/`` generates
+``<script src="/myscript.js">  `` +
+``</script>``
+
+When running in a virtual application named ``MyApp`` generates
+
+``<script src="/MyApp/myscript.js">  `` +
+``</script>``
+
+The tilde can be used in any string value that is interpretted as a file path; it resolves to the physical location where the web site is located.
+
+| API | see http://www.asp.net/web-pages/overview/api-reference/asp-net-web-pages-api-reference | There are ASP.NET classes to help with Validation, Databases, Forms, E-Mail, and more.
+|====
+
+==== Further Reading
+- http://razorcheatsheet.com/
+- http://www.mikesdotnetting.com/article/173/the-difference-between-helpers-and-functions-in-webmatrix
+- http://www.codeproject.com/Articles/787320/An-Absolute-Beginners-Tutorial-on-HTML-Helpers-and
+- http://haacked.com/archive/2011/01/06/razor-syntax-quick-reference.aspx/
