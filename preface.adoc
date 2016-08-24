@@ -1,6 +1,6 @@
 [preface]
 :numbered!:
-== Introduction
+== Preface
 
 I wrote this book over my 2016 summer break, off-contract. My goal was to make the Introduction to ASP.NET class something approachable without requiring a heavy math background or a career in software development. It assumes that you have had some programming courses and written small (100-line or more) programs successfully in an object-oriented language (such as Java or JavaScript); put together multi-page websites in HTML and CSS succcessfully; have used SQL in database systems; and desire to learn the ASP.NET environment.
 
