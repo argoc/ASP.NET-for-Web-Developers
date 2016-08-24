@@ -1,7 +1,6 @@
 = ASP.NET for Web Developers
 Amelia Garripoli <agarripoli@olympic.edu>
-New to ASP: Razor, C#, ASP.NET
-v0.6, August 23, 2016: under development, Ch 1-6 drafted (and appendix A)
+v0.6, August 23, 2016: under development
 
 :doctype: book
 :source-highlighter: coderay
@@ -11,10 +10,11 @@ v0.6, August 23, 2016: under development, Ch 1-6 drafted (and appendix A)
 :toc: left
 :toclevels: 2
 :numbered:
-:sourcedir: source
 
 
 ////
+Formerly: New to ASP: Razor, C#, ASP.NET
+
 Generate book from directory with book.adoc in it with the command
 asciidoctor-pdf book.adoc
 prepare to be amazed

@@ -9,7 +9,7 @@ Department of Business &amp; Technology +
 Olympic College +
 Bremerton, WA 98337
 
-Like those that came before it, this book can be distributed in unmodified form for non-commercial purposes. Modified versions can be made and distributed for non-commercial purposes provided they are distributed under the same license as the original. More specifically: This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/ . Other uses require permission from the author.
+Like those that came before it, this book can be distributed in unmodified form for non-commercial purposes. Modified versions can be made and distributed for non-commercial purposes provided they are distributed under the same license as the original. More specifically: This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/. Other uses require permission from the author.
 
 The website for this book is: http://faculty.olympic.edu/agarripoli/New2ASP .
 
@@ -22,7 +22,7 @@ Use shall constitute acceptance of the terms listed.
 
 Microsoft, Windows, Visual Studio, IIS, and ASP.NET are either registered trademarks or trademarks of Microsoft Corporation in the United States and/or other countries.
 
-[preface]
+
 :numbered!:
 == Preface
 

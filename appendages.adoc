@@ -6,9 +6,9 @@
 |====
 | Syntax/Sample | Razor | remarks
 
-| Code Block | ``@{`` +
- &nbsp;&nbsp; ``    int x = 123;`` + 
- &nbsp;&nbsp; ``    string y = "because.";`` +
+| Code Block | ``@{ `` +
+``  int x = 123;`` + 
+``   string y = "because.";`` +
 ``}``
 | C# inside the block: case-sensitive, strings require double quotes, and comments are C#-style. Variables have to be declared before they are used in code (variables can be used in a later code block on the same page).
 
@@ -29,21 +29,21 @@ So ``Hello @title. @name.`` knows the variables are ``title`` and ``name`` since
 All of the C# control structures can be used this way: for, foreach, else, while, do..while, and switch.
 
 | Mixing code and Plain text |  ``@if (test) {`` +
-&nbsp;&nbsp;``  <text>Hello `` +
-&nbsp;&nbsp;``    There</text>`` +
+``  <text>Hello `` +
+``    There</text>`` +
 ``}``
 | if you don't have HTML tags, you can use <text> ... </text>
 
 | Mixing code and plain text (alternate) |         
 ``@if (test) {`` +
-&nbsp;&nbsp;``  @:num's value is @num`` +
+``  @:num's value is @num`` +
 ``}``
 | Same as <text> but can only be one line. Notice you can slip back into Razor with an embedded @ inline expression.
 
 | Using block |         
 ``@using (Html.BeginForm()) {`` +
-&nbsp;&nbsp;``  <input type="text" `` +
-&nbsp;&nbsp;&nbsp;&nbsp;``value="input here">`` +
+``  <input type="text" `` +
+``value="input here">`` +
 ``}``
 | makes Html.BeginForm's returned HTML form element embed the contents of the block. That is, the <form> and </form> will wrap completely around the HTML generated within the block.         
 
@@ -62,8 +62,8 @@ All of the C# control structures can be used this way: for, foreach, else, while
 
 | Server side Comment |         
 ``@* `` +
-&nbsp;&nbsp;``This is a server side `` +
-&nbsp;&nbsp;``multiline comment `` +
+``  This is a server side `` +
+``  multiline comment `` +
 ``*@``
 |  These comments do not appear on the generated HTML; they can be done in a single line as well.
 
@@ -83,7 +83,7 @@ All of the C# control structures can be used this way: for, foreach, else, while
 
 | Creating a Helper |
 ``@helper DoSomethingRepetitive(string content, int num) {`` +
-&nbsp;&nbsp;``    <li> @num. @content</li>`` +
+``    <li> @num. @content</li>`` +
 ``}``
 
        | Generates a helper that you can call from within Razor as an inline expression. Helpers don't return values, but generate HTML for the resulting HTML page.

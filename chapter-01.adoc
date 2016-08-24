@@ -1,7 +1,7 @@
 :numbered:
 == Web Development
 
-Welcome to [underline]#New to ASP#. In this text we cover the basics of building full-stack websites in the ASP.NET environment.
+Welcome to {doctitle}. In this text we cover the basics of building full-stack websites in the ASP.NET environment.
 
 .https://commons.wikimedia.org/w/index.php?curid=15214941[Website Server Architecture CC-BY Ph.HENCHES]
 image::images/Archi_simple.jpg[Website Server Architecture]
@@ -20,9 +20,9 @@ ____
 
 === What you write
 
-When you develop a website or web application in the ASP.NET environment, you do write HTML, JavaScript, and CSS, but you add server-side coding and databases using Razor to embed C# in your page/application and call out to your own C# classes and those of the ASP.NET library. The database access can be done in several ways; Microsoft provides LINQ, with provides both a library and _another_ language for database access. The LINQ language is like SQL -- similar to how C# is like Java.
+When you develop a website or web application in the ASP.NET environment, you do write HTML, JavaScript, and CSS, and then you add server-side coding and databases using Razor to embed C# in your page/application and call out to your own C# classes and those of the ASP.NET library. The database access can be done in several ways; Microsoft provides LINQ, with provides both a library and _another_ language for database access. The LINQ language is like SQL -- similar to how C# is like Java.
 
-You write your application code in Visual Studio, and when it is run within Visual Studio, it runs in IIS Express. IIS is Internet Information Services, Microsoft's web server. In deployed mode, your application would be packaged and deployed in a Internet Information Services (IIS) for Windows® Server.
+You write your application code in Visual Studio, and when it is run within Visual Studio, it runs in IIS Express. IIS is Internet Information Services, Microsoft's web server. In deployed mode, your application would be packaged and deployed in Internet Information Services (IIS) for Windows® Server or some other web server supporting ASP.NET.
 
 Web applications can be a bit more disorganized than a typical computer program -- web sites turn into spaghetti really easily. So it is best to do some design up front, with a wire-frame diagram, and lay out that design in your development environment -- use directories to separate portions of your code. You will find that the Visual Studio IDE provides some framework for you, separating different types of files into different directories.
 
@@ -51,13 +51,13 @@ It can be frustrating to work through any of these. You may not see the syntax e
 
 ==== How to Debug Code
 
-One of the most important skills to develop as a programmer is debugging; the ability to track down the source of an issue and resolve it appropriately. It can be frustrating, but it is always necessary. A typical developer's first job is to take on existing code and "maintain" it. Don't fool yourself -- maintain is code for "debug". Very few programs are out there that are completely bug-free. Even long-time code has issues. See, for example, the http://heartbleed.com/[Heartbleed bug in OpenSSL].
+One of the most important skills to develop as a programmer is debugging; the ability to track down the source of an issue and resolve it appropriately. It can be frustrating, but it is always necessary. A typical developer's first job is to take on existing code and "maintain" it. Don't fool yourself -- maintain is another word for "debug". Very few programs are out there that are completely bug-free. Even long-time code has issues. See, for example, the http://heartbleed.com/[Heartbleed bug in OpenSSL].
 
 When you have a bug, you need to be a detective. The behavior you see is a clue. You need to unwind the clues to discover the root cause and fix it there.
 
 [underline]#Think Python# has a wonderful writeup on debugging in its Appendix A. I am including that here, rewritten to discuss our environment.
 
-I realize you do not yet know C#, Razor, and ASP.NET; however, the advice here works for any environment; so compare these ideas to the development work you have already done and see how they are generally applicable. Review this section as you learn more about ASP.NET to fit it into what you have learned about C# and Razor along the way.
+I realize you do not yet know C#, Razor, and ASP.NET; however, the advice here works for any environment; so compare these ideas to the development work you have already done and see how they are applicable there. Review this section as you learn more about ASP.NET to fit it into what you  learn about C# and Razor along the way.
 
 === Debugging
 
@@ -292,10 +292,9 @@ while (x > 0 && y < 0) {
     // do something to x
     // do something to y
 
-    Console.WriteLine($"x: {x}");
-    Console.WriteLine($"y: {y}");
-    Console.Write("condition: ");
-    Console.WriteLine((x > 0 && y < 0));
+    <p>x: @x</p>
+    <p>y: @y</p>
+    <p>condition: @(x > 0 && y < 0)</p>
 }
 ----
 
@@ -368,8 +367,8 @@ For example, this code causes a ``NullReferenceException``:
 
 [source,java]
 ----
-int[] array = new Point[5];
-Console.WriteLine(array[0].x);
+Point[] array = new Point[5];
+<p>array[0].x</p>
 ----
 
 **IndexOutOfRangeException**:
@@ -388,14 +387,19 @@ If either one is a parameter, go to the place where the method is invoked and se
 See “Infinite recursion”.
 
 **FileNotFoundException**:
-This means your application didn’t find the file it was looking for.
+Your application didn’t find the file it was looking for.
 If you are using Visual Studio, you might have to import the file into the project.
 Otherwise make sure the file exists and that the path is correct.
 This problem depends on your file system, so it can be hard to track down.
 
-**ArithmeticException**:
-Something went wrong during an arithmetic operation; for example, division by zero.
+**DivideByZeroException**:
+Something went wrong during an arithmetic operation causing a value to be divided by zero.
 
+**NotFiniteNumberException**:
+Something went wrong during an arithmetic operation causing an operation to occur on or return a NaN (not a number) or infinite value.
+
+**OverflowException**:
+Something went wrong during an arithmetic operation causing the result to be too large for the target variable or property.
 
 The Visual Studio debugger is useful for tracking down
 exceptions because it allows you to examine the state of the

@@ -248,6 +248,9 @@ When you do this, remember: there is an implicit copyright on anything you see o
 
 Good design starts and ends with the user: is your website usable. Yes, it has a purpose; it is your job as its designer to mold that purpose into a positive user experience. As developers, we often forget to look at the user and get lost in the purpose. So, design focuses on the user perspective, as you see in the list below.
 
+[quote,Charles Eames]
+Design is a plan for arranging elements in such a way as best to accomplish a particular purpose.
+
 ===== 1. Don't make users think
 
 Make it easy for users to "do the right thing" -- you want them to stay on your site and enjoy it. This means inviting them to push the right button, not making them click several times where one click will do.
