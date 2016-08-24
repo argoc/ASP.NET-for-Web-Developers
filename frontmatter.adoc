@@ -1,3 +1,27 @@
+:numbered!:
+== License
+
+(C) Copyright 2016, Amelia Read Garripoli
+
+Amelia Read Garripoli (agarripoli@olympic.edu) +
+Information Systems +
+Department of Business &amp; Technology +
+Olympic College +
+Bremerton, WA 98337
+
+Like those that came before it, this book can be distributed in unmodified form for non-commercial purposes. Modified versions can be made and distributed for non-commercial purposes provided they are distributed under the same license as the original. More specifically: This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/ . Other uses require permission from the author.
+
+The website for this book is: http://faculty.olympic.edu/agarripoli/New2ASP .
+
+This book is provided “as-is”. It may contain errors of spelling, grammar, or semantics. Information and views expressed in this document may change without notice. You bear the risk of using it.
+Examples depicted herein are provided for illustration only and are fictitious. 
+
+This book references websites from external sources not under my control. The web addresses may change, the content may change, and in particular they may have an invasive privacy policy. It is your responsibility to be aware of this and to act accordingly. You use the links in this text at your own risk. 
+
+Use shall constitute acceptance of the terms listed.
+
+Microsoft, Windows, Visual Studio, IIS, and ASP.NET are either registered trademarks or trademarks of Microsoft Corporation in the United States and/or other countries.
+
 [preface]
 :numbered!:
 == Preface
@@ -26,3 +50,5 @@ For more background, see
 - https://en.wikipedia.org/wiki/ASP.NET
 - https://en.wikipedia.org/wiki/ASP.NET_Razor
 - https://en.wikipedia.org/wiki/C_Sharp_(programming_language)
+
+

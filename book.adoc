@@ -11,9 +11,6 @@ New to ASP: Razor, C#, ASP.NET
 :numbered:
 
 
-
-
-
 ////
 Generate book from directory with book.adoc in it with the command
 asciidoctor-pdf book.adoc
@@ -24,11 +21,7 @@ prepare to be amazed
 Organize your book chapter by chapter
 ////
 
-include::preface.adoc[]
-
-include::colophon.adoc[]
-
-include::dedication.adoc[]
+include::frontmatter.adoc[License, Introduction]
 
 include::chapter-01.adoc[Web Development]
 
@@ -54,7 +47,7 @@ include::chapter-11.adoc[MVC]
 
 include::appendages.adoc[Addenda]
 
-include::bibliography.adoc[]
+include::bibliography.adoc[Resources]
 
 include::glossary.adoc[]
 

@@ -1,8 +1,7 @@
+:numbered!:
 == Addendum A
 
-Razor Quick-Reference
-
-So I thought it might be handy to write up a a really concise quick reference about the Razor syntax.
+=== Razor Quick-Reference
 
 |====
 | Syntax/Sample | Razor | remarks
@@ -133,3 +132,11 @@ The tilde can be used in any string value that is interpretted as a file path; i
 - http://www.mikesdotnetting.com/article/173/the-difference-between-helpers-and-functions-in-webmatrix
 - http://www.codeproject.com/Articles/787320/An-Absolute-Beginners-Tutorial-on-HTML-Helpers-and
 - http://haacked.com/archive/2011/01/06/razor-syntax-quick-reference.aspx/
+
+
+
+[colophon]
+:numbered!:
+== Colophon
+
+Produced using AsciiDocFX, AsciiDoctor, Google Drive, GitHub, and AppHarbor. Using material from other Open Educational Resources noted in the bibliography.
