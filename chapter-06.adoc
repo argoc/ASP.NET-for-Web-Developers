@@ -81,7 +81,12 @@ git remote add appharbor MY_REPOSITORY_URL <1>
 +
 *You will only need to do this step one time, the first time you deploy your repository.*
 
-6.  Deploy using ``git push appharbor master``
+6.  Deploy using:
++
+[source,java]
+----
+git push appharbor master
+----
 +
 This step will ask you for your AppHarbor password. Once you supply that, it will then prepare and upload the files from your local code repository to AppHarbor. You will see messages similar to this (but with different numbers and specific names):
 +
@@ -223,6 +228,51 @@ You can have multiple applications available on your AppHarbor account. Use all 
 3. Create an AppHarbor application for it.
 
 The local repo and AppHarbor deployment are specific to the VS Web Site; each Web Site needs its own local Git repo and its own AppHarbor application.
+
+=== Summary of Deployment
+
+|====
+| Setup (per machine) | First Time (per application) | N^th^ Time
+
+| 
+1. Install Visual Studio +
+2. Install Portable Git +
+3. Create an AppHarbor Account
+
+|
+
+1. Create a VS Web Site +
+2. Create an AppHarbor application +
+3. Create a local git repo: +
+&nbsp;&nbsp;[ ] open git-cmd window +
+&nbsp;&nbsp;[ ] cd to directory +
+&nbsp;&nbsp;[ ] ``git init`` +
+&nbsp;&nbsp;[ ] create .gitignore and .gitattributes +
+&nbsp;&nbsp;[ ] ``git config core.autocrlf false`` +
+&nbsp;&nbsp;[ ] ``git config core.safecrlf false`` +
+&nbsp;&nbsp;[ ] ``git add .`` +
+&nbsp;&nbsp;[ ] ``git commit -m "initial commit"`` +
+4. Tie the local git repo to your AppHarbor application: +
+&nbsp;&nbsp;[ ] ``git remote add appharbor MY_REPOSITORY_URL`` +
+5. Put the code on AppHarbor: +
+&nbsp;&nbsp;[ ] ``git push appharbor master`` +
+6. Go to AppHarbor application build result page; if working, go to application, otherwise see N^th^ time.
+
+|
+
+1. Modify a VS Web Site +
+2. Update the local git repo +
+&nbsp;&nbsp;[ ] open git-cmd window +
+&nbsp;&nbsp;[ ] cd to directory +
+&nbsp;&nbsp;[ ] ``git status`` +
+&nbsp;&nbsp;[ ] ``git add .`` +
+&nbsp;&nbsp;[ ] ``git rm FILENAME`` (if needed) +
+&nbsp;&nbsp;[ ] ``git commit -m "DESCRIBE_CHANGES"`` +
+3. Put the code on AppHarbor: +
+&nbsp;&nbsp;[ ] ``git push appharbor master`` +
+4. Go to AppHarbor application build result page; if working, go to application, otherwise repeat. 
+
+|====
 
 === Removing an Application
 
