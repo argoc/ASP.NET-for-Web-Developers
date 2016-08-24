@@ -1,6 +1,8 @@
 = ASP.NET for Web Developers
 Amelia Garripoli <agarripoli@olympic.edu>
 New to ASP: Razor, C#, ASP.NET
+v0.6, August 23, 2016: under development, Ch 1-6 drafted (and appendix A)
+
 :doctype: book
 :source-highlighter: coderay
 :listing-caption: Listing
@@ -9,6 +11,7 @@ New to ASP: Razor, C#, ASP.NET
 :toc: left
 :toclevels: 2
 :numbered:
+:sourcedir: source
 
 
 ////

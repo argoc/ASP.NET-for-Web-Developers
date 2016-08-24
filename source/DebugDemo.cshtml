@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Debug Demo</title>
+    </head>
+    <body>
+    @{
+      var weekday = DateTime.Now.DayOfWeek;
+      @ObjectInfo.Print(weekday)
+      
+      var message = "Hello, it's" + weekday;
+    }
+    @ObjectInfo.Print(DateTime.Now)
+
+    @ObjectInfo.Print(message)
+
+    </body>
+</html>

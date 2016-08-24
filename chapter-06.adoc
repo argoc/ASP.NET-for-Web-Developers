@@ -321,15 +321,7 @@ You can gain quite a bit of information about the state of your web server using
 .ServerInfo.cshtml
 [source,java]
 ----
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Server Info</title>
-    </head>
-    <body>
-   @ServerInfo.GetHtml()
-    </body>
-</html>
+include::source/ServerInfo.cshtml[]
 ----
 
 the GetHTML generates a table that will provide you with information about the state of your server: environment variables, configuration, version, and much more. Do not use this on a production page that casual users can see, as it provides hackers with information they can use to break into the server and your application.
@@ -364,24 +356,7 @@ This works with strings, numbers, and even objects -- the ToString() method of n
 .DebugDemo.cshtml
 [source,java]
 ----
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Debug Demo</title>
-    </head>
-    <body>
-    @{
-      var weekday = DateTime.Now.DayOfWeek;
-      @ObjectInfo.Print(weekday)
-      
-      var message = "Hello, it's" + weekday;
-    }
-    @ObjectInfo.Print(DateTime.Now)
-
-    @ObjectInfo.Print(message)
-
-    </body>
-</html>
+include::source/DebugDemo.cshtml[]
 ----
 
 The output HTML on a Friday afternoon in August was:
