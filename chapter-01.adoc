@@ -20,7 +20,7 @@ ____
 
 === What you write
 
-When you develop a website or web application in the ASP.NET environment, you do write HTML, JavaScript, and CSS, and then you add server-side coding and databases using Razor to embed C# in your page/application and call out to your own C# classes and those of the ASP.NET library. The database access can be done in several ways; Microsoft provides LINQ, with provides both a library and _another_ language for database access. The LINQ language is like SQL -- similar to how C# is like Java.
+When you develop a website or web application in the ASP.NET environment, you write HTML, JavaScript, and CSS, and then you add server-side coding and databases using Razor to embed C# in your page/application and call out to your own C# classes and those of the ASP.NET library. The database access can be done in several ways; Microsoft provides LINQ, with provides both a library and _another_ language for database access. The LINQ language is like SQL -- similar to how C# is like Java.
 
 You write your application code in Visual Studio, and when it is run within Visual Studio, it runs in IIS Express. IIS is Internet Information Services, Microsoft's web server. In deployed mode, your application would be packaged and deployed in Internet Information Services (IIS) for Windows® Server or some other web server supporting ASP.NET.
 
@@ -30,9 +30,15 @@ Web applications can be a bit more disorganized than a typical computer program 
 TODO: review VS a little bit here?
 ////
 
+=== Where your code sits
+
+The code you write is meant to live on a file system that is managed by a web server. When a person puts a URL in their browser (or clicks on a search result linking to a URL), that URL is fed to a web server. URLs identify the target machine and then the target page on that machine. The web server takes the target page as input and locates the data to return. It doesn't actually have to go directly to a file, but in our case it will. 
+
+Our users' URLs will map to pages in our web sites. The web server will find the page, and then it will run the C# code on that page and return an HTML page free of Razor and C# to the requesting browser. That means all of your C# code runs on the web server; only JavaScript code runs on the browser. You will need to keep this in mind as you develop your web site: the user's only interaction with your web site is via HTML, that is, links being clicked, forms being submitted, and JavaScript requests being issued. Your only way to communicate back is to provide HTML that is rendered in the user's browser. Keep that in mind, because it is both very limiting and very freeing, like trying to rent an apartment when you have a cat. Some things aren't going to be feasible, or require solutions unlike those you use in traditional stand-alone applications.
+
 === Pobody's nerfect 
 
-The second thing to figure out once you start coding is how to isolate and repair errors; we call this debugging.
+Once you start coding you will discover it's hard to write perfect code. You will have to isolate and repair errors in your code to make it work correctly; we call this debugging.
 
 .https://en.wikipedia.org/wiki/Software_bug#/media/File:H96566k.jpg[An early computer bug] (Public Domain; work of a federal government employee)
 image::images/bug.png[The First Computer Bug: a Moth]
@@ -49,19 +55,16 @@ Just like written English, where Word cannot catch a "word" error that is not a 
 
 It can be frustrating to work through any of these. You may not see the syntax error, and the message provided by the compiler may misdirect you. Runtime errors can be hard to isolate, and may be caused by a different part of your code executed long before the error occurred. Semantic errors can be a simple oversight, forgetting a requirement. These can have the most serious repercussions, so it is always a good idea to double-check requirements once your code is complete.
 
-==== How to Debug Code
-
 One of the most important skills to develop as a programmer is debugging; the ability to track down the source of an issue and resolve it appropriately. It can be frustrating, but it is always necessary. A typical developer's first job is to take on existing code and "maintain" it. Don't fool yourself -- maintain is another word for "debug". Very few programs are out there that are completely bug-free. Even long-time code has issues. See, for example, the http://heartbleed.com/[Heartbleed bug in OpenSSL].
 
 When you have a bug, you need to be a detective. The behavior you see is a clue. You need to unwind the clues to discover the root cause and fix it there.
 
-[underline]#Think Python# has a wonderful writeup on debugging in its Appendix A. I am including that here, rewritten to discuss our environment.
-
-I realize you do not yet know C#, Razor, and ASP.NET; however, the advice here works for any environment; so compare these ideas to the development work you have already done and see how they are applicable there. Review this section as you learn more about ASP.NET to fit it into what you  learn about C# and Razor along the way.
 
 === Debugging
 
-_from [underline]#Think Python# and [underline]#Think Java# with a nod to ASP.NET, C#, and Razor_
+_based on material from [underline]#Think Python# and [underline]#Think Java#_
+
+I realize you do not yet know C#, Razor, and ASP.NET; however, the advice here works for any environment; so compare these ideas to the development work you have already done and see how they are applicable there. Review this section as you learn more about ASP.NET to fit it into what you  learn about C# and Razor along the way.
 
 Different kinds of errors can occur in a program, and it is useful to distinguish among them in order to track them down more quickly:
 
@@ -205,17 +208,17 @@ and make sure you can get a known program to run. Then gradually add
 the pieces of the original program to the new one. If you don't want to restart, then try this instead...
 
 If
- you have examined the code thoroughly, and you are sure the compiler is
- compiling the right source files, it is time for extreme measures: debugging by halves.
+you have examined the code thoroughly, and you are sure the compiler is
+compiling the right source files, it is time for extreme measures: debugging by halves.
 
 *   Make a backup of the file you are working on.
 If you are working on Bob.cs, make a copy called Bob.cs.old.
 *   Delete about half the code from Bob.cs.
 Try compiling again.
 
-        *   If the program compiles now, you know the error is in the code you deleted.
+*   If the program compiles now, you know the error is in the code you deleted.
 Bring back about half of what you deleted and repeat.
-    *   If the program still doesn’t compile, the error must be in the code that remains.
+*   If the program still doesn’t compile, the error must be in the code that remains.
 Delete about half of the remaining code and repeat.
 *   Once you have found and fixed the error, start bringing back the code you deleted, a little bit at a time.
 This process is ugly, but it goes faster than you might think, and it is very reliable.
@@ -300,7 +303,7 @@ while (x > 0 && y < 0) {
 
 Now when  you run the program, you will see three lines of output
 for each time through the loop. The last time through the
-loop, the condition should be False. If the loop keeps
+loop, the condition should be false. If the loop keeps
 going, you will be able to see the values of x and y,
 and you might figure out why they are not being updated correctly.
 
@@ -357,7 +360,7 @@ number where each call occurred. Many of these may be ASP.NET infrastructure met
 In deployed mode, IIS will not display this information, as it would be a security leak to show information about the internals of your server-side program.
 ****
 
-The first step is to examine the place in the program where the error occurred and see if you can figure out what happened.
+The first step is to examine the place in the program where the error occurred and see if you can figure out what happened. Here are some common exceptions:
 
 **NullReferenceException**:
 You tried to access an instance variable or invoke a method on an object that is currently `null`.
@@ -504,7 +507,7 @@ For example:
 
 [source,java]
 ----
-self.hands[i].AddCard(self.hands[self.FindNeighbor(i)].PopCard());
+this.Hands[i].AddCard(this.Hands[this.FindNeighbor(i)].PopCard());
 
 ----
 
@@ -512,9 +515,9 @@ This can be rewritten as:
 
 [source,java]
 ----
-neighbor = self.FindNeighbor(i);
-pickedCard = self.hands[neighbor].PopCard();
-self.hands[i].AddCard(pickedCard);
+neighbor = this.FindNeighbor(i);
+pickedCard = this.hands[neighbor].PopCard();
+this.hands[i].AddCard(pickedCard);
 
 ----
 
@@ -530,7 +533,7 @@ x/2 π into C#, you might write:
 
 [source,java]
 ----
-y = x / 2 * Math.PI;
+y = x / 2 * Math.Pi;
 
 ----
 
@@ -543,7 +546,7 @@ the order of evaluation explicit:
 
 [source,java]
 ----
- y = x / (2 * Math.PI);
+ y = x / (2 * Math.Pi);
 
 ----
 
@@ -561,7 +564,7 @@ example, instead of:
 
 [source,java]
 ----
-return self.Hands[i].RemoveMatches();
+return this.Hands[i].RemoveMatches();
 
 ----
 
@@ -569,7 +572,7 @@ you could write:
 
 [source,java]
 ----
-count = self.Hands[i].RemoveMatches();
+count = this.Hands[i].RemoveMatches();
 return count;
 
 ----

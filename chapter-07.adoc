@@ -1,3 +1,29 @@
 == C# Methods, Classes, and Objects
 
+////
+Programming languages allow us to automate tasks, and we do so because we want to do the same task repeatedly. We may find tasks that need to happen several times within our code, in different places. Grouping code into logical blocks that we can call from different places
+////
 
+So far, C# looks very similar to JavaScript and Java. IT is object-oriented, so it supports reusability through class definition with  methods and properties, multiple types of polymorphism, and interfaces.
+C# also introduces some unique and powerful features, such as delegates 
+(type-safe function pointers) and lambda expressions (anonymous functions). 
+
+
+=== Methods
+
+=== Classes
+
+==== Properties
+
+
+=== Further Reading
+
+- http://dotnetslackers.com/articles/aspnet/Razor-Functions-and-Helpers.aspx#s2-overview-of-functions
+
+- https://msdn.microsoft.com/en-us/library/x9afc042.aspx C# Programming Guide on Classes
+
+- https://en.wikibooks.org/wiki/C_Sharp_Programming
+
+=== Exercises
+
+=== Lab
