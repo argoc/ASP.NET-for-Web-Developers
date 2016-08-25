@@ -17,7 +17,7 @@ Creating an account requires only a valid email address; you will be required to
 
 It's important, when using a cloud service, such as AppHarbor, to be aware of any requirements they put on your application. AppHarbor in particular requires that if you have user accounts, you inform the user that the information is available to both your application and to AppHarbor. Also, as is common among cloud services, AppHarbor reserves the right to use your application in their advertising.
 
-Because you are deploying to the cloud, you must not violate anyone's copyright, per the Digital Millenium Copyright Act. Disney is well-known for going after anyone putting Disney images on their pages. Keep it safe, use wikimedia commons, flickr commons, or use your own images (photos or drawings). Yes, this may make your pages may not look as good without an authentic Mickey Mouse image, but your future employers may actually come across your web application (especially if you put it in your portfolio), and will appreciate that you respected copyrights rather than "borrowing" images, text, or code. If you really feel the need to re-use copyrighted material, be sure it falls within general fair use guidelines, not academic fair use, which is more lenient, but only pertains to material kept in the school setting.
+Because you are deploying to the cloud, you must not violate anyone's copyright, per the Digital Millenium Copyright Act. Disney is well-known for going after anyone putting Disney images on their pages. Keep it safe, use wikimedia commons, flickr commons, or use your own images (photos or drawings). Yes, this may make your pages not look as good without an authentic Mickey Mouse image, but your future employers may actually come across your web application (especially if you put it in your portfolio), and will appreciate that you respected copyrights rather than "borrowing" images, text, or code. If you really feel the need to re-use copyrighted material, be sure it falls within general fair use guidelines, not academic fair use, which is more lenient, but only pertains to material kept in the school setting.
 
 
 === Platform as a Service
@@ -32,7 +32,7 @@ If the build and tests succeed, then AppHarbor will deploy your application: ins
 
 AppHarbor can scale your application across CPUs, disks, and servers to provide better performance and reliability (for a fee). This means it could actually run within several different instances, and have copies of its data on several different disks, to allow more users to access it and to provide failover should a disk go bad.
 
-When you web application is live, it is available through a free subdomain of apphb.com or a domain name you've purchased and configured (for a fee). 
+When your web application is live, it is available through a free subdomain of apphb.com or a domain name you've purchased and configured (for a fee). 
 
 AppHarbor is actually running within Amazon Web Services -- so their service layer is the ASP.NET configuration and management, and how they choose to do scaling and services within the AWS infrastructure. (AWS provides direct ASP.NET support as well.) Your application is running in the same server as other applications, but AppHarbor isolates different applications from each other.
       
@@ -66,7 +66,7 @@ Once you have an AppHarbor account (created at https://appharbor.com/[appharbor.
 
 .. The very first time you deploy, you will need to install Git on your machine. See "How do I get Git?"  below for how to do this.
 
-.. The first time you deploy a new application, you will ened to put it into a Git repository first. See "Create a Git Repository" below for how to do this. 
+.. The first time you deploy a new application, you first need to put it into a local Git repository. See "Create a Git Repository" below for how to do this. 
 
 .. Re-deployments will require udpating your local Git Repository; it is not sufficient to just edit the files. See "Update a Git Repository" below for the steps to do this.
 
@@ -440,6 +440,7 @@ For more information on the Visual Studio debugger, see https://msdn.microsoft.c
 - https://support.appharbor.com/kb/getting-started/deploying-your-first-application-using-git
 - https://git-scm.com/
 - https://try.github.io/levels/1/challenges/1
+- https://dzone.com/refcardz/getting-started-git
 - http://www.asp.net/web-pages/overview/testing-and-debugging/aspnet-web-pages-razor-troubleshooting-guide
 
 

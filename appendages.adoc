@@ -134,6 +134,20 @@ The tilde can be used in any string value that is interpretted as a file path; i
 - http://haacked.com/archive/2011/01/06/razor-syntax-quick-reference.aspx/
 
 
+== Addendum B
+
+=== C# Quick Reference
+
+==== Further Reading
+
+- http://www.thecodingguys.net/resources/cs-cheat-sheet.pdf covers basic, core C#
+
+- http://www.digilife.be/quickreferences/qrc/core%20csharp%20and%20.net%20quick%20reference.pdf  more in depth, notice format is left column -> right column -> center column
+
+- https://dzone.com/storage/assets/4471-rc16-010d-csharp_1.pdf good advice for programming (not a language cheat sheet)
+
+- http://www.tutorialspoint.com/csharp/pdf/csharp_quick_guide.pdf at 111 pages, not really "quick"; captures the entire tutorialspoint tutorial on C#.
+
 
 [colophon]
 :numbered!:

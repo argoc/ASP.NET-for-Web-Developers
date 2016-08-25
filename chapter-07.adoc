@@ -367,7 +367,7 @@ Here you can see we have a helper that will put the same list of operators where
 === Classes
 
 ==== Properties
-
+TODO
 
 === Further Reading
 
@@ -383,4 +383,8 @@ Here you can see we have a helper that will put the same list of operators where
 
 === Exercises
 
+TODO
+
 === Lab
+
+TODO

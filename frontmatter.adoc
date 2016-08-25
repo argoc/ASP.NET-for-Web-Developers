@@ -26,15 +26,23 @@ Microsoft, Windows, Visual Studio, IIS, and ASP.NET are either registered tradem
 :numbered!:
 == Preface
 
-I wrote this book over my 2016 summer break, off-contract. My goal was to make the Introduction to ASP.NET class something approachable without requiring a heavy math background or a career in software development. It assumes that you have had some programming courses and written small (100-line or more) programs successfully in an object-oriented language (such as Java or JavaScript); put together multi-page websites in HTML and CSS succcessfully; have used SQL in database systems; and desire to learn the ASP.NET environment.
+I wrote this book over my 2016 summer break, off-contract from my position as tenure-track Information Systems Faculty at Olympic College. My goal was to make the Introduction to ASP.NET class something approachable without requiring a heavy math background or a career in software development. It assumes that you have had some programming courses and written small (100-line or more) programs successfully in an object-oriented language (such as Java or JavaScript); put together multi-page websites in HTML and CSS succcessfully; have used SQL in database systems; and desire to learn the ASP.NET environment.
 
 Due to time constraints, I've made heavy use of excellent OER resources written for Java; C# and Java share many similarities. That said, this could not have been accomplished without the excellent Microsoft Developer's Network resources at http://www.asp.net/ and http://www.msdn.com/
 
-This book will be covering Razor, C#, and the ASP.NET library.
+This book will be covering Razor, C#, and the ASP.NET library. It assumes you have already taken these Olympic College courses:
 
-If you need a basis in HTML, I recommend the Microsoft Academy course, https://mva.microsoft.com/en-US/training-courses/html5-css3-fundamentals-development-for-absolute-beginners-14207[HTML5 & CSS3 Fundamentals: Development for Absolute Beginners]
+* CIS 155, Web Development I. This course covers HTML and CSS.
++
+If you need a refresher on HTML, I recommend the Microsoft Academy course, https://mva.microsoft.com/en-US/training-courses/html5-css3-fundamentals-development-for-absolute-beginners-14207[HTML5 & CSS3 Fundamentals: Development for Absolute Beginners]
 
-If you need a basis in SQL, I recommend http://sqlzoo.net/[SQLZoo's Tutorial] or Learn Code The Hard Way's http://sql.learncodethehardway.org/[Learn SQL The Hard Way].
+* CIS 210, Introduction to SQL. This course covers SQL.
++
+If you need a refresher on SQL, I recommend http://sqlzoo.net/[SQLZoo's Tutorial] or Learn Code The Hard Way's http://sql.learncodethehardway.org/[Learn SQL The Hard Way].
+
+* Either CIS 255, Web Development II, which covers programming in JavaScript, or CIS 142, Java Programming I, which covers OO programming in Java.
++
+If you need a refresher on programming, I recommend finding a "learn to program" course on Java or C# on Udemy, EdX, Coursera, or other platform. (If you have a specific one you recommend, let me know). 
 
 It's always a good idea to know the history behind what you are learning, so here is a short look into the history behind this technology:
 
@@ -42,7 +50,7 @@ ASP.NET was first released in 2002 by Microsoft as a web application framework o
 
 Razor was developed in 2010 by Andrew Nurse (http://vibrantcode.com/) for Microsoft it replaces Active Server Pages' (.aspx's) inlining syntax with a simpler form that has been embraced by the Microsoft developer community. It streamlines the transition between HTML and code.
 
-C# was developed in 1999 by Microsoft. Who in particular designed features we do not know, but the team lead was Anders Hejlsberg. If you know Java, some of the changes may seem silly (IndexOutOfBoundsException instead of ArrayIndexOutOfBoundsException, for example) but some changes are helpful -- the foreach loop in C# resulted in the definition of a similar structure in Java, after C# did it. C# also introduced many helpful shorthands in defining classes, so properties really are properties, and not directly tied to class instance variables. Was C# a response to Java's license requiring no changes to Java? we will never know, but its lead developer claims that C# is "not a Java clone" but is more related to C++.
+C# was developed in 1999 by Microsoft. Who designed paticular features we do not know, but the team lead was Anders Hejlsberg. If you know Java, some of the changes may seem silly (IndexOutOfBoundsException instead of ArrayIndexOutOfBoundsException, for example) but some changes are helpful -- the foreach loop in C# resulted in the definition of a similar structure in Java, after C# did it. C# also introduced many helpful shorthands in defining classes, so properties really are properties, and not directly tied to class instance variables. Was C# a response to Java's license requiring no changes to Java? we will never know, but its lead developer claims that C# is "not a Java clone" but is more related to C++.
 
 For more background, see
 

@@ -1,5 +1,6 @@
 *.html
 *.pdf
+*.xml
 *~
 cheatsheet*
 cheatsheet*/*
