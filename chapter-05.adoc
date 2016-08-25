@@ -2925,6 +2925,14 @@ switch ( rand.Next(3) ) {
 ----
 
 
+
+=== Variables and Scope
+
+Variables can be defined within any of the compound statements in the C# statements. Once a variable is defined within a compound statement, it is visible until the end of that compound statement. This has two implications:
+
+1. After the compound statement, the variable is no longer visible. You can declare a variable by the same name in a later compound statement.
+2. Another variable by the same name cannot be defined in a nested compound statement.
+
 ===  Introduction to Exceptions and try..catch
 
 In addition to the control structures that

@@ -4,12 +4,365 @@
 Programming languages allow us to automate tasks, and we do so because we want to do the same task repeatedly. We may find tasks that need to happen several times within our code, in different places. Grouping code into logical blocks that we can call from different places
 ////
 
-So far, C# looks very similar to JavaScript and Java. IT is object-oriented, so it supports reusability through class definition with  methods and properties, multiple types of polymorphism, and interfaces.
+So far, C# looks very similar to JavaScript and Java. 
+It is object-oriented, so it supports reusability through classes with  methods and properties and polymorphism with inheritance, interfaces,and overloading. 
 C# also introduces some unique and powerful features, such as delegates 
 (type-safe function pointers) and lambda expressions (anonymous functions). 
+There is a rich set of foundation classes provided in ASP.NET, the Foundation Class Library, providing collections, threads and locking, security, and much more.
 
+Object oriented design requires defining a class and then giving it both class (static) properties and methods and object (instance) properties and methods. Instances of the class are called objects. Static properties and methods are shared by all of the instances -- if one changes it, they all see the change. In fact, anyone who can see the class can see them (more on this in a bit). Each instance of the class gets its own copy to manipulate of the instance properties and methods in the class.
+
+So far we've been playing fast and loose with static versus instance methods and properties; it's time to clear that up:
+
+* When we call a method or access a property by dotting off of a local variable or a property (remember, DateTime.Now is a property), then we are calling the instance method or property for the object instance that variable holds. If we change the property value, then it only changes it for that instance. 
+
+* When we call a method or access a property by dotting off of a class name (DateTime and Math are class names), then we are calling the static method or property of the class -- there is only one copy of that property or method, and it's visible to us. If we change the property value, then everyone who accesses that property sees the change.  
+
+DateTime.Now.Month accesses the Month property of the instance stored in the Now property of the DateTime class.  Math.Sqrt(9) accesses the static method Sqrt on the Math class.
+
+How do we tell which ones are static versus instance?  As you will see as we introduce the language structures, the keyword ``static`` is used on static properties and methods, and no such keyword is used on instance properties and methods.
+
+Let's look at methods first, then classes and their properties and methods.
 
 === Methods
+
+So far we’ve only written short blocks of code in our web pages.
+In this chapter, we’ll show you how to organize more complex code and make code reusable, using methods and classes.
+
+A method is a collection of code with a name and some inputs; it may or may not produce an output, and it may also alter the state of the object and of any objects it has access to.  Because we can give it inputs, the method can change its action based on the values it is given. If the method returns a value, our program gets the value when the method completes.
+
+Methods provide the behaviors for a class or an object; typically these are things the class or instance will want to do repeatedly. Rather than have a huge method for a complex action, we may also define smaller methods that are called by other methods. Each method should have one clear action that it performs.
+
+Methods can be used over and over, at different places in the program. A
+method can even be used inside another method. This allows you to write
+simple methods and then use them to help write more complex methods,
+which can then be used in turn in other methods. In this way, very complex
+programs can be built up step-by-step, where each step in the construction is reasonably simple.
+
+==== Adding methods to a page
+
+Razor provides a way for us to put server-side code in a web page. There is a special Razor block for adding methods to the web page, @functions { .. }. This block has to contain pure C#, no embedded HTML is permitted; this keeps the Razor engine simpler, and Razor provides Helpers, a similar tool, to create re-usable code blocks that do contain embedded HTML.
+
+Razor's @functions are methods. We've mentioned earlier that your page is an object; in fact, there is a class for it, and each user who accesses your page gets an instance of that class. The @functions that you define are methods in that class.
+
+Here is a function block containing functions to compute a tip amount:
+
+[source,java]
+----
+@functions {
+    double ComputeTip(double subtotal, double tipRate) {
+        double tip;
+        
+        tip = subtotal * tipRate;
+        
+        return tip;
+    }
+    
+}
+----
+
+Notice that this is computing just the tip -- it is important to clearly document what your method is doing, so that those who use it can tell what it is doing. We see this with Math.Sin and the other trigonometric functions: they clarify that they work on radian values, not degrees. There are tools that will turn the comments on your methods into such documentation, so be sure to clearly document the assumptions your method makes and the computation it performs. Not everyone will have access to your source code.
+
+Let's pull apart the function above:  ``double ComputeTip`` specifies that this method will return a value of type double, and that its name is ComputeTip.  If it did not return a value, its return type would be the non-type ``void``. Notice the keyword static did not appear -- that makes this an instance method. Instance methods are mainly needed if they change the object state, and you may be able to determine that this one does not change the object state: it computes a value based solely on its inputs. It could have been defined static.
+
+Notice that the C# convention is that method names start with an initial uppercase letter and parameter names start with an initial lowercase letter.
+
+Next we see ``(double subtotal, double tipRate)``. The parentheses tell the compiler "I am giving you the parameters now", and are needed even if your method has no parameters. Each parameter is specified with a type and a name. The name becomes a local variable that we can use inside the method. When the method is called, the argument value is computed and then copied into the parameter for use within the method. The parameter's value is _never_ copied back out to the caller, so any changes to it will not be seen by the caller.
+
+A parameter's scope is the method it is defined within. Parameters behave like variables, so no variable within a method can have the same name as a parameter. 
+
+Finally, we see ``{ .. }`` -- this looks like our Razor code block. It is the body of the method. It can only contain C#, Razor does not permit HTML lines within a method.
+
+Within the code block, you may notice a statement you have not seen before: the return statement: ``return tip;``. The syntax for this statement is:
+
+[source,java]
+----
+    return EXPRESSION;
+----
+
+When that statement is seen within a method, the EXPRESSION is evaluated and the method is exited, with the value of the expression returned to the caller. This happens no matter where the return is within the method; if it is within a for loop or a switch statement, execution of the method halts at that point, and the value is returned to the caller.
+
+Void methods (those not returning values) can use a ``return;`` statement to return control to the caller, or will return control when the closing ``}`` is reached, if there was no explicit return statement.
+
+You can include additional methods in the @functions { } block; and because of how Razor processes it, the functions can appear anywhere in the page and be called even before they appear. By convention, we will place them at the top, before they are used.
+
+You can invoke the same method more than once, and you can have one method invoke another. A method can even invoke itself.
+
+[source,java]
+----
+
+subTotal += ComputeTip(subTotal,chosenRate); <1>
+total = subTotal + ComputeTax(subTotal,locationCode); <2>
+
+----
+
+<1> In the code above, you see that subTotal is passed to ComputeTip, and the result is added to subTotal and put back into the subTotal local variable.
+<2> Next you see that the tax is computed using the new value of subTotal and a location code for looking up tax rates, and added to subTotal to compute the total amount. 
+
+We see that two different methods are called and used in the code above. Notice that the methods are not executed when the @functions { } block is seen; rather, they are executed when the are called from other C# code. This is called the _flow of execution_. It's important to keep this in mind; if you never call a method, then it is never executed.
+
+Beginners often wonder why it is worth the trouble to create new methods.
+There are many reasons, here are a few of them:
+
+*   Creating
+ a new method gives you an opportunity to give a name to a group of
+statements, which makes code easier to read and understand.
+
+*   Introducing new methods can make a program smaller by eliminating repetitive code.
+For example, we can compute the tip amount based on the value the user gave us without a separate computation for each specific amount.
+*   A common problem solving technique is to break tasks down into sub-problems.
+Methods allow you to focus on each sub-problem in isolation, and then compose them into a complete solution.
+
+==== Parameters and Arguments
+
+Some of the methods we have used require arguments, which are the values you provide when you invoke the method.
+For example, to take a substring, you provide the starting and stopping locations with in the string value.
+
+When you use a method, you provide the arguments.
+When you write a method, you name the parameters.
+The parameter list indicates what arguments are required.
+The following code shows an example:
+
+[source,java]
+----
+@functions {
+
+    // Put the first letter at the end and add "ay"
+    string PigLatin(string word) {
+        return word.Substring(1,word.Length-1)+word[0]+"ay";
+    }
+}
+
+// form to get a word from the user
+
+<p>@PigLatin("Hello") @PigLatin("There"), in Pig Latin your word is: @PigLatin(yourWord).</p>
+----
+
+``PigLatin`` has a parameter named ``word`` with type ``string``. When we call ``PigLatin``, we have to provide an argument with type ``string``. This can be a variable, a string literal, another method call (for a method that also returns a string), or an expression which evaluates to a string. In our example, we've called it three times: twice with string literals, and once with a local variable.
+
+
+Before the method executes, the argument gets assigned to the parameter.
+In this example, the argument ``"Hello"`` gets assigned to the parameter ``word`` for the first call to PigLatin. In each subsequent call, the value of the argument is assigned to ``word`` in turn.
+
+This process is called parameter passing because the value gets passed from outside the method to the inside.
+An argument can be any kind of expression, so this works also:
+
+[source,java]
+----
+@PigLatin(yourWord+"s");
+----
+
+Here the word you supplied has an s added to the end before that value is assigned to the parameter named ``word``. The value you provide as an argument must have the same type as the parameter. So if your word was "round", ``word`` get the value "rounds" assigned to it.
+
+
+The value you supply has to be a string. For example, if you try:
+
+[source,java]
+----
+ @PigLatin(17);  // syntax error
+----
+
+You will get an error message like this:
+
+[source,java]
+----
+PigLatin.cshtml(25,10): error CS1502: The best overloaded method match for 'ASP._Page_PigLatin_cshtml.PigLatin(string)' has some invalid arguments
+PigLatin.cshtml(25,19): error CS1503: Argument 1: cannot convert from 'int' to 'string'
+----
+
+The first error message is letting you know the compiler tried to find any method named PigLatin that will work (you can define two methods with the same name -- more on this in a bit). The second one is more useful: it's telling you your argument has the wrong type.
+
+Sometimes C# can convert an argument from one type to another automatically.
+For example, ``Math.Sqrt`` requires a ``double``, but if you invoke ``Math.Sqrt(25)``, the integer value ``25`` is automatically converted to the floating-point value ``25.0``.
+But in the case of ``PigLatin``, C# can’t (or won’t) convert the integer ``17`` to a ``string``.
+
+Parameters and other variables only exist inside their own methods.
+Inside your page, there is no variable named ``word``.
+If you try to use it there, you’ll get a compiler error.
+
+Because variables and parameters only exist inside the methods where they are defined, they are often called local variables.
+
+==== Named Parameters and Optional Arguments
+
+You may have noticed an issue with our pig latin implementation: ``PigLatin("There")`` returns the value ``hereTay`` when it should return the value ``ereThay``, since "Th" is the first sound-unit in the word.
+
+Usually only one letter is needed; so we could require a length, but that makes everything work harder. C# solves this by offering us default parameters. You can specify a default value for a parameter, and if it is not specified, its default value is used.
+
+To make this work, C# also lets you specify a name next to an argument value, to say what parameter the value is for.  Let's rewrite our code and see how this works:
+
+[source,java]
+----
+@functions {
+
+    // Put the first letter at the end and add "ay"
+    // if the length gives us nonsense, ignore it and return the word
+    string PigLatin(string word, int numChars = 1) {
+        if (numChars < 1 || numChars > (word.Length-1)) {
+            return word; // just return the word on bad lengths
+        }
+        
+        return word.Substring(numChars,word.Length-numChars)
+               + word.Substring(0,numChars)
+               + "ay";
+    }
+}
+
+// form to get a word from the user
+
+<p>@PigLatin("Hello") @PigLatin("There",2), in Pig Latin your word is: @PigLatin(word: yourWord).</p>
+----
+
+Because we have given a default value for numChars, if it is not specified then when the method executes it is given the value 1. We say that numChars is an optional argument.
+
+Notice the final call: ``@PigLatin(word: yourWord)``. Here we use the parameter name and a colon to say what parameter the argument value is assigned to.  With named parameters, we don't have to match the order specified in the method. We could say: ``@PigLatin(numChars:2, word:"cheese")``. C# will match up the arguments to the named parameters, rather than using their positions.
+
+If you do not specify parameter names on the method invocation, then positional matching is done. C# lets you use positional matching for the start of a method call, but once you use a named parameter, then you have to name the rest of your arguments as well. Any unnamed or unspecified parameters in the method call must have defaults, and those defaults will be used when the method is invoked.
+
+[TIP]
+====
+Notice that I took care in writing the new version of PigLatin to deal with bad input values. I also stated how I handled them in the comments on the method. Consider what inputs can make your method mis-behave, and determine what behavior you want it to have. Here are some typical choices: 
+
+1. just let it do whatever C# would have it do, whether that is to throw an exception or continue on with a corrupt value (sometimes this is the right thing to do, but it should still be made clear that it was a decision made in your design)
+
+2. throw an explicit exception about the bad input values (this informs the caller about specifically what went wrong, and lets the caller decide how to handle it)
+
+3. handle the situation so that the program continues with some known good state (this lets the program continue uninterrupted, but does mask the problem of the bad inputs)
+====
+
+C# has another type of variable parameter list, for details on that see https://msdn.microsoft.com/en-us/library/w5zay9db.aspx.
+
+==== Parameters and Objects
+
+C# uses pass by value for parameters: the argument value is copied into the parameter value, and no changes to the parameter's value are ever seen by the caller. _However_, if you go through a parameter to values it has access to (if it is an object or an array), then the changes you make through the parameter will be visible to the caller.
+
+With arrays, this means that you can change the contents of the array, and the caller will see those changes.However, if your method changes the parameter's value, to point to a new array, that change will not be seen by the caller.
+
+[CAUTION]
+====
+C# also provides two other parameter modes: pass by reference and pass as output.
+
+"pass by reference" on parameters means that changes to them are seen; this is done by putting the keyword ``ref`` before the parameter type. When used, the keyword ``ref`` must be put before the argument as well, and it must be a storage location (something that can be on the left of an assignment statement). Any changes to the parameter's contents will be visible to the caller.
+
+"pass as output" on parameters means that the values are not read in from the arguments, but are only assigned within the method and then visible upon return. ``out`` must be put both on the parameter declaration and the argument value. The argument will not be read or copied to the parameter when the method is called, but they will be updated with the value of the parameter when the method completes.
+
+This isn't generally good practice in OO programming, but does give fine-grained control that is useful in procedural systems programming.
+====
+
+==== method syntax
+
+A method is defined in a class; since our Razor pages are turned into classes, it provides us with the @functions { .. } block to permit us to do this. We can also put methods in classes, as we will see in the next section.
+
+A method definition in C# takes the form:
+
+[source,java]
+----
+modifiers  return-type  method-name  ( parameter-list ) {
+    statements
+}
+----
+
+The statements between the braces, { and }, in a method definition
+make up the body of the method. These
+statements are the
+instructions that the computer executes when the method is called. Methods
+can contain any of the statements discussed previously.
+
+The modifiers that can occur at the
+beginning of a method definition are words that set certain characteristics
+of the method, such as whether it is static or not. 
+Another modifier that can be specified is the visibility of the method, one of these:
+
+public:: the method can be called from anywhere.
+
+private:: the method is only visible within the class, so it can only be called from other methods in the same class.
+
+protected:: the method is only visible to its class, or from a subclass of this class.
+
+internal:: the method is only visible from within the same project. This limits callers to just your library, if you were building a library and wanted some internal utility methods.
+
+protected internal:: the method is visible from this class, any subclasses (even if in another project), and any other class in the same project.
+
+If you do not specify a visibility for your method, then its visibility is *private* . Since you do not explicitly access the page class for your Razor page, and won't need to access the methods outside of the page, this is appropriate.
+
+For the full list of modifiers, some of which are beyond the scope of this text, see https://msdn.microsoft.com/en-us/library/ms173121.aspx.
+
+If the method computes a value, then
+the return-type is used to specify the type of
+value that is returned by the function.  It can be a type name such as
+string, an array type
+such as double[], or a Class - any valid C# type. If the
+method does not return a value, then the return-type is replaced 
+by the special value void,
+which indicates that no value is returned. The term "void" is meant to indicate that the return value is empty or non-existent.
+
+Finally, we come to the parameter-list of
+the method. Parameters 
+represent information that is passed into the method from outside, to be
+used by the method's internal computations. 
+The parameter list in a subroutine can be empty, or it can consist of one or
+more parameter declarations of the form ``parameter-modifier type parameter-name optional-default-value``. If there are several
+declarations, they are separated by commas. Note that each declaration can name
+only one parameter. For example, if you want two parameters of type
+double, you have to say "double x, double y", rather than
+"double x, y".
+
+parameter-modifier:: is optional and specifies either pass by value (no modifier), pass by reference (ref), or pass as output (out). ref and out have to be used as prefixes to argument values as well.
+
+type:: any valid C# type can be used as a parameter type.
+
+optional-default-value:: is specified as ``= constant-value``, providing a default value if no argument value is provided for this parameter. The constant value can be a literal or a constant expression (something the compiler can evaluate).
+
+[TIP]
+====
+You may also see methods with abbreviated bodies such as this:
+
+``public string Name => First + " " + Last;``
+
+Here, the method Name has no parameters, and returns the value computed using the properties First and Last from the containing class.
+
+These are Expression Body Definitions, and you can read more about them here: https://msdn.microsoft.com/en-us/library/ms173114.aspx
+====
+
+
+==== Helpers
+
+Razor has a feature not found in C# classes, the helper. This is a type of function that embeds HTML within it, the same way we have already done in our Razor code blocks. You define one helper at a time, like so:  
+
+[source,java]
+----
+@helper HelperName (parameters) {
+  .. helper body ..
+}
+----
+
+Then you can invoke the helper with @HelperName(arguments) later in your Razor page.  The helper body can contain the same code as any other Razor block, that is, it can contain both C# and HTML.
+
+When you invoke the helper, it is replaced with the HTML that its helper body generates. You do not use a return statement in a helper.
+
+For example:
+
+[source,java]
+----
+@helper OperatorList() {
+      <option value="add">+</option>  
+      <option value="sub">-</option>  
+      <option value="mul">*</option>  
+      <option value="div">/</option>  
+      <option value="mod">%</option>  
+}
+
+<form ...>
+
+...
+<select name="op1">@OperatorList</select>
+...
+<select name="op2">@OperatorList</select>
+...
+
+</form>
+----
+
+Here you can see we have a helper that will put the same list of operators wherever it is used. This helps us keep our page correct -- if we need to change the list, we only change it once, and that is seen everywhere the list is used.
 
 === Classes
 
@@ -20,9 +373,13 @@ C# also introduces some unique and powerful features, such as delegates
 
 - http://dotnetslackers.com/articles/aspnet/Razor-Functions-and-Helpers.aspx#s2-overview-of-functions
 
+- http://weblogs.asp.net/scottgu/asp-net-mvc-3-and-the-helper-syntax-within-razor
+
 - https://msdn.microsoft.com/en-us/library/x9afc042.aspx C# Programming Guide on Classes
 
 - https://en.wikibooks.org/wiki/C_Sharp_Programming
+
+- https://msdn.microsoft.com/en-us/library/ms173114.aspx
 
 === Exercises
 

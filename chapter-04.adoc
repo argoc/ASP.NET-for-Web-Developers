@@ -68,6 +68,8 @@ These words include ``public``, ``class``, ``static``, ``void``, and ``int``, wh
 You can find the complete list of keywords at https://msdn.microsoft.com/en-us/library/x53a06bb.aspx[https://msdn.microsoft.com/en-us/library/x53a06bb.aspx], but you don’t have to memorize them.
 Most programming editors provide “syntax highlighting”, which makes different parts of the program appear in different colors.
 
+A variable, once defined, has a visible *scope*. In Razor, a variable can be used anywhere on the page once it is declared in a Razor code block, including in a later Razor code block.
+
 C# also allows another form of variable declaration:
 
 [source, java]
