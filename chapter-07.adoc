@@ -316,7 +316,7 @@ optional-default-value:: is specified as ``= constant-value``, providing a defau
 ====
 You may also see methods with abbreviated bodies such as this:
 
-``public string Name => First + " " + Last;``
+``public string Name +=>+ First + " " + Last;``
 
 Here, the method Name has no parameters, and returns the value computed using the properties First and Last from the containing class.
 
@@ -341,7 +341,7 @@ When you invoke the helper, it is replaced with the HTML that its helper body ge
 
 For example:
 
-[source,java]
+[source,HTML]
 ----
 @helper OperatorList() {
       <option value="add">+</option>  
