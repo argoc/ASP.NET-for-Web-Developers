@@ -19,3 +19,4 @@ long as you attribute the work and don’t use it for commercial purposes. I hav
 - http://www.asp.net/web-pages/overview/getting-started/introducing-razor-syntax-c Chapter 3 benefited from this amazing tutorial on Razor.
 - https://appharbor.com/ a PaaS ASP.NET cloud service with a usable free tier for deployment of the applications in this text.
 - http://blog.slaks.net/2011/01/dissecting-razor-part-1-pieces-of.html - this and the later parts give insight into the inner workings of Razor: how it does what it does.
+- http://www.csharpcourse.com/ reference material
