@@ -1,3 +1,14 @@
 == ASP.NET MVC 5
 
 TODO
+
+Could do the blog one:
+https://github.com/madskristensen/MiniBlog
+
+=== Further Reading
+
+Here is another transformation of a Web Pages application into an MVc application. It starts from the "Bakery" template available in WebMatrix (but not in Visual Studio).
+
+- http://www.mikesdotnetting.com/article/262/migrating-from-razor-web-pages-to-asp-net-mvc-5-views-and-controllers
+- http://www.mikesdotnetting.com/article/263/migrating-from-razor-web-pages-to-asp-net-mvc-5-data-access-and-view-models
+- http://www.mikesdotnetting.com/article/264/migrating-from-razor-web-pages-to-asp-net-mvc-5-model-binding-and-forms

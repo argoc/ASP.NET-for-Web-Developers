@@ -47,7 +47,7 @@ Razor's @functions are methods. We've mentioned earlier that your page is an obj
 
 Here is a function block containing functions to compute a tip amount:
 
-[source,java]
+[source,C#]
 ----
 @functions {
     double ComputeTip(double subtotal, double tipRate) {
@@ -75,7 +75,7 @@ Finally, we see ``{ .. }`` -- this looks like our Razor code block. It is the bo
 
 Within the code block, you may notice a statement you have not seen before: the return statement: ``return tip;``. The syntax for this statement is:
 
-[source,java]
+[source,C#]
 ----
     return EXPRESSION;
 ----
@@ -88,7 +88,7 @@ You can include additional methods in the @functions { } block; and because of h
 
 You can invoke the same method more than once, and you can have one method invoke another. A method can even invoke itself.
 
-[source,java]
+[source,C#]
 ----
 
 subTotal += ComputeTip(subTotal,chosenRate); <1>
@@ -123,7 +123,7 @@ When you write a method, you name the parameters.
 The parameter list indicates what arguments are required.
 The following code shows an example:
 
-[source,java]
+[source,C#]
 ----
 @functions {
 
@@ -147,7 +147,7 @@ In this example, the argument ``"Hello"`` gets assigned to the parameter ``word`
 This process is called parameter passing because the value gets passed from outside the method to the inside.
 An argument can be any kind of expression, so this works also:
 
-[source,java]
+[source,C#]
 ----
 @PigLatin(yourWord+"s");
 ----
@@ -157,14 +157,14 @@ Here the word you supplied has an s added to the end before that value is assign
 
 The value you supply has to be a string. For example, if you try:
 
-[source,java]
+[source,C#]
 ----
  @PigLatin(17);  // syntax error
 ----
 
 You will get an error message like this:
 
-[source,java]
+[source,text]
 ----
 PigLatin.cshtml(25,10): error CS1502: The best overloaded method match for 'ASP._Page_PigLatin_cshtml.PigLatin(string)' has some invalid arguments
 PigLatin.cshtml(25,19): error CS1503: Argument 1: cannot convert from 'int' to 'string'
@@ -190,7 +190,7 @@ Usually only one letter is needed; so we could require a length, but that makes 
 
 To make this work, C# also lets you specify a name next to an argument value, to say what parameter the value is for.  Let's rewrite our code and see how this works:
 
-[source,java]
+[source,C#]
 ----
 @functions {
 
@@ -254,7 +254,7 @@ A method is defined in a class; since our Razor pages are turned into classes, i
 
 A method definition in C# takes the form:
 
-[source,java]
+[source,C#]
 ----
 modifiers  return-type  method-name  ( parameter-list ) {
     statements
@@ -328,7 +328,7 @@ These are Expression Body Definitions, and you can read more about them here: ht
 
 Razor has a feature not found in C# classes, the helper. This is a type of function that embeds HTML within it, the same way we have already done in our Razor code blocks. You define one helper at a time, like so:  
 
-[source,java]
+[source,C#]
 ----
 @helper HelperName (parameters) {
   .. helper body ..
@@ -366,8 +366,260 @@ Here you can see we have a helper that will put the same list of operators where
 
 === Classes
 
-==== Properties
+Classes are what make object orientation so rich; they provide many, many capabilities. We've already seen methods, but there are properties also, and many aspects of classes to fulfill the OO features of inheritance, encapsulation, and overloading.
+
+You will define each class in its own file with the file extension .cs. To make your source code deployable, put these files in the App_Code directory of your project. ASP.NET looks to that directory to compile code.
+
+What code goes in a class, versus in Razor functions? Object-oriented design says that you design a class when you want to have the ability to use the functionality from different pages in your web site. So if you have common functionality that several of your pages use, you would define a class for it, and then use the class's methods and properties to access the functionality. 
+
+====
+Remember to be DRY : if you find yourself repeating code, then methods and classes are called for.
+====
+
+==== Classes live in Namespaces
+
+Namespaces give you a way to group classes into logical groups. You place a class within a namespace when you define the class, like so:
+
+[source,C#]
+----
+namespace Storage {
+
+  // class definitions here
+  
+}
+----
+
+Typically you put one class in a file; this means you put the namespace clause around it in that file. You use the same namespace clause in each of your files containing classes in that namespace.
+
+If you do not use a namespace clause, your class is put into the default, unnamed, namespace. Although this is not good practice, you will often see this done in learn-to-program situations. A general convention is to put your code in a namespace that matches your project name, and then to further organize it into multi-level namespaces to separate your code into logical groups.
+
+The namespace name can have multiple parts separated by dots, i.e. Storage.Binary, Storage.Text, and Storage.Text.Utc are all valid namespace names.
+
+By convention, you build a directory structure that matches your namespace names; where namespaces use . to separate the name, you make another level of directories. Your classes go in the lowest directory. So, if the namespace Storage.Text.Utc had a class UtcUtilities, you would see this directory structure:
+
+.Namespace Directory Hierarchy
+image::images/NamespaceSample.png[]
+////
+[tree,file="images/NamespaceSample.png",height="+200",width="+100"]
+--
+Storage
+`--Text
+   `--Utc
+      `--UtcUtilities.cs
+--
+////
+
+[TIP]
+====
+Namespaces, like classes and methods, start with an Uppercase letter. This is a coding convention, not a requirement.
+
+Notice another convention here: CamelCase even applies to acronynms like UTC -- in a C# name, we write it as Utc.  Similarly, HTML becomes Html when used in a C# name. This convention may seem grating, but if you want your code to appear professional, it's best to follow the convention.
+====
+
+You can decide if the class ought to be visible outside of its assembly by setting an access modifier on it; these are similar to the ones for methods:
+
+* public : visible outside of its assembly
+* internal : only visible within its assembly (the default)
+
+internal, the default, is sufficient for our needs.
+
+
+[TIP]
+====
+What's an assembly? it's whatever code was assembled for your application. We aren't building cross-assembly projects here, but we do use ASP.NET: everything from that that we use had to have been declared public.
+====
+
+Once you have classes within namespaces, you can then decide how to access them outside of their namespaces. In order to access a class from another Namespace without qualifying it by its namespace name, you add a using statement to the top of your .cs file, before the namespace clause:
+
+[source,C#]
+----
+using System.Collections;
+using System.Web.WebMail;
+
+namespace Storage {
+
+  // class definitions here
+  
+}
+----
+
+The using statement lets you reference classes within that namespace without qualifing them. It does not let you reference nested namespaces -- you have to explicitly add a using statement for each nested namespace to use its classes without qualification.
+
+You can put any number of using statements at the top of your file, or even within the namespace clause. If they define classes that have the same names, references to those names are considered ambiguous; C# has ways to resolve this, the simplest is to fully qualify those names. If your using namespace contains a class by the same name as your class, the class you are defining is the one used. 
+
+For other ways to resolve ambiguous class names, see https://msdn.microsoft.com/en-us/library/aa664766(v=vs.71).aspx
+
+
+==== Classes define Methods
+
+We've already stepped through method definitions; methods are placed within a class, and can operate either as static methods, called by dotting off of the class name, or as instance methods, called by dotting off of a variable or property referencing an object of the class type.
+
+
+[source,C#]
+----
+namespace Utilities {
+
+  /// methods to manipulate strings
+  public class StringUtilities {
+  
+      /// returns the word turned into pig latin
+      /// assumes the word is a word (not more than one word)
+      public static string PigLatin(string word) {
+          ...
+      }
+  }
+  
+}
+----
+
+Here we have put our PigLatin method in a class called StringUtilities, in a namespace called Utilities. So we can invoke the method like so:
+
+[source,C#]
+----
+    string result = Utilities.StringUtilities.PigLatin("hello");
+----
+
+Because it is a static method, we dot off of the class name.
+
+
+==== How do Classes create Objects?
+
+How would we call an instance method?  First, we need to be able to create instances of the class.  We saw an early example of this with Random, where we created a new Random object by saying ``new Random()``. This was actually using something in the class: the constructor.
+
+A constructor is a special code block (you may hear it called a "special method", as it looks like a method) defined in the class to say what steps to take when a new instance is created.  For instance, you may want to initialize the instance's properties or you may want to require certain information be provided when instances are created.
+
+You define a constructor in the same manner as a method except that it has no return type, and the name is the same as the class name. It also has no return statement -- it can only be used within a ``new`` statement, to create an instance of the class.
+
+[source,C#]
+----
+public class Car
+{
+    string model;
+    
+    public Car()
+    {
+        model = "Ford";
+    }
+}
+----
+
+[NOTE]
+====
+Yes, I did sneak a variable definition into the class; they are allowed in class bodies, too; more on this in a bit.
+====
+
+If you do not define a constructor, then a class implicitly has one that takes no arguments, and initializes any class variables to their default values (0, false, or null).
+
+If you define a constructor that takes parameters, then there is no longer a default constructor.  You can define as many constructors for a class as you like; they must all take different parameter types or a different number of parameters.
+
+[source,C#]
+----
+public class Car
+{
+    string model;
+    
+    public Car()
+    {
+        Car("Ford"); // "call" the other constructor; you can only call
+                     // constructors from other constructors.
+                     // It's good practice to call the more specific
+                     // constructor, supplying defaults.
+                     // This avoids duplicating code between constructors.
+    }
+    
+    public Car(string m)
+    {
+        model = m;
+    }
+}
+----
+
+
+If you do not want instances of the class created, then you can define a 0-arg constructor that is private; this hides the construtor from any other class. We might do this in our StringUtilities class to prevent anyone from creating instances, since it only defines static methods:
+
+[source,C#]
+----
+public class StringUtilities
+{
+    private StringUtilities() { } // no instances can be created
+    
+    ... static methods here
+}
+----
+
+In order to create an instance of a class (an object), you have to know what constructor(s) it has. You create the instance with a new operator, passing the values the constructor requires. 
+
+[source,C#]
+----
+
+  Car myCar = new Car();
+  Car myDaughtersCar = new Car("Volkswagon");
+  
+----
+
+The ``new`` operator takes a class name and constructor arguments and returns a new object that has been created and initialized by the constructor.  That new object can be:
+
+. stored in a variable (as our example)
+. stored in an array of that object's class
+. stored in a Property of that object's class
+
+
+[source,C#]
+----
+  DateTime[] importantDates = {
+    new DateTime(1944,1,1), // first computer
+    new DateTime(1991,8,6) // first web server
+  };
+----
+
+Here we initialize an array with two objects.
+
+==== Objects: where are they?
+
+Objects are pretty complex entities. As such, it's important to understand that what is in the variable, array entry, or property is not the mass of the object but is an object reference. Objects are located in a separate part of your computer's memory usually called the heap. The address of your object is what is stored in the variable, array entry, or property. We call this an object reference.
+
+So, if two variables are assigned the same object, then changes to the object in one variable are seen by the other variable. But we need properties to show this more clearly, so let's return to this in a bit.
+
+==== Classes define Properties
+
+
+Classes get their power from having not only methods, to implement common behaviors, but also by having properties, to store state.
+
+Properties can be at the class level: static; or they can be at the object level: instance.
+
+C# does a very nice job of separating the idea of a property from another idea, that of a variable.
+
+Properties are the visible state of the object. 
+
+
+
+NOT DONE
+
+
+
+=== Objects
+
+
+* object references and what can go wrong
+* null and what it's used for
+
+=== Boxing and Unboxing
 TODO
+
+=== Inheritance
+TODO
+
+=== Interfaces
+TODO
+
+=== There's more ...
+
+We can only go so deep with C# classes in a first C# course. There are many more complex features to the C# class system including:
+
+* partial classes
+* asynchronous methods
+* delegates
+* destructors
 
 === Further Reading
 
@@ -380,6 +632,10 @@ TODO
 - https://en.wikibooks.org/wiki/C_Sharp_Programming
 
 - https://msdn.microsoft.com/en-us/library/ms173114.aspx
+
+- https://msdn.microsoft.com/en-us/library/t990ks23(v=vs.140).aspx APP_CODE
+
+- https://prezi.com/0qr6eqniejad/the-10-most-important-events-in-computer-history/
 
 === Exercises
 

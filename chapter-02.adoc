@@ -372,6 +372,8 @@ There are conventions for web pages that are there for very good reasons, such a
 . http://www.digital-web.com/articles/principles_of_design/
 . https://www.webaim.org/
 
+- https://msdn.microsoft.com/en-us/library/hh145667 builds a sample website using layouts
+
 
 === Exercises
 

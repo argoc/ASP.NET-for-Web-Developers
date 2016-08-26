@@ -19,3 +19,8 @@ long as you attribute the work and don’t use it for commercial purposes. I hav
 - https://appharbor.com/ a PaaS ASP.NET cloud service with a usable free tier for deployment of the applications in this text.
 - http://blog.slaks.net/2011/01/dissecting-razor-part-1-pieces-of.html - this and the later parts give insight into the inner workings of Razor: how it does what it does.
 - http://www.csharpcourse.com/ reference material
+
+- https://code.msdn.microsoft.com/Introducing-ASPNET-Web-cad79534 licensed under the http://www.apache.org/licenses/[Apache License] (code located here https://github.com/joinabhimanyu/WebPagesMovies )
+-  https://code.msdn.microsoft.com/CSASPNETSearchEngine-3eb92010 licensed under http://opensource.stackexchange.com/questions/2318/using-open-source-sample-code-provided-by-microsoft-for-commercial-software[MS-LPL] 
+- https://code.msdn.microsoft.com/Search-SQL-Server-database-21d70eaa licensed under http://opensource.stackexchange.com/questions/2318/using-open-source-sample-code-provided-by-microsoft-for-commercial-software[MS-LPL] 
+
