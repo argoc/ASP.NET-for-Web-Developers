@@ -12,3 +12,4 @@ Here is another transformation of a Web Pages application into an MVc applicatio
 - http://www.mikesdotnetting.com/article/262/migrating-from-razor-web-pages-to-asp-net-mvc-5-views-and-controllers
 - http://www.mikesdotnetting.com/article/263/migrating-from-razor-web-pages-to-asp-net-mvc-5-data-access-and-view-models
 - http://www.mikesdotnetting.com/article/264/migrating-from-razor-web-pages-to-asp-net-mvc-5-model-binding-and-forms
+- http://www.mikesdotnetting.com/article/210/razor-web-pages-e-commerce-adding-a-shopping-cart-to-the-bakery-template-site a post about adding a shopping cart to the bakery website (related, but expanding rather than converting)

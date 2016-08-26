@@ -574,13 +574,32 @@ The ``new`` operator takes a class name and constructor arguments and returns a 
 
 Here we initialize an array with two objects.
 
+[TIP]
+====
+That's handy, but what about the class -- perhaps we want to initialize the static properties. You can define a static initializer in a class like so:
+
+[source,C#]
+----
+class CalendarEvent {
+
+    static DateTime calendarStarted;
+    
+    static {
+        calendarStarted = DateTime.Now;
+    }
+}
+----
+
+In this code, we have a private variable in the class and we initialize it to the current system time when the class is loaded. It captures the time the calendar was started in our application.
+====
+
 ==== Objects: where are they?
 
 Objects are pretty complex entities. As such, it's important to understand that what is in the variable, array entry, or property is not the mass of the object but is an object reference. Objects are located in a separate part of your computer's memory usually called the heap. The address of your object is what is stored in the variable, array entry, or property. We call this an object reference.
 
 So, if two variables are assigned the same object, then changes to the object in one variable are seen by the other variable. But we need properties to show this more clearly, so let's return to this in a bit.
 
-==== Classes define Properties
+==== Classes define Variables and Properties
 
 
 Classes get their power from having not only methods, to implement common behaviors, but also by having properties, to store state.
@@ -591,35 +610,426 @@ C# does a very nice job of separating the idea of a property from another idea, 
 
 Properties are the visible state of the object. 
 
+===== Class local variables (aka fields)
+
+I hinted above that you can have variables defined directly in your class. Static variables are defined for the class (so all instances share them) and instance variables are defined for instances (so each instance has its own instance of the local variable, the other instances get their own).
+
+These are defined just like those in code blocks:
+
+[source,C#]
+----
+class Car
+{
+    string model;
+    int odometer;
+    int gallons; 
+
+    ... rest of class here    
+}
+----
+
+Here we see we define three variables in the class; these are not defined static, so when an object is created, it gets its own three variables local to it. All of its methods can see these variables; they are primarily used as a way to track the object's properties.
+
+You could make these variables available outside of the class by giving them an access modifier. Variables use the same access modifiers as methods, and their default is also private.
+
+[TIP]
+====
+It is not good practice to give outside access to class variables; proeprties should be used instead.  For this reason, by convention a class's variables are initial lower case like other local variables and are private.
+====
+
+===== Properties
+
+Properties define state. Static properties define the class state (like Now on DateTime) and instance properties define the object state (like Month on DateTime).
+
+Poperties are defined like this:
+
+[source,C#]
+----
+class Car
+{
+    string model;
+    int odometer;
+    int gallons; 
+
+    public int Model {
+        get { return model; }
+        set { model = value; }
+    }
+    
+    public double MilesPerGallon {
+        get { return odometer/(double)gallons; }
+    }
+    
+    ... rest of the class    
+}
+----
+
+Properties define their visibility, type, and name, and then provide their get and set operations. The ``get`` operation is used whenever you access the property in an expression, and the ``set`` operation is used whenever you have the property as the target of an assignment statement.
+
+As you can see in our example, Model is very simple: it simply reads from the instance variable model, and writes to it (``value`` is a keyword in C#, meaning the value of the right side of the assignment statement). However, MilesPerGallon only has a ``get`` operation, and that is computed from two of the instance variables. This means that MilesPerGallon cannot be the target of an assignment statement.
+
+You can put access modifiers on the get and set code blocks; this is useful if you want those who use your class to get it, but only make it settable within the class. You will see this in StatClass.cs in the exercises.
+
+Since the style of property that directly reads and writes it underlying variable is so common, C# defines a shorthand to do both at the same time:
 
 
-NOT DONE
+[source,C#]
+----
+class Car {
+    int odometer;
+    int gallons; 
 
+    public int Model { get; set; }
+
+    public double MilesPerGallon {
+        get { return odometer/(double)gallons; }
+    }
+    
+    ... rest of the class    
+}
+----
+
+Notice that we don't have to define the variable separately.
+
+[CAUTION]
+====
+This clear definition of properties is a very clever feature of C#. You often want to "gate" property access with security levels, and ensure that assignments only get valid values. By using code blocks, you can make sure your properties are correctly accessed and updated.
+====
+
+Properties, like methods and variables, can have access modifiers. They, like other class contents, are private by default. When you want a property to be visible state of the class (static) or object (instance), you need to make it public.
+
+For more on C# Properties see https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx[Properties (C# Programming Guide)].
 
 
 === Objects
 
+Now that we have classes, how do we use them?
 
-* object references and what can go wrong
-* null and what it's used for
+Let's define one for our examples with objects:
 
-=== Boxing and Unboxing
-TODO
+[source,C#]
+----
+class CalendarEntry {
+
+    static const Date OldestYearPermitted = new Date(1900,0,0);
+    
+    DateTime date;
+
+    public CalendarEntry(Date d, string e) {
+        EventDate = d;
+        Event = e;
+    }
+    
+    public string Event { get; set; }
+    
+    public DateTime EventDate {
+    
+        get {
+            return date;
+        }
+        
+        set {
+            // Check boundaries for dates.
+            if (value.Year > 1900 && value.Year <= DateTime.Today.Year) {
+                date = value;
+            } else {
+                throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
+}
+----
+
+[NOTE]
+====
+Notice the order of defintions in CalendarEntry. Any order is allowed, but by convention we put them in this order:
+
+* constants (variables defined static const cannot change value and are available to the class and all instances).
+* static variables
+* instance variables
+* constructors
+* public methods (static and then instance)
+* private methods (static and then instance)
+* destructors
+====
+
+==== The new expression creates instances
+
+When we want to create a CalendarEntry instance, we use a `new` expression. Because it has defined a constructor, there is no default constructor; this forces us to provide values for the object's properties.
+
+[source,C#]
+----
+ CalendarEntry internetBirthday = 
+       new CalendarEntry(
+           new DateTime(1991,8,6),"internet's birthday");
+----
+
+Notice that we had to create a `DateTime` object to put in the `EventDate` property, used when we create the `CalendarEntry` instance, which is then put into the local variable `internetBirthday`.
+
+This is what that looks like conceptually.
+
+image::images/internetBirthdayHeap.png[]
+
+
+We have two objects on the heap, and the local variable within its scope (which may be a method or a class).
+
+There is a shorthand way to create and initialize an object when its class has only a default or no-argument constructor:
+
+[source,C#]
+----
+    new DateTime{ Year = 1901, Month = 6, Day = 30 }
+----
+
+This creates a new instance and then updates its properties to the supplied values. The example here shows DateTime with three of its properties being initialized. Any uninitialized properties are set to default values (0, false, or null).
+
+
+
+==== The null value
+
+Now, you might not always have an object; what do you do then? C# provides a special value, ``null``. This can be assigned to any variable or property that holds an object. If you recall, arrays are actually objects -- so any variable that holds an array can also be set to null.
+
+[TIP]
+====
+You can turn any primitive type to one that can also hold a null; do this by delaring the variable with a ? after the type. This does require more storage space for the variable.
+====
+
+[TIP]
+====
+The ?? operator is a shorthand way to check nullability: ``x ?? y`` has the result y if x is null, and x if it is not null.
+====
+
+Because variables can hold this value, if you try to look at a property or invoke a method on an object when there is no object (the value is null), you will get a *NullReferenceException*. Usually this is a defect in your code -- you should always check for nulls and then determine appropriate handling, whether it is raising an exception or taking a substitute action.
+
+==== Objects as parameters
+
+Notice that variables hold references to objects. When you change a property in that object, it makes the change on the heap.
+
+That means if two different variables hold references to the same object, each will see changes the other made.
+
+[source,c#]
+----
+    DateTime internetBirthdate = new DateTime(1990,8,6);
+    DateTime firstWebPageServed = internetBirthday; <1>
+    firstWebPageServed.Day = 7;
+----
+
+<1> Notice that the object reference is copied from `internetBirthdate` to `firstWebPageServed`. So both refer to the same object on the heap. When the Day property of one is changed, it changes it on the heap: so the change is immediately visible to the other variable as well.
+
+.Two Variables Reference the same Object
+image::images/TwoVarsOneObj.png[]
+
+That also means if a variable passes its value to a parameter, and the method makes changes to the object through the parameter, they will be visible to the variable after the call completes.
+
+The only way to have that not happen is to ensure the variables point to different objects on the heap, using a separate `new` for each one. Even if they have the same property values, there will be two distinct instances on the heap.
+
+==== But wait, won't memory fill up?
+
+It would, yes, if all we did was`new` all day. However, the system is watching everything we do (in this case, the system is the ASP.NET CLR engine that is running our compiled code). In particular, it keaps track of whether we have a variable or property referencing an object or not. Once no variable or property references an object, it can be thrown out,  and its memory made available back to the heap. This is called "garbage collection".
+
+
+
+==== Boxing and Unboxing
+I already mentioned the nullable attribute for the primitive types; but that is not always sufficient; sometimes, you have to have an Object rather than a primitive type.
+
+In fact, each of the C# primitives maps to a specific ASP.NET Class, as shown in the following table.
+
+.C# type and .NET class
+|====
+| C# Type | .NET Framework Type
+
+| bool | **System.Boolean**
+| byte | **System.Byte**
+| sbyte | **System.SByte**
+| char | **System.Char**
+| decimal | **System.Decimal**
+| double | **System.Double**
+| float | **System.Single**
+| int | **System.Int32**
+| uint | **System.UInt32**
+| long | **System.Int64**
+| ulong | **System.UInt64**
+| object | **System.Object**
+| short | **System.Int16**
+| ushort | **System.UInt16**
+| string | **System.String**
+|====
+
+This means if you declare a parameter with the .NET type, and use a variable or expression that results in the C# type, that value will be *boxed* within an object of the .NET type. Similarly, if you use of the thes .NET types in an expression where the C# type is needed, it will be automatically *unboxed* and its value used; note that a `null` value in this situation will be handled according to how the variable was defined: if it's nullable, it takes the null. Otherwise, it raises a *NullReferenceException`.
+
+[source,C#]
+----
+  int currentDay = 26;
+  Int32 tomorrow = currentDay + 1; <1>
+  
+  ... time passes
+  
+  currentDay = tomorrow; <2>
+  tomorrow = currentDay + 1; <1>
+----
+
+<1> `currentDay` is an int, so it can be added to 1 and will result in an int. The target of the assignment statement is a `Int32` so that result will have to be boxed; it would be the same as saying: ``Int 32 tomorrow = new Int32(currentDay + 1);`` We don't have to explicitly use the new, as our int value result will be wrapped in an Int32 to automatically box the primitive with object-ness. (We could call this boxing's object-ive. Couldn't resist.)
+
+<2> When we want to assign an Int32 to an int, the reverse has to happen. The int value within the Int32 is unboxed, and its value is copied into the variable. Because this behavior is specific to each particular target type, there is no single method that is called to do it.
+
+You may have noticed the type object in our list above; objects can hold any item at all; if they are assigned a primitive from a local variable, they will box it. To unbox from an object, you have to first typecast it down to the appropriate primitive type.
+[source,C#]
+----
+  int currentDay = 26; 
+  object objectDay = currentDay; // boxed, put in the heap
+  
+  currentDay = (int)objectDay; // to get it back out
+----
+//TODO: pictures!
+
+Similarly, you can put any object instance in an object. But to see it as its original class, you will have to typecast it back to that class. As an object, the methods specific to your class are not accessible.
+
+[source,C#]
+----
+  DateTime internetBirthday = new DateTime(1991,8,6); 
+  object something = internetBirthday; // copies the object reference,
+                                       // but loses its DateTime-ness
+  
+  internetBirthday = (DateTime)something; // transform it back
+----
+
+[NOTE]
+====
+Boxing and Unboxing have a huge impact on performance, so it is best to be aware of when you have the C# type and when you have the .NET class. In general, stick with the C# types unless there's no way to avoid using the .NET types.
+====
 
 === Inheritance
-TODO
+
+
+The object built-in type hints at a key object-orientation feature: inheritance.
+
+Class definitions are a good start at smart programming, as they modularize our code into understandable units with state and behavior.
+
+We get an even stronger amount of re-use when one class can be a subclass of another class: that is, it inherits all of the fields, properties, and methods and then adds more.
+
+Often you need classes that differ only a little bit; either one can be the supertype of the other, or they have a common supertype and they are both its subclasses.
+
+
+The keyword `extends` is used to note that a class has a superclass, like so:
+
+[class,C#]
+----
+class CalendarRepeatingEntry extends CalendarEntry {
+    Public int NumRepeats { get; set; }
+    
+    ... more added to class
+}
+----
+
+All of the public methods, properties and variables in CalendarEntry are now available to CalendarRepeatingEntry and its instances. So it not only has NumRepeats but also has EventDate and Event.
+
+If you do not specify `extends`, then your class automatically extends System.Object.
+
+The method, property, and variable access modifiers may make more sense at this point, now that you have seen inheritance:
+
+public:: the method can be called from anywhere.
+
+private:: the method is only visible within the class, so it can only be called from other methods in the same class.
+
+protected:: the method is only visible to its class, or from a *subclass* of this class.
+
+internal:: the method is only visible from within the same project. This limits callers to just your library, if you were building a library and wanted some internal utility methods.
+
+protected internal:: the method is visible from this class, any *subclasses* (even if in another project), and any other class in the same project.
+
+If you do not specify a visibility for a method, property, or variable then its visibility is *private* . If you do not specify a visibliity for a class, then its visibility is *internal*.
+
+
+==== Impact on types
+
+We can assign any instance to an object variable because object is the superclass of all other classes. In fact, for any variable defined to hold a particular class, we can assign not only instances of that class but also instances of its subclasses.  Basically, an object instance is an instance of its immediate class and also an instance of its superclasses. Each class has one single immediate superclass, except object (and System.Object, the same class), which has no superclass.
+
+Let's walk through an example:
+
+[source,C#,linenums]
+----
+ CalendarEntry internetBirthday;
+           
+ RepeatingCalendarEntry internetParty =
+       new RepeatingCalendarEntry {
+           EntryDate = newDateTime(1991,8,6),
+           Entry = "Internet's Party",
+           NumRepeats = 100 };
+           
+ internetBirthday = internetParty; // OK
+ internetParty.NumRepeats = 101; // OK
+ internetBirthday.NumRepeats = 102; // ERROR
+ 
+ internetParty = internetBirthday; // ERROR
+ internetParty = (RepeatingCalendarEntry) internetBirthday; // OK but...
+
+ CalendarEvent tcpBirthday = new CalendarEvent(
+       newDateTime(1983,1,1),"TCP's Ratification Date");
+       
+ RepeatingCalendarEntry tcpParty;
+ 
+ tcpParty = tcpBirthday; // ERROR
+----
+
+When we assign `internetParty` to `internetBirthday`, this works. Any access of the object through that variable (`internetBirthday`) will assume it is a CalendarEntry, and not a `RepeatingCalendarEntry`. This means that we can't access NumRepeats through `internetBirthday`, since it is hidden by the implicit cast to be just CalendarEvent.
+
+The other direction is worse: when we try to assign a CalendarEvent instance to a RepeatingCalendarEvent variable, we can't do it at all. Why not? because there is no NumRepeats property in our CalendarEvent instance.
+
+If we know we have a RepeatingCalendarEvent in our CalendarEvent variable, we can typecast it back to a RepeatingCalendarEvent.  Now, our "know" may actually be riddled with bugs, and a CalendarEvent object may have snuck into our variable; the execution engine does a final type check at runtime, and if the type cannot be cast because it is not actually a RepeatingCalendarEvent, then a *InvalidCastException* is thrown.
 
 === Interfaces
-TODO
+
+Inheritance is very powerful, and complex. So C#, like Java before it, restricts programmers to 1 immediate parent; we call this "single inheritance". There are designs so complex that single inheritance is not sufficient. However, implementing multiple inheritance is very complex.
+
+C# took the same route as Java in this regard, adding interfaces and allowing a class to implement several different interfaces.  An interface can be thought of as a class without any implementation, for example:
+
+[source,C#]
+----
+interface IListableCalendarItem {
+
+    ... methods and properties without code bodies
+
+}
+----
+
+We can use more than one interface when we define a class:
+
+[source,C#]
+----
+class CalendarEntry implements IListableCalendarItem, IIterable {
+
+    ...
+
+}
+----
+
+The keyword `implements` on the class definition specifies which interfaces the class implements.
+
+[NOTE]
+====
+The C# naming convention is to start all interfaces with the letter I and then an initial uppercase letter of the first word in its name. I've followed that convention in my example, and we will see it throughout ASP.NET.
+====
+
+If the class does not implement all of the methods and properties in the interface, then it is considered an abstract class, and it must have subclasses that complete the implementation. You cannot use a new expression on an abstract class. You can also explicitly make a class abstract by putting `abstract` before the keyword `class` in its definition.
+
+We won't be defining interfaces ourselves in this text, but there are many useful interfaces in ASP.NET. We will see these in the chapter on Collections and Databases.
+
 
 === There's more ...
 
 We can only go so deep with C# classes in a first C# course. There are many more complex features to the C# class system including:
 
 * partial classes
+* abstract classes
 * asynchronous methods
 * delegates
 * destructors
+* nested types
+* structs and enums
+* anonymous types
+* generic types
+* class initializer
+
+The Microsoft Developer Network https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx[C# Programming Guide] provides an overview of these features.
 
 === Further Reading
 
@@ -639,8 +1049,96 @@ We can only go so deep with C# classes in a first C# course. There are many more
 
 === Exercises
 
-TODO
+. Remember the dice calculations? First, build a method that will return a dice roll (one die). Then, build a Dice class so that you can create multiple dice. Then build a second class that holds two dice and upon request will compute a new roll and return it as the sum of the two dice; this can be impelemented to require an object or as static methods and properties. It should have both of its dice be stored in private variables (or an array of 2). Develop a simple page that reports a dice roll, using your classes to perform the roll, every time the user requests a new roll (a simple Submit button is fine).
+
+. A common programming task
+is computing statistics of a set of numbers. (A statistic is a number that
+summarizes some property of a set of data.) Common statistics include the mean
+(also known as the average) and the standard deviation (which tells how spread
+out the data are from the mean). I have provided a class called
+StatCalc that can be used to compute these statistics, as well as the
+sum of the items in the dataset and the number of items in the dataset. 
++
+.StatCalc.cs
+----
+include::source/App_Code/StatCalc.cs[]
+----
++
+Notice the <summary> tag and the use of three /'s -- this is C#'s way of providing documentation in published classes. If you are interested to find out more, see https://msdn.microsoft.com/en-us/library/b2s063f7.aspx[XML Documentation Comments] on MSDN.
++
+If calc is a variable of
+type StatCalc, then the following instance methods and properties are available:
++
+*   calc.Enter(item)  where
+item is a number, adds the item to the dataset.
+*   calc.Count  is a property
+that returns the number of items that have been added to the dataset.
+*   calc.Sum  is a property
+that returns the sum of all the items that have been added to the dataset.
+*   calc.Mean  is a property
+that returns the average of all the items.
+*   calc.StandardDeviation  is
+a property that returns the standard deviation of the items.
++
+Typically, all the data are added one after the other by calling the
+Enter() method over and over, as the data become available. After all
+the data have been entered, any of the other methods and properties can be called to get
+statistical information about the data. The properties  Mean and
+StandardDeviation should only be called if the number of items is
+greater than zero.
++
+Starting with StatCalc.cs, add properties Max and Min.
+The Max property
+should return the largest of all the items that have been added to the dataset,
+and Min should return the smallest. You will need to keep track of the largest and smallest items that have
+been seen so far; consider your initial values for these properties carefully and initialize them in a 0-argument constructor.
++
+Test your new class by using it in a web site to compute statistics for a set
+of non-zero numbers entered by the user. Start by creating an object of type
+StatCalc:
++
+[source,java]
+----
+StatCalc  calc;   // Object to be used to process the data.
+calc = new StatCalc();
+----
++
+Read numbers from the user and add them to the dataset. Request  5 numbers from the user; decide how to handle blank entries and document it on your page so your user knows what to expect. After all the
+user's numbers have been entered, print out each of the six statistics
+that are available from calc. You do not need to print the numbers again.
+
+
+. This problem uses the
+Dice and PairOfDice class from exercise 1 and your updated StatCalc.cs class from exercise 2.
++
+The program you  wrote for a previous chapter performs
+the experiment of counting how many times a pair of dice is rolled before a
+given total comes up. It repeats this experiment 10000 times and then reports
+the average number of rolls. It does this whole process for each possible total
+(2, 3, ..., 12).
++
+Redo that exercise. But instead of just reporting the average number of
+rolls, you should also report the standard deviation and the maximum number of
+rolls. Use a PairOfDice object to represent the dice. Use a
+StatCalc object to compute the statistics. (You'll need a new
+StatCalc object for each possible total, 2, 3, ..., 12. You can use a
+new pair of dice if you want, but it's not required.)
+
+. In the board game Scrabble, each tile contains a letter, which is
+ used to spell words in rows and columns, and a score, which is used to 
+determine the value of words.
++
+1. Write a definition for a class named ``Tile`` that represents letter/number tiles like those used in Scrabble.
+The properties should include a character named ``Letter`` and an integer named ``Value``.
+2. Write a constructor that takes parameters named ``letter`` and ``value`` and initializes the instance variables.
+3. Write a method named ``ToString`` that returns the two property values combined in a string that is the return value, for examples A(1).
++
+Create a web site that generates random tiles and displays a hand of 6 tiles upon request. The letters should be between A and Z, and the values should be between 1 and 10.  The 6 tiles should be stored in an array of tiles, and then displayed from the array.
++
+Stretch goal: Write the display in a helper, and invoke the helper on your page.
 
 === Lab
 
-TODO
+We are early for the database portion, but consider the data you would want to have be persistent. Databases store data in tables, with each row representing an object. Design the objects you will want to store in your database; create a class for each object, if you have more than one (there will be one type of object per table).
+
+Redo your prorotype to use this object -- create a static 
