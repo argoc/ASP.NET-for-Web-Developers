@@ -1,7 +1,6 @@
 This project is the textbook for CIS 219.
 
-This book uses other Creative Commons sources and research, and is released
-into Creative Commons itself -- see LICENSE for the specifics.
+This book uses other Creative Commons sources and research, and is released into Creative Commons itself -- see LICENSE for the specifics.
 
 The published text will be available at
 
@@ -11,7 +10,7 @@ in HTML and PDF formats.
 
 If you want to see the book in development, view it here on GitHub by clicking on book.adoc:
 https://github.com/argoc/ASP.NET-for-Web-Developers/blob/master/book.adoc
-and navigating into the book from there.
+and navigating into the book from there. Please note that GitHub's rendering is not perfect, it doesn't embed variables or includes inside source blocks.
 
 If you wish to contribute, I'd welcome feedback, contributions, and
 corrections.
