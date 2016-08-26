@@ -47,7 +47,7 @@ Razor's @functions are methods. We've mentioned earlier that your page is an obj
 
 Here is a function block containing functions to compute a tip amount:
 
-[source,C#]
+[source,java]
 ----
 @functions {
     double ComputeTip(double subtotal, double tipRate) {
@@ -75,7 +75,7 @@ Finally, we see ``{ .. }`` -- this looks like our Razor code block. It is the bo
 
 Within the code block, you may notice a statement you have not seen before: the return statement: ``return tip;``. The syntax for this statement is:
 
-[source,C#]
+[source,java]
 ----
     return EXPRESSION;
 ----
@@ -88,7 +88,7 @@ You can include additional methods in the @functions { } block; and because of h
 
 You can invoke the same method more than once, and you can have one method invoke another. A method can even invoke itself.
 
-[source,C#]
+[source,java]
 ----
 
 subTotal += ComputeTip(subTotal,chosenRate); <1>
@@ -123,7 +123,7 @@ When you write a method, you name the parameters.
 The parameter list indicates what arguments are required.
 The following code shows an example:
 
-[source,C#]
+[source,java]
 ----
 @functions {
 
@@ -147,7 +147,7 @@ In this example, the argument ``"Hello"`` gets assigned to the parameter ``word`
 This process is called parameter passing because the value gets passed from outside the method to the inside.
 An argument can be any kind of expression, so this works also:
 
-[source,C#]
+[source,java]
 ----
 @PigLatin(yourWord+"s");
 ----
@@ -157,7 +157,7 @@ Here the word you supplied has an s added to the end before that value is assign
 
 The value you supply has to be a string. For example, if you try:
 
-[source,C#]
+[source,java]
 ----
  @PigLatin(17);  // syntax error
 ----
@@ -190,7 +190,7 @@ Usually only one letter is needed; so we could require a length, but that makes 
 
 To make this work, C# also lets you specify a name next to an argument value, to say what parameter the value is for.  Let's rewrite our code and see how this works:
 
-[source,C#]
+[source,java]
 ----
 @functions {
 
@@ -254,7 +254,7 @@ A method is defined in a class; since our Razor pages are turned into classes, i
 
 A method definition in C# takes the form:
 
-[source,C#]
+[source,java]
 ----
 modifiers  return-type  method-name  ( parameter-list ) {
     statements
@@ -328,7 +328,7 @@ These are Expression Body Definitions, and you can read more about them here: ht
 
 Razor has a feature not found in C# classes, the helper. This is a type of function that embeds HTML within it, the same way we have already done in our Razor code blocks. You define one helper at a time, like so:  
 
-[source,C#]
+[source,java]
 ----
 @helper HelperName (parameters) {
   .. helper body ..
@@ -380,7 +380,7 @@ Remember to be DRY : if you find yourself repeating code, then methods and class
 
 Namespaces give you a way to group classes into logical groups. You place a class within a namespace when you define the class, like so:
 
-[source,C#]
+[source,java]
 ----
 namespace Storage {
 
@@ -431,7 +431,7 @@ What's an assembly? it's whatever code was assembled for your application. We ar
 
 Once you have classes within namespaces, you can then decide how to access them outside of their namespaces. In order to access a class from another Namespace without qualifying it by its namespace name, you add a using statement to the top of your .cs file, before the namespace clause:
 
-[source,C#]
+[source,java]
 ----
 using System.Collections;
 using System.Web.WebMail;
@@ -455,7 +455,7 @@ For other ways to resolve ambiguous class names, see https://msdn.microsoft.com/
 We've already stepped through method definitions; methods are placed within a class, and can operate either as static methods, called by dotting off of the class name, or as instance methods, called by dotting off of a variable or property referencing an object of the class type.
 
 
-[source,C#]
+[source,java]
 ----
 namespace Utilities {
 
@@ -474,7 +474,7 @@ namespace Utilities {
 
 Here we have put our PigLatin method in a class called StringUtilities, in a namespace called Utilities. So we can invoke the method like so:
 
-[source,C#]
+[source,java]
 ----
     string result = Utilities.StringUtilities.PigLatin("hello");
 ----
@@ -490,7 +490,7 @@ A constructor is a special code block (you may hear it called a "special method"
 
 You define a constructor in the same manner as a method except that it has no return type, and the name is the same as the class name. It also has no return statement -- it can only be used within a ``new`` statement, to create an instance of the class.
 
-[source,C#]
+[source,java]
 ----
 public class Car
 {
@@ -512,7 +512,7 @@ If you do not define a constructor, then a class implicitly has one that takes n
 
 If you define a constructor that takes parameters, then there is no longer a default constructor.  You can define as many constructors for a class as you like; they must all take different parameter types or a different number of parameters.
 
-[source,C#]
+[source,java]
 ----
 public class Car
 {
@@ -537,7 +537,7 @@ public class Car
 
 If you do not want instances of the class created, then you can define a 0-arg constructor that is private; this hides the construtor from any other class. We might do this in our StringUtilities class to prevent anyone from creating instances, since it only defines static methods:
 
-[source,C#]
+[source,java]
 ----
 public class StringUtilities
 {
@@ -549,7 +549,7 @@ public class StringUtilities
 
 In order to create an instance of a class (an object), you have to know what constructor(s) it has. You create the instance with a new operator, passing the values the constructor requires. 
 
-[source,C#]
+[source,java]
 ----
 
   Car myCar = new Car();
@@ -564,7 +564,7 @@ The ``new`` operator takes a class name and constructor arguments and returns a 
 . stored in a Property of that object's class
 
 
-[source,C#]
+[source,java]
 ----
   DateTime[] importantDates = {
     new DateTime(1944,1,1), // first computer
@@ -578,7 +578,7 @@ Here we initialize an array with two objects.
 ====
 That's handy, but what about the class -- perhaps we want to initialize the static properties. You can define a static initializer in a class like so:
 
-[source,C#]
+[source,java]
 ----
 class CalendarEvent {
 
@@ -616,7 +616,7 @@ I hinted above that you can have variables defined directly in your class. Stati
 
 These are defined just like those in code blocks:
 
-[source,C#]
+[source,java]
 ----
 class Car
 {
@@ -643,7 +643,7 @@ Properties define state. Static properties define the class state (like Now on D
 
 Poperties are defined like this:
 
-[source,C#]
+[source,java]
 ----
 class Car
 {
@@ -673,7 +673,7 @@ You can put access modifiers on the get and set code blocks; this is useful if y
 Since the style of property that directly reads and writes it underlying variable is so common, C# defines a shorthand to do both at the same time:
 
 
-[source,C#]
+[source,java]
 ----
 class Car {
     int odometer;
@@ -707,7 +707,7 @@ Now that we have classes, how do we use them?
 
 Let's define one for our examples with objects:
 
-[source,C#]
+[source,java]
 ----
 class CalendarEntry {
 
@@ -757,7 +757,7 @@ Notice the order of defintions in CalendarEntry. Any order is allowed, but by co
 
 When we want to create a CalendarEntry instance, we use a `new` expression. Because it has defined a constructor, there is no default constructor; this forces us to provide values for the object's properties.
 
-[source,C#]
+[source,java]
 ----
  CalendarEntry internetBirthday = 
        new CalendarEntry(
@@ -775,7 +775,7 @@ We have two objects on the heap, and the local variable within its scope (which 
 
 There is a shorthand way to create and initialize an object when its class has only a default or no-argument constructor:
 
-[source,C#]
+[source,java]
 ----
     new DateTime{ Year = 1901, Month = 6, Day = 30 }
 ----
@@ -806,7 +806,7 @@ Notice that variables hold references to objects. When you change a property in 
 
 That means if two different variables hold references to the same object, each will see changes the other made.
 
-[source,c#]
+[source,java]
 ----
     DateTime internetBirthdate = new DateTime(1990,8,6);
     DateTime firstWebPageServed = internetBirthday; <1>
@@ -856,7 +856,7 @@ In fact, each of the C# primitives maps to a specific ASP.NET Class, as shown in
 
 This means if you declare a parameter with the .NET type, and use a variable or expression that results in the C# type, that value will be *boxed* within an object of the .NET type. Similarly, if you use of the thes .NET types in an expression where the C# type is needed, it will be automatically *unboxed* and its value used; note that a `null` value in this situation will be handled according to how the variable was defined: if it's nullable, it takes the null. Otherwise, it raises a *NullReferenceException`.
 
-[source,C#]
+[source,java]
 ----
   int currentDay = 26;
   Int32 tomorrow = currentDay + 1; <1>
@@ -872,7 +872,7 @@ This means if you declare a parameter with the .NET type, and use a variable or 
 <2> When we want to assign an Int32 to an int, the reverse has to happen. The int value within the Int32 is unboxed, and its value is copied into the variable. Because this behavior is specific to each particular target type, there is no single method that is called to do it.
 
 You may have noticed the type object in our list above; objects can hold any item at all; if they are assigned a primitive from a local variable, they will box it. To unbox from an object, you have to first typecast it down to the appropriate primitive type.
-[source,C#]
+[source,java]
 ----
   int currentDay = 26; 
   object objectDay = currentDay; // boxed, put in the heap
@@ -883,7 +883,7 @@ You may have noticed the type object in our list above; objects can hold any ite
 
 Similarly, you can put any object instance in an object. But to see it as its original class, you will have to typecast it back to that class. As an object, the methods specific to your class are not accessible.
 
-[source,C#]
+[source,java]
 ----
   DateTime internetBirthday = new DateTime(1991,8,6); 
   object something = internetBirthday; // copies the object reference,
@@ -911,7 +911,7 @@ Often you need classes that differ only a little bit; either one can be the supe
 
 The keyword `extends` is used to note that a class has a superclass, like so:
 
-[class,C#]
+[source,java]
 ----
 class CalendarRepeatingEntry extends CalendarEntry {
     Public int NumRepeats { get; set; }
@@ -945,7 +945,7 @@ We can assign any instance to an object variable because object is the superclas
 
 Let's walk through an example:
 
-[source,C#,linenums]
+[source,java]
 ----
  CalendarEntry internetBirthday;
            
@@ -982,7 +982,7 @@ Inheritance is very powerful, and complex. So C#, like Java before it, restricts
 
 C# took the same route as Java in this regard, adding interfaces and allowing a class to implement several different interfaces.  An interface can be thought of as a class without any implementation, for example:
 
-[source,C#]
+[source,java]
 ----
 interface IListableCalendarItem {
 
@@ -993,7 +993,7 @@ interface IListableCalendarItem {
 
 We can use more than one interface when we define a class:
 
-[source,C#]
+[source,java]
 ----
 class CalendarEntry implements IListableCalendarItem, IIterable {
 
