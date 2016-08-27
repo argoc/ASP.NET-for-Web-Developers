@@ -8,11 +8,11 @@ This chapter describes how to write statements using variables, which
 store values like numbers and words, and operators, which are symbols 
 that perform a computation.
 We also explain three kinds of programming errors and offer additional 
-debugging advice.
+debugging advice building on that in Chapter 1.
 
-This chapter will cover primitive types, variables, literals, expressions, statements, and method calls.
+This chapter will cover primitive types, variables, literals, expressions, assignment statements and method calls.
 
-Later chapters will look into defining arrays, object classes, properties, and methods, and exception handling.
+Later chapters will look into control flow statements, arrays, exception handling, object classes, properties, and methods.
 
 === Declaring variables
 
@@ -32,9 +32,9 @@ For example, the ``int`` type can store integers, and the ``char`` type can stor
 
 Some types begin with a capital letter and some with lowercase.
 We will learn the significance of this distinction later, but for now you should take care to get it right.
-There is no such type as ``Int``; there is actually a ``String`` type in C#, it is the system class defined to support the string primitive type, and there is also an Int32 type behind int.
+There is no such type as ``Int``; there is actually a ``String`` type in C#; it is the system class defined to support the string primitive type. Tere is also an Int32 class behind the int type.
 
-To declare an integer variable, the syntax is:
+To declare an integer variable, the variable declaration statement is:
 
 [source,java]
 ----
@@ -84,7 +84,7 @@ The type is fixed at compile time by the type of the initialization value.
 
 In our example, ``message`` will be a ``string`` variable, and ``age`` will be an ``int`` variable.
 
-The initializer cannot be null (which is a special, untyped value).
+The initializer on a ``var`` declaration cannot be null (which is a special, untyped value).
 
 ===  Assignment
 
@@ -120,6 +120,11 @@ message = "123";     // legal
 message = 123;       // not legal
 ----
 
+[NOTE]
+====
+Assignment statements are actually expressions; if you use an assignment statement without a semicolon, then it is an expression, and it can be placed inside a larger expression. The value of an assignment expression is the value placed into the storage location (variables, so far, are our only storage locations; later we will see array indexes and properties used this way also).
+====
+
 Variables must be initialized (assigned for the first time) before they can be used.
 You can declare a variable and then assign a value later, as in the previous example.
 You can also declare and initialize on the same line:
@@ -141,7 +146,7 @@ It is not!
 Equality is commutative, and assignment is not.
 For example, in mathematics if a = 7 then 7 = a.
 In C# ``a = 7;`` is a legal assignment statement, but ``7 = a;`` is not.
-The left side of an assignment statement has to be a variable name (storage location).
+The left side of an assignment statement has to be a storage location (so far the only storage locations we have covered are local variables; we will see others in later sections).
 
 Also, in mathematics, a statement of equality is true for all time.
 If a = b now, a is always equal to b.
@@ -154,7 +159,7 @@ int b = a;     // a and b are now equal
 a = 3;         // a and b are no longer equal
 ----
 
-The third line changes the value of ``a``, but it does not change the value of ``b``, so they are no longer equal.
+The third line changes the value of ``a``, but it does not change the value of ``b``, so they are no longer equal. When you store a value in a variable with an assignment statement, it replaces the value that was in that location earlier.
 
 Taken together, the variables in a program and their current values make up the program’s state.
 This figure shows the state of the program after these assignment statements run:
@@ -254,6 +259,8 @@ Variables, constants, and literals all have a data type -- the type of the data.
 |====================================
 
 As you will see later, C# also allows you to define classes, which are object-oriented types you can then use in your programs. ASP.NET actually defines its own classes, which C# maps to these primitive types. So, `int` maps to ASP.NET's `Int32` and `string` maps to `String`. It is C#'s convention to capitalize class names, property names, and method names while the primitive types and local variables and local constants are initial lower case. Both use camel case.
+
+It is best to stick with the data type that will fit the values you need; however, if you are using a library of previously written methods, such as ASP.NET, you may use types larger than you need, to avoid conversion between types when you make calls to methods in that library.
 
 ==== String.Format
 
@@ -382,7 +389,7 @@ There is an even shorter form for +1 and -1, the post-fix (after) ++ and-- and p
 
 These have subtle impacts when embedded within other expressions.
 
-``x++`` and `++x`` both add one to x, changing the value in the variable x. However, the _value_ of ``x++` is x _before_ it is updated, while the value of `++x`` is the value of x _after_ it is updated.
+`x&#43;&#43;` and `&#43;&#43;x` both add one to x, changing the value in the variable x. However, the _value_ of `x&#43;&#43;` is x _before_ it is updated, while the value of `&#43;&#43;x` is the value of x _after_ it is updated.
 
 [source,java]
 ----
@@ -666,6 +673,8 @@ There are many operators defined in C#, similar to those found in Java, C, and o
 
 There are additional operators not included here, see https://msdn.microsoft.com/en-us/library/6a71f45d.aspx[MSDN C# Operators].
 
+Notice the Associativity column; English readers expect left-to-right associativity, which means the operators are evaluated from left to right (1 + 2 + 3 is 3 + 3 is 6). However, the conditional expression and the assignment statements have right-to-left associativity. This means their right side is evaluated before their left side. For assignments this makes sense: the value to be assigned has to be evaluated before it can be stored in the storage location, so ``x = y = 2`` first assigns 2 to y and then takes the value of that assignment expression, 2, and stores that in x.
+
 ===  Composition
 
 So far we have looked at the 
@@ -900,54 +909,13 @@ a 100-nanosecond interval of a computer's time.
 .TimedComputation.cshtml
 [source,java]
 ----
-/**
- * This program performs some mathematical computations and displays the
- * results.  It also displays the value of the constant Math.PI.  It then 
- * reports the number of seconds that the computer spent on this task.
- */
-
-public class TimedComputation {
-
-   public static void main(String[] args) {
-
-      long startTime; // Starting time of program, in milliseconds.
-      long endTime;   // Time when computations are done, in milliseconds.
-      double time;    // Time difference, in seconds.
-
-      startTime = System.currentTimeMillis();
-
-      double width, height, hypotenuse;  // sides of a triangle
-      width = 42.0;
-      height = 17.0;
-      hypotenuse = Math.sqrt( width*width + height*height );
-      System.out.print("A triangle with sides 42 and 17 has hypotenuse ");
-      System.out.println(hypotenuse);
-
-      System.out.println("\nMathematically, sin(x)*sin(x) + "
-                                       + "cos(x)*cos(x) - 1 should be 0.");
-      System.out.println("Let's check this for x = 1:");
-      System.out.print("      sin(1)*sin(1) + cos(1)*cos(1) - 1 is ");
-      System.out.println( Math.sin(1)*Math.sin(1) 
-                                        + Math.cos(1)*Math.cos(1) - 1 );
-      System.out.println("(There can be round-off errors when" 
-                                      + " computing with real numbers!)");
-
-      System.out.print("\nHere is a random number:  ");
-      System.out.println( Math.random() );
-
-      System.out.print("The value of Math.PI is ");
-      System.out.println( Math.PI );
-
-      endTime = System.currentTimeMillis();
-      time = (endTime - startTime) / 1000.0;
-
-      System.out.print("\nRun time in seconds was:  ");
-      System.out.println(time);
-
-   } // end main()
-
-} // end class TimedComputation
+include::source/TimedComputation.cshtml[]
 ----
+
+[TIP]
+====
+If you get 0 time elapsed, that's due to both the speed of your machine and the inaccuracy of DateTime.Now. See https://blogs.msdn.microsoft.com/ericlippert/2010/04/08/precision-and-accuracy-of-datetime/ for an interesting writeup on this topic.
+====
 
 '''
 

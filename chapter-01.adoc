@@ -1,11 +1,10 @@
 :numbered:
 == Web Development
 
-Welcome to {doctitle}. In this text we cover the basics of building full-stack websites in the ASP.NET environment.
+Welcome to {doctitle}. In this text we cover the basics of building full-stack websites in the ASP.NET environment. A full-stack website has three layers: the client browser (Users), the Web Server, and a backing database (BD). The clients share that backing database, but each have their own personal view of it, provided to them by the web server. The users' only way to communicate is through the HTTP protocol, via web pages and asynchronous partial-page AJAX requests.
 
 .https://commons.wikimedia.org/w/index.php?curid=15214941[Website Server Architecture CC-BY Ph.HENCHES]
 image::images/Archi_simple.jpg[Website Server Architecture]
-
 
 
 === What the user sees
@@ -22,13 +21,10 @@ ____
 
 When you develop a website or web application in the ASP.NET environment, you write HTML, JavaScript, and CSS, and then you add server-side coding and databases using Razor to embed C# in your page/application and call out to your own C# classes and those of the ASP.NET library. The database access can be done in several ways; Microsoft provides LINQ, with provides both a library and _another_ language for database access. The LINQ language is like SQL -- similar to how C# is like Java.
 
-You write your application code in Visual Studio, and when it is run within Visual Studio, it runs in IIS Express. IIS is Internet Information Services, Microsoft's web server. In deployed mode, your application would be packaged and deployed in Internet Information Services (IIS) for Windows® Server or some other web server supporting ASP.NET.
+You write your application code in Visual Studio, and when it is run within Visual Studio, it runs in a local web server using IIS Express. IIS is Internet Information Services, Microsoft's web server; IIS Express is a lightweight version for development use. In deployed mode, your application would be packaged and deployed in Internet Information Services (IIS) for Windows® Server or some other web server supporting ASP.NET.
 
-Web applications can be a bit more disorganized than a typical computer program -- web sites turn into spaghetti really easily. So it is best to do some design up front, with a wire-frame diagram, and lay out that design in your development environment -- use directories to separate portions of your code. You will find that the Visual Studio IDE provides some framework for you, separating different types of files into different directories.
+Web applications can be a bit more disorganized than a typical computer program -- web sites turn into spaghetti really easily. So it is best to do some design up front, with a wire-frame diagram, and lay out that design in your development environment -- use directories to separate portions of your code. You will find that the Visual Studio IDE provides some framework for you, separating different types of files into different directories. We'll walk through the Visual Studio organization in the next chapter.
 
-////
-TODO: review VS a little bit here?
-////
 
 === Where your code sits
 
@@ -36,12 +32,13 @@ The code you write is meant to live on a file system that is managed by a web se
 
 Our users' URLs will map to pages in our web sites. The web server will find the page, and then it will run the C# code on that page and return an HTML page free of Razor and C# to the requesting browser. That means all of your C# code runs on the web server; only JavaScript code runs on the browser. You will need to keep this in mind as you develop your web site: the user's only interaction with your web site is via HTML, that is, links being clicked, forms being submitted, and JavaScript requests being issued. Your only way to communicate back is to provide HTML that is rendered in the user's browser. Keep that in mind, because it is both very limiting and very freeing, like trying to rent an apartment when you have a cat. Some things aren't going to be feasible, or require solutions unlike those you use in traditional stand-alone applications.
 
+
 === Pobody's nerfect 
 
-Once you start coding you will discover it's hard to write perfect code. You will have to isolate and repair errors in your code to make it work correctly; we call this debugging.
+Once you start coding you will discover it's hard to write perfect code. You will have to isolate and repair errors in your code to make it work correctly; we call this *debugging*.
 
 .https://en.wikipedia.org/wiki/Software_bug#/media/File:H96566k.jpg[An early computer bug] (Public Domain; work of a federal government employee)
-image::images/bug.png[The First Computer Bug: a Moth]
+image::images/bug.png[An Early Computer Bug: a Moth]
 
 http://thenextweb.com/shareables/2013/09/18/the-very-first-computer-bug/#gref[Bill Burke's journal entry on September 9, 1947] captures an early use of the term bug for a problem in a computer - in this case a real bug, a moth in a relay.
 

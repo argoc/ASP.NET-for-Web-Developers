@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head><title>Timed Computation</title></head>
+<body>
+
+<p>We performed some mathematical computations on the server;
+here are the results, and how long it took to perform them.</p>
+
+@{
+    // capture the start time
+    DateTime startTime = DateTime.Now;
+
+    <p>Time at the start is @startTime.</p>
+
+    // Compute the hypotenuse of a fixed triangle:
+    double width, height, hypotenuse;  // sides of a triangle
+    width = 42.0;
+    height = 17.0;
+    hypotenuse = Math.Sqrt( width*width + height*height );	  
+	<p>A triangle with sides @width and @height 
+	has hypotenuse @hypotenuse.</p>
+
+    // Compute a known mathematical value, see if double can handle it
+    <p>Mathematically, <code>sin(x)*sin(x) + cos(x)*cos(x) - 1</code> 
+	should be 0.</p>
+    <p>Let's check this for x = 1:<br/>
+    <code>sin(1)*sin(1) + cos(1)*cos(1) - 1 = 
+    @(Math.Sin(1)*Math.Sin(1) + Math.Cos(1)*Math.Cos(1) - 1)
+    </code></p>
+    <p>(There can be round-off errors when computing with real numbers.)</p>
+
+    // print a few random things...
+    Random rand = new Random();
+    <p>Here is a random number: @rand.NextDouble()</p>
+
+    <p>The value of &pi; is @System.Math.PI</p>
+
+    // figure out if time has passed ... how fast is your server?
+    DateTime stopTime = DateTime.Now;
+    TimeSpan elapsedTime = stopTime - startTime;
+
+    <p>Time at the end is @stopTime.</p>
+    <p>Run time was @(elapsedTime.TotalMilliseconds) milliseconds.</p>
+}
+</body>
+</html>
