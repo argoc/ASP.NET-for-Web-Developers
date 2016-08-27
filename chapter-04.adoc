@@ -907,14 +907,14 @@ since the calculations performed in this program occupy only a tiny fraction of
 a 100-nanosecond interval of a computer's time.
 
 .TimedComputation.cshtml
-[source,java]
+[source,html]
 ----
 include::source/TimedComputation.cshtml[]
 ----
 
 [TIP]
 ====
-If you get 0 time elapsed, that's due to both the speed of your machine and the inaccuracy of DateTime.Now. See https://blogs.msdn.microsoft.com/ericlippert/2010/04/08/precision-and-accuracy-of-datetime/ for an interesting writeup on this topic.
+If you get 0 time elapsed, that's due to either the speed of your machine and the inaccuracy of DateTime.Now. See https://blogs.msdn.microsoft.com/ericlippert/2010/04/08/precision-and-accuracy-of-datetime/ for an interesting writeup on this topic.
 ====
 
 '''
@@ -1154,7 +1154,7 @@ As an example, let’s take a simple web page body named Hello.cshtml:
 
 If you forget the semicolon at the end of the variable declaration, you might get an error message like this:
 
-[source,java]
+[source]
 ----
 Hello.cshtml(7,33): error CS1002: ; expected
 ----
@@ -1167,7 +1167,7 @@ And sometimes the description of the problem is more confusing than helpful.
 
 For example, if you leave out the closing brace at the end of the Razor block, you may get an error like this:
 
-[source,java]
+[source]
 ----
 Hello.cshtml(6): Build (web): The code block is missing a closing "}" character.  Make sure you have a matching "}" character for all the "{" characters within this block, and that none of the "}" characters are being interpreted as markup.  
 ----
@@ -1200,7 +1200,7 @@ that explains what happened and where.
 
 For example, if you accidentally divide by zero you will get a message like this in Visual Studio:
 
-[source,java]
+[source]
 ----
 An exception of type 'System.DivideByZeroException' occurred in App_Web_zst0xju3.dll but was not handled in user code
 
@@ -1211,7 +1211,7 @@ Some parts of this output are useful for debugging.
 The first line includes the name of the exception, ``System.DivideByZeroException'``, and a message that indicates more specifically what happened, ``Attempted to divide by zero``.
 If you look into the detail of the error (click View Detail...), and then open the exception up, you will see the file where the error occurred in the Stack Trace:
 
-[source,java]
+[source]
 ----
    at ASP._Page_Hello_cshtml.Execute() in Hello.cshtml:line 13
    at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
@@ -1245,7 +1245,7 @@ error:
 
 This program compiles and runs just fine, but the output is:
 
-[source,java]
+[source,html]
 ----
 <p>The portion of the hour taken up is 0</p>
 ----
@@ -1265,8 +1265,9 @@ It refers to language features we haven’t talked about yet, so you might want 
 
 === Data types in C#
 
-|====================================
-|*type* | *description* | *range of values* | *literal*
+|====
+|type | description | range of values | literal
+
 |byte | 8-bit unsigned integer | 0 - 255 | whole number in range
 |sbyte | 8-bit signed integer | -128 - 127 | whole number in range
 |short | 16-bit signed integer | -32,768 - 32,767 | whole number in range
@@ -1282,12 +1283,13 @@ It refers to language features we haven’t talked about yet, so you might want 
 | string | sequence of Unicode characters | | double quotes around 0 or more characters
 | bool | Boolean value | true or false | true or false
 | object | An object |  | new creates one; null (more on this later)
-|====================================
+|====
 
 Implicit type conversion will occur when a loss of significant digits will not occur. For example, a byte will be implicitly converted to an int (exactly) and even to a double (though the exact value may be lost on the conversion) since the range of the double will fit the range of the byte.
 
 |====
-| *From* | *To*
+| From | To
+
 | sbyte | **short**, **int**, **long**, **float**, **double**, or **decimal**
 | byte | **short**, **ushort**, **int**, **uint**, **long**, **ulong**, **float**, **double**, or **decimal**
 | short | **int**, **long**, **float**, **double**, or **decimal**
@@ -1352,8 +1354,7 @@ There is another type of conversion, a user-defined conversion. An example of th
 
 Every class in C# is contained in something called a namespace.
 Classes that are not explicitly  put into a  namespace are in the "default" namespace.
-Almost all the examples in this textbook are in the default namespace, and I will not
-even discuss namespaces in any depth until we look at classes and objects in detail in a later chapter.  However,
+Almost all the examples in this textbook are in the default namespace; we will look at namespaces further when we look at classes and objects in a later chapter.  However,
 the classes we use from ASP.NET will come from a variety of namespaces, so we will take a look at them now.
 
 Namespaces are a way of grouping classes, identifying them as filling a common purpose and keeping them separate from classes with a different purpose. They use the dot notation we are already familiar with from accessing properties and methods. You can define a namespace as a top-level namespace or within another namespace.  ASP.NET defines a top-level System namespace; the classes that we use from ASP.NET are actually in the System namespace, which is "always available" no matter what your current namespace is.
@@ -1362,12 +1363,21 @@ To use classes from other namespaces, you have to make them visible to your web 
 
 [source,java]
 ----
-@using System.Collections
+@using System.Collections;
 ----
 
-This makes the classes in the namespace System.Collection visible. We will be using collections quite a bit when we look at databases in a later chapter.
+This makes the classes in the namespace System.Collections visible. We will be using collections quite a bit when we look at databases in a later chapter.
 
 Our Web Pages (.cshtml files) reside in the default namespace. We can do the same with our C# classes, or place them into namespaces to keep them apart and organize them in groups based on their use. C# classes will also include using statements to make classes in other namespaces visible to them.
+
+[TIP]
+====
+There are two files in Visual Studio Web Sites that contain further information about namespaces: packages.config and web.config. These **config**uration files identify namespaces that are not automatically available, and make them available to your web pages. This is why, even though the Razor classes are defined in System.Web.WebPages, you do not need to put a @using System.Web.WebPages in each of your .cshtml files.
+
+packages.config is managed for you by Visual Studio; VS will update it when you install a package using the NuGet package manager.
+
+If you later find there is a namespace that you use often, you can add it to web.config to have it automatically available to all of your pages.
+====
 
 
 === Further Reading
@@ -1528,7 +1538,7 @@ http://apress.jensimmons.com/v5/pro-html5-programming/ch5.html a very thorough o
 
 It's pretty easy to find distance-between calculations in JavaScript, however you will need to do the computation on the server side as you work through a large (potentially) database of locations relative to the user's current location. You don't want to copy all the data to the client, so you will need to do it on the server.
 
-Write a web page that takes the user's current location in a form, and then computes (on the same page, like we did in the simple calculator in Chapter 3) the distance between the user's location and a fixed location of your choosing. Put that fixed location into constant(s) in your code, do not hard code them.
+Write a web page that takes the user's current location in a form, and then computes (on the same page, like we did in the simple calculator in Chapter 3) the distance between the user's location and a fixed location of your choosing. Put that fixed location into constants in your code, do not hard code the numbers within the computation.
 
 http://stackoverflow.com/questions/365826/calculate-distance-between-2-gps-coordinates proposes this code, among others:
 

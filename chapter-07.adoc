@@ -1028,6 +1028,7 @@ We can only go so deep with C# classes in a first C# course. There are many more
 * anonymous types
 * generic types
 * class initializer
+* class attributes
 
 The Microsoft Developer Network https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx[C# Programming Guide] provides an overview of these features.
 
