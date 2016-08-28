@@ -248,6 +248,48 @@ C# also provides two other parameter modes: pass by reference and pass as output
 This isn't generally good practice in OO programming, but does give fine-grained control that is useful in procedural systems programming.
 ====
 
+==== the call stack
+
+When a method is called, it needs space for its parameters. The system notes where it was called from (the calling method's activation record). It creates an activation record with room for the  methods parameters, and puts that on the activation record stack, often just called the "call stack", as its primary contents are method invocations.
+
+When the method completes, its activation record is removed from the stack; if it had a return value, that is supplied to the calling method for that method to use in the containing expression.
+
+Let's step through an example with these methods:
+
+[source,java]
+----
+
+int Times2(int val) {
+  return val*2;
+}
+
+int Times10(int val) {
+  return val * Times2(5);
+}
+
+int TImes20(int val) {
+  return val * Times10(2);
+}
+----
+
+When `Times20(4)` is called, an activation record is put on the top of the stack to hold the fact that Times20 is called, and its parameter val is given the value 4, from the argument value.
+
+`Times20(4)` will call `Times10(2)`; this creates a new activation record which is put on top. `Times10(2)` will call `Times2(5)`. At this point the call stack looks like this:
+
+|====
+| top of stack
+
+| Times2(5) val = 5
+| Times10(2) val = 2
+| Times20(4) val = 4
+| ... calls below Times20(4)
+| bottom of stack
+|====
+
+When `Times2(5)` completes, it is removed from the call stack and returns the value 10 to its caller (`Times10(2)`), who then uses it to compute val * 10, using its own value of val, i.e. 2. That then removes itself from the call stack, returning its value, 20, to `Times20(4)`. That then removes itself from the call stack, using the returned 20 and its value of val, 4, to compute 80; it then removes itself from the call stack and returns 80 to its caller. 
+
+It's important to be able to draw call stacks and trace the values in variables -- a key style of debugging is the "code walkthrough" where you are the computer, checking that the code is doing what you expect with a manual walkthrough yourself rather than running the code.
+
 ==== method syntax
 
 A method is defined in a class; since our Razor pages are turned into classes, it provides us with the @functions { .. } block to permit us to do this. We can also put methods in classes, as we will see in the next section.

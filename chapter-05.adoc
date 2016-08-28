@@ -104,6 +104,10 @@ that identifier is valid. The scope of a variable defined inside a block is
 limited to that block, and more specifically to the part of the block that
 comes after the declaration of the variable.
 
+===== Block activation records
+
+Every time a block is entered, if it has local parameters, an activation record is created on the "activation stack", a portion of memory reserved for executing code. When the block completes, its activation record is destroyed and removed from the stack. This means that a local variable defined within a block does not keep its value with each subsequent trip to the same block - it is gone at the end of the block, and created again anew when the block is re-entered. 
+
 ==== The Basic While Loop
 
 The block statement by itself really doesn't affect the flow of control in a
