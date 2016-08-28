@@ -1,4 +1,48 @@
 == Validation and Helpers
 
+It's considered good design in web sites to check for valid data early -- before the data goes to the server. Note that you still have to check for valid data on the server, since HTTP requests may not come from your page but be manually created and issued (even form post requests).
+
+HTML5 has some basic checks built in, but you can streamline the checking by using ASP.NET validators. These will check for values you specify are valid, and will generate appropriate messages when a request's values are not valid.
+
+=== Input values
+
+Values can come in from several places: they can be submitted in a form, present in the query string of the URL, or part of the url route request.
+
+==== ASP.NET routes
+
+- matchimg names
+TODO
+
+==== URL query string
+
+- Query[]
+TODO
+
+==== Form fields
+
+- Request[] and Request.Form[]
+TODO
+
+
+=== Registering Validators
+
+TODO
+
+=== Checking Validators
+
+
+
 - JQuery and HTML5 form validation
 - helpers for forms, etc.
+
+=== Further Reading
+
+TODO
+
+=== Exercises
+
+TODO
+
+=== Lab
+
+TODO
