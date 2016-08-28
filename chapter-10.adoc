@@ -21,8 +21,41 @@ image::images/UrlParts.png[]
 
 The protocol, domain name, and port identify the web server. The path to the file is used by ASP.NET Routing and may become part of the input values. We will see how to access the parameters in the next section. 
 
-- matchimg names
-TODO
+So far in this material, I've always had the URL path lead directly to a file, including the .cshtml extension.  However, a key issue in Search Engine Optimization (SEO) is how pages are located and bookmarked. It is harder to get a high ranking with parameters on your URL.
+
+ASP.NET provides an alternative interpretation of the path to allow for parameter values to be encoded in the path rather than supplied as separate parameters.  Here is its path interpretation algorithm:
+
+. If there is a .cshtml extension on the last value in the path, locate the file and run it (this will get a 404 if there is no file).
+. Otherwise, if there is no file extension on the last value, look for one with a .cshtml extention in that directory, and if found, run it.
+. Otherwise, look at the parent "directory" name as if it were a file with no extension and see if there is a .cshtml file at that path; if there is such a file, run that page and pass the last value to it.
+. Otherwise continue this check up the path until you find a match or root is reached; if a match is found, pass the unused part of the path   as values in UrlData.
+. If no file is found and root is reached, go back to the full path and look for Default.cshtml and then Index.cshtml in that directory (all cases of those two names are used, so default and index will also be found).
+            
+
+So we could construct URLs for a page collecting social data like so:
+
+If my URL is `http://www.myserver.com/SocialData/argoc/42` then:
+
+1. It doesn't end in .cshtml so rule 1 is skipped.
+2. Look for SocialData/argoc/42.cshtml - it won't be found as that is data for the Social Data page.
+3. Look for SocialData/argoc.cshtml and be ready to pass 42 to it. It won't be found, as this is still data for my page.
+4. Look for SocialData.cshtml. This one is found, so argoc/42 is passed to it in the UrlData and it is run.
+5. There was no need to return to the full URL and look for /SocialData/argoc/42/Default.cshtml or /SocialData/argoc/42/Index.cshtml.
+
+
+Once the page is running, it can access the path that came after it in the URL through the UrlData property available on the page. UrlData is a simple array of strings, with ``UrlData[0]`` holding the first (on the left) unused name in the path, and ``UrlData[1]`` holding the second one, and so on; all of the /-separated names are in the UrlData array.
+
+
+This code would display all that were available to you; try passing "long" URLs to this page to see what shows up.
+
+
+.UrlDataDemo.cshtml
+[source,java]
+----
+include::UrlDataDemo.cshtml[]
+----
+
+
 
 ==== URL parameters
 
@@ -77,6 +110,7 @@ If you want to ensure you are only looking at one of those 5 areas' available ke
 |====
 
 We will disuss using the other three later in this chapter.
+
 
 === Check if user's input matches validation
 
@@ -274,13 +308,136 @@ Note that even with `type=number` in the form, the value provided to you on the 
 
 There are no built-in checks for dates; however there is a datepicke available in jquery-ui. This helps the user enter the date correctly, and also gives them a clear visual to improve data entry accuracy. See https://jqueryui.com/datepicker/ for details on its use.
 
-=== Other data sources
+=== Helpers
+
+The Validation class is a Razor Helper; it is there to make generating validating web pages easier, and it does its job well.
+
+There are several other Helper classes provided in ASP.NET to aid in generating solid web pages.
+
+We already discussed HTML encoding issues, and the use of `Html.Raw` and `Html.Encode` to protect your site against HTML/JavaScript injection attacks.
+
+We also covered the `WebGrid` Helper when we discussed collections and databases.
+
+However, the HtmlHelper class contains quite a variety of methods that can be very useful in generating a variety of HTML structures. 
+
+.Porting happens
+[TIP]
+====
+It's up to you to use the form helpers or not -- if you use them, you are tieing your code very tightly to the ASP.NET section of the universe. If you write out the HTML yourself, then at least the client-side code for your website is easier to port to another web stack. Porting is the act of taking your code from one framework or language and rewriting it to work under a different framework or language. HTML5 has come a long way, so it is not as important to use the HtmlHelpers in ASP.NET as it was prior to HTML5.
+====
+
+[cols="1,2"]
+|====
+|Html Helper method | description
+
+| Html.CheckBox | generate a checkbox field
+| Html.DropDownList | generate a select list field
+| Html.Hidden | generate a hidden field
+| Html.Label | generate a label for a given field
+| Html.ListBox | generate a select list field
+| Html.Password | generate a password field
+| Html.Radio | generate a radio-button field
+| Html.TextArea | generate a textarea field
+| Html.TextBox | generate a text field
+|====
+
+Each of these methods has several different implementations (it is overloaded).
+
+For example, TextBox has these signatures:
+
+|====
+| signature | use
+
+|TextBox(string) | generates the field with the given string as name and id attribute values.
+|TextBox(string, object) | as above; the object specifies the initial value (its ToString will be used)
+|TextBox(String, Object, IDictionary<String, Object>) | as above, and pass additional attributes as key/value pairs
+|TextBox(String, Object, Object) | same as the previous one, using an anonymous object rather than a dictionary
+|====
+
+You can see details of these with examples on the MSDN ...
+
+// <<find good examples and pull one in here>>
 
 TODO
 
-. Cookies
-. ClientCertificate
-. ServerVariables
+
+=== Other HTTP request data sources
+
+As we mentioned earlier, there are 5 sources of data in an HTTP Request:
+
+- QueryString
+- Form
+- Cookies
+- ClientCertificate
+- ServerVariables
+
+When you access the Form fields, you usually know the names of the fields; however that may not be the case with the final three.
+
+All five are actually collections, and so could be accessed with foreach loops, iterating through their contents.
+
+==== Cookies
+
+In the `Cookies` collection, each cookie is an element in the collection; it is an instance of https://msdn.microsoft.com/en-us/library/system.web.httpcookie(v=vs.110).aspx[`System.Web.HttpCookie`], with several cookie properties: 
+
+[cols="1,3"]
+|====
+|HttpCookie property | description
+
+|Domain |the domain the cookie is associated with
+|HasKeys | true if the cookie has subkeys
+|HttpOnly | false if the cookie is accessible by client-side script
+|Item[String] | a shortcut to the Values property (for backward compatibility)
+| Name | the name of the cookie (its key)
+| Path | the virtual path of the cookie
+|Secure	 | indicates whether to transmit using HTTPS only or not
+| Shareable | if true, the cookie can participate in output caching
+| Value | the cookie's value
+| Values | the cookie's key/value pairs if they are embedded within the cookie
+|===
+
+It's not likely we will be using cookies with our simple applications, but there are some Helpers for Security that will be making use of them. Cookies are one way to maintain session state if you need to retain information for a user session.
+
+`Name` and `Value` are the two properties you would be most likely to want to read, as they represent the key/value pair of the cookie.
+
+[NOTE]
+====
+The European Union has strict regulations on the use of cookies, so it's best to pop up a warning to inform the user you are using cookies to satisfy their regulations, regardless of the source of the HTTP request you are processing.
+====
+
+Be careful about what you put in cookies; they travel between client and server, and so you risk exposing information in a live web site that could compromise security.
+
+==== ClientCertificate
+
+The `ClientCertificate` property holds an HttpClientCertificate object, which contains information about the client's security certificate, if one was provided in the HttpRequest. This class has several fields, and it is likely you would want to print them all out to get a complete view of the certificate.
+
+|====
+|Certificate
+|Cookie
+|Flags
+|IsPresent
+|Issuer
+|IsValid
+|KeySize
+|SecretKeySize
+|SerialNumber
+|ServerIssuer
+|ServerSubject
+|Subject
+|ValidFrom
+|ValidUntil
+|====
+
+You may find that a ToString or ObjectInfo.Print call will give you sufficient information should you need to debug a certificate. Be careful exposing this information in a live web site, as it could compromise security.
+
+==== ServerVariables
+
+The web server runs within an operating system itself. At the operating system level, it is possible to set environment variables. This is often done as a way to configure servers with sensitive information such as passwords - putting them in _AppStart.cshtml is not secure if your source code is Open Source, as then anyone who finds your Open Source repository can see the contents of that file.
+
+The variables can be browsed with the ServerVariables property. This is often quite a long list, so be prepared for output if you print them all out.
+
+The `ServerVariables` property holds a `NameValueCollection`, so is accessed like other dictionaries, getting the `AllKeys` property, which provides an array of strings, with each entry in the array being a key from the collection. Then the code needs to iterate through the keys to get the values associated with each key in turn. A `NameValueCollection` can map one key to several values, so once the values are retrieved with the `GetValues(key-value)` method as an array of strings, an embedded for loop (or foreach loop) is needed to print out that array's contents in turn.
+
+Be careful exposing this information in a live web site, as it could compromise security.
 
 
 === Further Reading
@@ -301,11 +458,29 @@ TODO
 
 - https://msdn.microsoft.com/en-us/library/ms524948(v=vs.90).aspx
 
-- xdxdf
+- http://www.asp.net/web-pages/overview/routing/creating-readable-urls-in-aspnet-web-pages-sites
+
+- http://www.mikesdotnetting.com/Article/165/WebMatrix-URLs-UrlData-and-Routing-for-SEO
+
+- http://www.mikesdotnetting.com/article/187/more-flexible-routing-for-asp-net-web-pages
+
+- https://msdn.microsoft.com/en-us/library/system.web.httprequest.cookies(v=vs.110).aspx
+
+- https://msdn.microsoft.com/en-us/library/system.web.httprequest.clientcertificate(v=vs.110).aspx
+
+- https://msdn.microsoft.com/en-us/library/system.web.httprequest.servervariables(v=vs.110).aspx
+
+- http://www.mikesdotnetting.com/article/184/html-helpers-for-forms-in-razor-web-pages
+
+- 
 
 === Exercises
 
-TODO
+. SEO is a big topic and very important to those attempting to "go viral" on the internet. Consider some of your past exercises. What improvements can you make to improve their SEO rating? Choose one to update to use UrlData (a path) rather than a Form submission. This may require JavaScript skills -- the submit button needs to craft the target URL based on form values.
+
+. Make your own URL testing page: start with `UrlDataDemo.cshtml` and add loops to print out any Form data, Query data, and the Anchor as well. It should print each group of data out separately and label them to say where they are from.
++
+See the MSDN documentation for https://msdn.microsoft.com/en-us/library/system.web.httprequest(v=vs.110).aspx[System.Web.HttpRequest], the class behind the Request object, to identify the properties they are stored in. Use foreach loops on the collections, locating the keys and values.  Your page should work even if a form is submitted. Don't put a form on your page -- make a small form that targets your UrlDataDemo.cshtml to test it.
 
 === Lab
 

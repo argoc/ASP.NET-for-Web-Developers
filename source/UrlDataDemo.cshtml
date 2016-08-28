@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title>URL Data Demo</title>
+    </head>
+    <body>
+        @if (UrlData.Count == 0)
+        {
+        <p>Enter this page with a URL such as 
+            <a href="@((Request.Url).ToString())/a/b/c/1/2/3 ">
+                @((Request.Url).ToString())/a/b/c/1/2/3</a> 
+        (and drop the .cshtml if you used it) to see what is displayed.</p>
+        } else
+        {
+            <p>The URL you entered was @Request.Url</p>
+        }
+
+        <p>Number of items in UrlData: @UrlData.Count</p>
+        <ul>
+            @for (int i = 0; i < UrlData.Count; i++)
+            {
+                <li>[@i]: @UrlData[i]</li>
+            }
+        </ul> 
+    </body>
+</html>
