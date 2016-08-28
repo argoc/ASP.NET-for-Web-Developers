@@ -1,4 +1,8 @@
 == Security and Accessibility
 
 - the user account system
+- XSRF/XSS
+- injection attacks (JS and SQL...strings)
 - webaim
+
+http://docs.asp.net/en/latest/security/cross-site-scripting.html

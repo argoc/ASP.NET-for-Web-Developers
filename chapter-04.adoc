@@ -628,6 +628,33 @@ In addition there are two properties available on string variables:
 All types in C# define a method `ToString()` that converts the value of the type to a string value. This is useful when you want to get a printable version of a value, or compare the value to that stored in a string.
 
 
+=== Comparison and Boolean Operators
+
+C# has a primitive boolean type. These are very handy for storing simple states, testing conditions, and other operations. We will see they are heavily used in the C# flow-of-control statements.  They take on only two values: true or false.
+
+Having a boolean type means that we can discuss comparisons as expressions, since they take two values and compare them, resulting in a true or a false.
+
+Comparison operators are supplied on all of the primitive types that result in boolean values: <, >, +<=+, >=, ==, !=, is.  Note that == tests equality, not =, which is for assignment statements. ``is`` tests the type of a value and is true if the value has the type specified.  These operators are defined to work in the logical way: numbers compare numerically, characters and strings compare from left to right based on character values, and false < true for booleans. Classes can override these operators to define them for a class as well.
+
+We have to peek ahead just a little at objects to fully explain ==. == tests values for the built-in types, but for objects it tests object identity. So == on two objects returns true if and only if they reference the same object (or if they override the == operator, another possibility).
+
+
+[CAUTION]
+====
+C# diverges from Java in how it tests string equality; string values are fully fledged objects in Java, where they are built-in types in C#. One particular result of this is that the C# == comparison on strings is a value comparison, while in Java it is an identity comparison.
+====
+
+
+The operators that take booleans include
+
+|====
+| && | logical and | both sides must be true for true result
+| ^^ | logical exclusive or | only one side can be true for true result
+| ! | logical not (unary operator) | reverses the value
+|====
+
+
+
 === Precedence of operators
 
 When more than one operator appears in an expression, they are evaluated according to order of operations.
@@ -725,20 +752,6 @@ concisely.
 But don’t get too carried away.
 Large, complex expressions can be hard to read and debug.
 
-=== Boolean operators
-
-C# has a primitive boolean type. These are very handy for storing simple states, testing conditions, and other operations. We will see they are heavily used in the C# flow-of-control statements.  They take on only two values: true or false.
-
-The operators on booleans include
-
-|====
-| && | logical and | both sides must be true for true result
-| ^^ | logical exclusive or | only one side can be true for true result
-| ! | logical not (unary operator) | reverses the value
-|====
-
-Also, comparison operators are supplied on all of the primitive types that result in boolean values: <, >, +<=+, >=, ==, !=, is.  Note that == tests equality, not =, which is for assignment statements. ``Is`` tests the type of a value and is true if the value has the type specified.
-
 Composition is used extensively with boolean expressions. For example, we might say
 
 [source,java]
@@ -748,6 +761,8 @@ bool okToSell = ((movie < 17) || (age >= 17)) && (cash > total);
 ----
 
 In this code we are testing to see if we can sell a movie ticket: if the movie requires the person be over 17, then we check their age; and they have to have the money to buy the ticket. Notice the use of parentheses; the expression would not evaluate correctly without the outer pair on the left, since && is evaluated before || (but luckily () is evaluated before &&).
+
+
 
 === General operators
 

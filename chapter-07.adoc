@@ -783,7 +783,6 @@ There is a shorthand way to create and initialize an object when its class has o
 This creates a new instance and then updates its properties to the supplied values. The example here shows DateTime with three of its properties being initialized. Any uninitialized properties are set to default values (0, false, or null).
 
 
-
 ==== The null value
 
 Now, you might not always have an object; what do you do then? C# provides a special value, ``null``. This can be assigned to any variable or property that holds an object. If you recall, arrays are actually objects -- so any variable that holds an array can also be set to null.
@@ -799,6 +798,23 @@ The ?? operator is a shorthand way to check nullability: ``x ?? y`` has the resu
 ====
 
 Because variables can hold this value, if you try to look at a property or invoke a method on an object when there is no object (the value is null), you will get a *NullReferenceException*. Usually this is a defect in your code -- you should always check for nulls and then determine appropriate handling, whether it is raising an exception or taking a substitute action.
+
+
+
+==== `this`
+
+Notice that we have accessed the instance variables, methods, and properties directly by name within the class, while outside the class you have to dot off of a local variable to access them. There is an implicit local variable always available within the methods of your class, named `this`. `this` refers to the current object that the method or property is being invoked upon. Within the class definition, if the reference is not ambiguous, `this` is optional.
+
+For CalendarEntry, I could have written the constructor like this:
+[source,java]
+----
+    public CalendarEntry(Date d, string e) {
+        this.EventDate = d;
+        this.Event = e;
+    }
+----
+The optional `this.` has been put in front of each of the properties having values assigned. When the properties' set code blocks are executed, they are executed against the current object, `this`.
+
 
 ==== Objects as parameters
 
@@ -976,6 +992,94 @@ The other direction is worse: when we try to assign a CalendarEvent instance to 
 
 If we know we have a RepeatingCalendarEvent in our CalendarEvent variable, we can typecast it back to a RepeatingCalendarEvent.  Now, our "know" may actually be riddled with bugs, and a CalendarEvent object may have snuck into our variable; the execution engine does a final type check at runtime, and if the type cannot be cast because it is not actually a RepeatingCalendarEvent, then a *InvalidCastException* is thrown.
 
+
+=== Overloading and Overriding
+
+You may have noticed, if you have been looking at MSDN ASP.NET class specifications, that they often have methods with the same name but different parameter lists (a different number of parameters, or a different type parameter at a particular position in the list). This is called overloading a method with multiple implementations. When you call a method, method resolution occurs based on the arguments specified; their types have to match the types declared for one of the overloaded methods. That will be the method called.
+
+For example:
+
+[source,java]
+----
+namespace System;
+
+class StringUtilities {
+
+    static public char FirstLetter (long i) {
+     .... determines the first letter of a short, int, or long
+     return i.ToString()[0];
+    }
+    
+    ststic public char FirstLetter (string s) {
+     return s[0];
+    }
+}
+----
+
+Our class defines two FirstLetter methods, one that operates on longs (and thus, due to automatic conversion, will also work on ints and shorts -- this type of widening of parameters is a common design choice) and one that operates on strings.
+
+When used, the type of the argument is used to determine which method to call:
+
+[source,java]
+----
+    char firstOfOne = StringUtilities.FirstLetter(1); // returns '1' 
+    char firstOfOne = StringUtilities.FirstLetter("hello"); // returns 'h'
+----
+
+The first call resolves to FirstLetter(long i) while the second call resolves to FirstLetter(string s). Notice that both return the same type -- that is required in overloaded methods.
+
+You saw overloading at work in our constructor; you can define more than one constructor as long as the type or number of parameters differs.
+
+For more on overloading, including how it is resolved with named parameters, see https://msdn.microsoft.com/en-us/library/ms229029(v=vs.110).aspx[Member Overloading] in the .NET Development Guide.
+
+Overriding, on the other hand, is about defining the same method with the same signature in a superclass and a subclass. We say the subclass's method *overrides* the superclass's method.
+
+You must design a method to deliberately allow itself to be overridden:
+
+1. declare it to be a `virtual` method, with a method body; then its body is used unless it is later overridden; or
+2. declare it to be an `abstract` method, without a method body, just a signature, and a ; where the body would have been; or
+3. declare it to be an `override` method, providing a method body; such a method must be overriding a method in its parent using these three rules (note this requires some overall superclass to initially define the method virtual or static).
+
+`abstract` and `virtual` methods cannot be static; only one is used, and it typically goes before the access modifier for the method (public, protected, etc.).
+
+The overriding method must declare itself to `override` in the same manner that the base method delared itself override-able. It must also have the same access modifier, return type and parameter types as the overridden method.
+
+Properties can also be overridden, using the same rules on the overriding modifier on the property (`static`, `virtual`, `abstract`, or `override`).
+
+To access the superclass's overridden method or property within the overriding class, use 'super.' before the method or property name. This resolves to the method in the superclass rather than the local one, and is done so that your class can extend the definition found in the subclass, adding to it rather than completely replacing it.
+
+For more information about how to use the **override** keyword, see https://msdn.microsoft.com/en-us/library/6fawty39.aspx[Versioning with the Override and New Keywords (C# Programming Guide)] and https://msdn.microsoft.com/en-us/library/ms173153.aspx[Knowing when to use Override and New Keywords].
+
+The root class in C# is System.Object. System.Object defines two methods, `Equals` and `ToString` that is expects all classes under it to redefine. When you do so, you will be overriding these methods. `Equals` returns a boolean saying whether this instance is equal to the one passed to it; and `ToString` returns a string representation of the object.  `System.Object.Equals` bases equals on object identity; it's up to you to use that, or to replace it with one based on object state, which is commonly done.  `ToString` returns a representation as a string of the object's type and value.
+
+We might define these on CalendarEntry like so:
+
+[source,java]
+----
+  class CalendarEntry {
+    ... other contents
+    
+    public override bool Equals(Object obj) {
+      CalendarEntry calObj = obj as CalendarEntry; 
+      if (calObj == null)
+         return false;
+      else
+         // base it on the date and string values...
+         // not perfect, what about nulls?
+         return EntryDate.Equals(calObj.EntryDate) 
+                 && Entry.Equals(calObj.Entry);
+    }
+   
+    public override string ToString() {
+      return EntryDate+": "+Entry;
+    }
+  }
+----
+
+Notice that I want to ensure value equality; I am using the .Equals methods on DateTime and String, which check value equality. If i read the API, I can determine if they have overridden the == operator to use value equality (have they? Check their specification pages on http://msdn.microsoft.com/
+
+
+
 === Interfaces
 
 Inheritance is very powerful, and complex. So C#, like Java before it, restricts programmers to 1 immediate parent; we call this "single inheritance". There are designs so complex that single inheritance is not sufficient. However, implementing multiple inheritance is very complex.
@@ -1013,6 +1117,32 @@ If the class does not implement all of the methods and properties in the interfa
 
 We won't be defining interfaces ourselves in this text, but there are many useful interfaces in ASP.NET. We will see these in the chapter on Collections and Databases.
 
+=== The ASP.NET and .NET Libraries
+
+There are so many classes in ASP.NET that reviewing them all takes time; most developers get familiar with the ones they use regularly, and know how to look up the ones they don't use as often.
+
+It's a good idea to always look around a little bit, as the ASP.NET libraries are large, and it's very possible the code you want, or some portion of it, is available to you in ASP.NET already. Why use the library? That code has been field-tested in diverse applications and environments, and stood the test of time. Are you going to test your code as thoroughly? 
+
+You can find the core classes in the https://msdn.microsoft.com/en-US/library/mt472912(v=vs.110).aspx[.NET Framework Class Library].
+
+The framework comes with .NET, which is underneath ASP.NET.
+
+Here are a few classes it's useful to be familiar with:
+
+----
+System.Math - useful functions for numbers
+System.String - many utilities for string manipulation
+System.Convert - static functions to convert among the base types
+System.DateTime - a date/time representation
+System.Random - a random number generating class
+----
+
+`System.Text` is a useful namespace to explore if you are manipulating strings; it contains the class `System.Text.StringBuilder`, which is more efficient and building strings than `System.String`. 
+
+System contains the core classes, but as we expand our look into databases, we will also be looking at the namespaces
+`System.Collections` and `System.Data`.
+
+The Framework Class Library comes in .NET, which is underneath ASP.NET. ASP.NET adds the System.Web namespace and all of its sub namespaces, which provide web functionality to your application.
 
 === There's more ...
 
@@ -1027,8 +1157,8 @@ We can only go so deep with C# classes in a first C# course. There are many more
 * structs and enums
 * anonymous types
 * generic types
-* class initializer
 * class attributes
+* https://msdn.microsoft.com/en-us/library/8edha89s.aspx[overloading operators]
 
 The Microsoft Developer Network https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx[C# Programming Guide] provides an overview of these features.
 
@@ -1050,7 +1180,27 @@ The Microsoft Developer Network https://msdn.microsoft.com/en-us/library/67ef8sb
 
 === Exercises
 
-. Remember the dice calculations? First, build a method that will return a dice roll (one die). Then, build a Dice class so that you can create multiple dice. Then build a second class that holds two dice and upon request will compute a new roll and return it as the sum of the two dice; this can be impelemented to require an object or as static methods and properties. It should have both of its dice be stored in private variables (or an array of 2). Develop a simple page that reports a dice roll, using your classes to perform the roll, every time the user requests a new roll (a simple Submit button is fine).
+
+. Rewrite your GPS coordinate code from Chapter 3 to be two functions in a @function block. One returns the radians given the degrees, and the second returns the distance between two points in feet.
+
+
+. Remember the dice calculations in previous exercises? Build a PairOfDice class that simulates having two dice; it will have a Roll method with a void return type that generates two new random, valid dice values, and methods ValueDie1 and ValueDie2 that return the individual values on the dice, and Total that returns the sum of the two die.
+This can be impelemented to require an object or as static methods and properties (explain your choice in comments on the PairOfDice class). It should have both of its dice values be stored in private variables (or an array of 2).
++
+`Roll` simulates olling a pair of dice. You can simulate rolling one die by choosing
+one of the integers 1, 2, 3, 4, 5, or 6 at random. The number you pick
+represents the number on the die after it is rolled. The expression 
+`rand.Next(6)+1`
+does the computation to select a random integer between 1 and 6, where `rand` is a variable holding a `Random` object.
++
+Do not store the total, but compute it when it is requested from the two dice values. OO design is always a tradeoff: if you stored the total, you would recalculate it whenever there was a new roll, even if it was not requested, while if you don't, then you have to compute it each time it is requested. Your design would consider which of these was more likely, and program for that. Since we only request the total once for each roll, not storing it makes sense -- we won't be slower, and our object will require less storage in memory.
++
+With that class, rework your page from Chapter 5. Make a page that reports how many times it has
+to roll a pair of dice before they come up snake eyes. This is a simulation using your PairOfDice Class and using its Roll method to roll its dice.
++
+The page should report the number of rolls that it makes
+before the dice come up snake eyes. (Note: "Snake eyes" means that both dice
+show a value of 1.) 
 
 . A common programming task
 is computing statistics of a set of numbers. (A statistic is a number that
@@ -1109,8 +1259,10 @@ user's numbers have been entered, print out each of the six statistics
 that are available from calc. You do not need to print the numbers again.
 
 
+
+
 . This problem uses the
-Dice and PairOfDice class from exercise 1 and your updated StatCalc.cs class from exercise 2.
+PairOfDice class from exercise 1 and your updated StatCalc.cs class from exercise 2.
 +
 The program you  wrote for a previous chapter performs
 the experiment of counting how many times a pair of dice is rolled before a
@@ -1138,8 +1290,19 @@ Create a web site that generates random tiles and displays a hand of 6 tiles upo
 +
 Stretch goal: Write the display in a helper, and invoke the helper on your page.
 
+
+. Write a page to play Hangman. Let's keep it simple and limit ourselves to http://www.thefreedictionary.com/6-letter-words.htm[6 letter words]; make an array of 20 strings and store 20 6-letter words in it.
+You're going to have to track which word the user is guessing, but don't give it away in the HTML; I recommend passing the index into the word array in a hidden form field; the hidden field won't be displayed, but by using the index you are making sure your word can't be found in the HTML source.
++
+Decide if you want to just use code blocks on your page or a separate class holding property and methods. Note that a class and its instances is specific to each load of your page: a function created on a page is no longer available when the user resubmits a form on that page or clicks to another page.
+
+
+. Review the https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx[System.Text.StringBuilder] specification and then rewrite PigLatin to use a StringBuilder in building its return value (it should still return a string).
+
+. Write a performance test on the two versions of PigLatin: call one PigLatinS and the other PigLatinSB; run each within a loop 1000 times and see which is faster. If they are the same speed, run them 10000 times. Once you see a difference, double the number and see if the difference doubles or not. Write a report summarizing your testing and its results. This type of analysis of performance and reporting of the results often happens as part of the prototyping cycle, when you are exploring alternatives and want to determine which is better, and by how much.
+
 === Lab
 
 We are early for the database portion, but consider the data you would want to have be persistent. Databases store data in tables, with each row representing an object. Design the objects you will want to store in your database; create a class for each object, if you have more than one (there will be one type of object per table).
 
-Redo your prorotype to use this object -- create a static 
+Redo your prototype to use this object -- create a static array that holds several instances of this object to represent data you might look through or present to the user.

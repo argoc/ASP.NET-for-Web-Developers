@@ -3939,6 +3939,7 @@ You get two points if you find the error without compiling the program,
 one point if you find it using the compiler, and your opponent gets a 
 point if you don’t find it.
 
+
 . Consider the following code:
 +
 [source,java]
