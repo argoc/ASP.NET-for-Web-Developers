@@ -2,7 +2,11 @@
 
 It's considered good design in web sites to check for valid data early -- before the data goes to the server. Note that you still have to check for valid data on the server, since HTTP requests may not come from your page but be manually created and issued (even form post requests).
 
-HTML5 has some basic checks built in, but you can streamline the checking by using ASP.NET validators. These will check for values you specify are valid, and will generate appropriate messages when a request's values are not valid.
+HTML5 has some check for client-side validation; ASP.NET provides validators for ensuring the values are good at the server, and providing helpful messages when they are not. These will check for values you specify are valid, and will generate appropriate messages when a request's values are not valid.
+
+This requires that we look at how data comes from the user, and at the ASP.NET utilities supplied for Validation, the `Validation` class and the ``Html.ValidationSummary`` and ``Html.ValidationMessage``
+	methods. These three work in conjunction with each other.
+
 
 === Input values
 
@@ -10,34 +14,294 @@ Values can come in from several places: they can be submitted in a form, present
 
 ==== ASP.NET routes
 
+A URL has these distinct parts:
+
+.Parts of a URL from https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_is_a_URL[What is a URL?] CC-BY-SA-2.5
+image::images/UrlParts.png[]
+
+The protocol, domain name, and port identify the web server. The path to the file is used by ASP.NET Routing and may become part of the input values. We will see how to access the parameters in the next section. 
+
 - matchimg names
 TODO
 
-==== URL query string
+==== URL parameters
 
-- Query[]
-TODO
+A URL has these distinct partsLooking at our URL again:
+
+.Parts of a URL from https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_is_a_URL[What is a URL?] CC-BY-SA-2.5
+image::images/UrlParts.png[]
+
+The protocol, domain name, and port identify the web server. The path to the file is used by ASP.NET Routing and may become part of the input values. 
+
+The parameters in the URL are key-value pairs; if you submit your form with ``method="get"``, you will see the form fields as parameters, with the form name as the key and the form field value as the value.
+
+These URL parameters are available to you in ASP.NET using the Query property of the page. The Query property is a dictionary index like Request; you index into it with the key, and the value is returned to you, like so:
+
+[source,java]
+----
+    // if the url has ?screenName=argoc&faveNum=42:
+    string screenName=Request.Query["screenName"]; // argoc
+    int num = Request.Query["faveNum"].AsInt(); // 42, convert into int
+----
+
+The values are all strings, so any integers or other information will need to be converted back to their types.  Note that the URL-encoding you see in your browser bar will be turned back into characters in the Query values (spaces will be spaces, not the three charaters "%20").
+
 
 ==== Form fields
 
-- Request[] and Request.Form[]
+We have been getting form fields directly from the Request, like so: ``Request["field-name"]``.  The \[]'s look like an array index operation, and they are, but to a special array with string indexes rather than numeric ones. These are usually referred to as dictionaries -- the string key is used to look up the value.
+
+[NOTE]
+====
+The .NET class behind dictionaries is called ``System.Collections.Generic.Dictionary``. It is a generic type, meaning you can say what the types are for both the key and the index. ``Request`` is a Dictionary from a string key to a string value.
+====
+
+When we use Request as the dictionary, it is actually searching 4 different parts of the HTTP request for keys (from HTML name attributes), in this order:
+
+1. parameters 
+2. form fields
+3. cookies
+4. client certificate
+4. server variables
+
+If you want to ensure you are only looking at one of those 5 areas' available keys, and not the other 4, then look at its particular property in request, which is also available as a dictionary with key indexing:
+
+|====
+| HTTP request portion | Property name
+
+| parameters | QueryString
+| form fields | Form
+| cookies | Cookies
+| client certificate | ClientCertificate
+| server variables | ServerVariables
+|====
+
+We will disuss using the other three later in this chapter.
+
+=== Check if user's input matches validation
+
+The ASP.NET class Validator class provides static methods that let you say what fields you want to test, and how to test them. Typical checks include:
+
+* ensuring a value was specified
+* ensuring the value is the right type (int, date, string...)
+* ensuring the value is in the appropriate range or matches the appropriate pattern
+
+You should validate all portions of the form, as the user may be manually generating the post request, so select list values are not guaranteed to match those supplied.
+
+|====
+a| Validation check | Description
+
+|Validation.RequireField(field-name, optional-error-message) |
+provide the form field name (from your form's name attribute) as a string value and, if desired, the error to display when no value is provided for that field.
+
+|Validation.RequireFields(field1-name, field2-name, ...) | provide the required fields in a single call.
+
+| Validation.Add(field-name, validation-type) 
+a| add a check on the named field. The validation-type can be:
+
+* Validator.DateTime(optional-error-message)
+* Validator.Decimal(optional-error-message)
+* Validator.EqualsTo(otherField , optional-error-message)
+* Validator.Float(optional-error-message)
+* Validator.Integer(optional-error-message)
+* Validator.Range(min, max, optional-error-message)
+* Validator.RegEx(pattern, optional-error-message)
+* Validator.Required(optional-error-message)
+* Validator.StringLength(length)
+* Validator.Url([error message])
+
+|====
+
+These checks would be defined at the start of your page.
+
+=== Check if all validation tests pass
+
+You check if the validation checks succeeded before doing any processing by calling Validation.IsValid() and checking the result, a boolean value. Since the form had to be submitted, this typically foes with the IsPost check like so:
+
+[source,html]
+----
+if(IsPost && Validation.IsValid()){
+    // Process form submit
+}
+----
+
+If IsValid returns false, you typically skip normal page processing and re-present the form to the user with the bad values.
+
+=== Display validation errors
+
+The two methods `Html.ValidationMessage` and `Html.ValidationSummary` can be used to inform the user what checks did not pass. `Html.ValidationMessage` must be given the form field name; it checks the result for that particular field, and if any failed, provides their error messages. These are the messages you provided, or defaults if you did not provide any.
+
+Typically you put `Html.ValidationMessage(field-name)` by each form field, so the message shows up when there is an issue with the value. You might put `Html.ValidationSummary` at the top of your form or by the Submit button.
+
+Here is an example showing the Validation setup and checks:
+
+.ValidationDemo.cshtml
+[source,html]
+----
+include::source/ValidationDemo.cshtml[]
+----
+
+
+=== Client-side validation
+
+All of our checks so far are server-side checks. Rather than require you to hand-code client-side checks in HTML5 and JavaScript, ASP.NET Web Pages provides hooks to have most checks made on the client-side as well.
+
+[WARNING]
+====
+You must check values on the server, as that is the point at which the values impact potential persistent data. Checking on the client has become popular as it avoids the round-trip to the server before reporting a failure. 
+
+Server-side checking is mandatory for a secure system; client-side checking is a nice-to-have that improves the user's experience.
+====
+
+To make these checks function on the client-side, you must register three JavaScript libraries in your page:
+
+[source,java]
+----
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+----
+
+If you created your site from a template, all three files will be in your Scripts directory and can be directly referenced (the version number on jquery may differ; change the src value to match your file). 
+If you are not already working with a
+non-empty Web Pages template (like **Starter Site**) that includes the
+library, create a Web Pages site that's based on **Starter Site**.
+Then copy these three __.js__ file to your current site.  
+
+In each form field, add a call to `Validation.For(field-name)` to get the client-side check; this will put attributes in the form field to match the required validations.
+
+Validation.For is a Razor helper, so it is replaced by attributes that are used by client-side validation. jQuery uses these to do unobtrusive validation (thus the third script's name).
+
+Here is our example with these two changes made:
+
+.ValidationDemoClient.cshtml
+[source,html]
+----
+include::source/ValidationDemoClient.cshtml[]
+----
+
+Some checks will not be made on the client: data type validation is not done. You could choose to add some of these checks, as HTML5 forms added values to the type attribute that would permit direct client-side checks of them.
+
+These checks are made on the client (as well as the server):
+
+*   ``Required``
+*   ``Range(min,max)``
+*   ``StringLength(max-length, optional-min-length])``
+*   ``Regex(pattern)``
+*   ``EqualsTo(otherField)``
+
+In this example, the test for a valid URL won't work in client code.
+However, the test will be performed in server code. 
+
+Note that validation checks will be applied to form data regardless of whether it is submitted with GET or POST; however, our IsValid check only occurs if the form has been submitted via a POST request, given how we've coded the page (which, since the form is submitted POST, works just fine).
+
+[TIP]
+====
+When would you want to submit form data with GET? Hint: google.com does this.
+
+Submitting form data with GET is useful if you want to let the user bookmark the results.  
+
+In fully-fledged web sites, if bookmarking form results is expected, usually more advanced methods are used so that the bookmark looks like a URL with no parameters - which is one key reason why ASP.NET includes routing and ways to redefine it. This can be important in Search Engine Optimization (SEO).
+====
+
+
+=== HTML5 validation tools
+
+
+HTML5 provides several new form attributes for client-side validation of form contents. It also has CSS selectors to enable highlighting bad form values; these are not fully integrated with Validation.For, so be sure to test them carefully.
+
+Css has a :invalid and a :valid selector that can be useful in providing visual cues to the user:
+
+[source,html]
+----
+input:invalid {
+  border: 1px solid red;
+}
+input:valid {
+  border: 1px solid green;
+}
+----
+
+These attributes can be used on form fields (<input>, <select>, <textarea>, and the other items active in a field):
+
+|====
+| attribute | values | description
+
+| required | presence | field cannot be blank when submitted
+| maxLength | integer | limits the numer of characters in the field
+| pattern | regex | requires the input match the regular expression supplied
+| min and max | integers | limit the range of values in the field
+| disabled | - | value cannot be changed from what is shown
+|====
+
+The type value can be set to something other than text for more complete checking of types on the client. The recognized values are:
+
+|====
+| type value | notes
+
+| text | constrained by maxLength
+| number | can be decimal; constrained by min and max
+| email | not validated in all browsers yet
+| tel | semantic type for telephone numbers, but not validated due to the large variety of formats around the world
+| url | valid URL
+| password | not displayed to the user; however, clear-text in the POST value
+| search | text field, but set up as a search 
+|====
+
+In addition you can provide <datalist>s to suggest appropriate values to the user; they can type in any value, but the datalist will be used for autocomplete if the user's input matches a prefix of any of the values.
+
+[source,html]
+----
+<label for="faveUrl">What's your favorite web site?</label>
+<input type="url" id="faveUrl" list="suggUrl" />
+<datalist id="suggUrl">
+  <option>http://google.com/</option>
+  <option>http://stackoverflow.com/</option>
+  <option>http://slack.net/</option>
+  <option>http://wired.com.</option>
+</datalist>
+----
+
+Another type of example you can provide is a "placeholder" attribute value, which puts a value in the text box that disappears as soon as the user types. The internet community has not decided whether it likes these or not, see if you think they add value to your site.
+
+[source,html]
+----
+<label for="faveNum">What's your favorite number?</label>
+<input type="number" id="faveNum" placeholder="42" />
+----
+
+Note that even with `type=number` in the form, the value provided to you on the server is still a string.
+
+There are no built-in checks for dates; however there is a datepicke available in jquery-ui. This helps the user enter the date correctly, and also gives them a clear visual to improve data entry accuracy. See https://jqueryui.com/datepicker/ for details on its use.
+
+=== Other data sources
+
 TODO
 
+. Cookies
+. ClientCertificate
+. ServerVariables
 
-=== Registering Validators
-
-TODO
-
-=== Checking Validators
-
-
-
-- JQuery and HTML5 form validation
-- helpers for forms, etc.
 
 === Further Reading
 
-TODO
+- http://www.asp.net/web-pages/overview/ui-layouts-and-themes/validating-user-input-in-aspnet-web-pages-sites
+
+- https://msdn.microsoft.com/en-us/library/ms972961.aspx
+
+- https://msdn.microsoft.com/en-us/library/7kh55542.aspx
+
+- https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Forms/Data_form_validation
+
+- https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Forms
+
+- https://jqueryui.com/datepicker/
+
+- https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_is_a_URL
+
+- https://msdn.microsoft.com/en-us/library/ms524948(v=vs.90).aspx
+
+- xdxdf
 
 === Exercises
 

@@ -1,0 +1,67 @@
+@{
+    var message="";
+    // Specify validation requirements for different fields.
+    Validation.RequireField("screenName", "Screen name is required");
+    Validation.RequireField("faveNum", "Favorite number is required");
+    Validation.Add("screenName", Validator.StringLength(10));
+    Validation.Add("faveNum", Validator.Integer("Favorite number must be an integer"));
+    Validation.Add("faveNum", Validator.Range(1, 100, "Favorite number must be between 1 and 100"));
+    Validation.Add("faveUrl", Validator.Url("Favorite site must be a URL"));
+
+    if (IsPost)  {
+        // Before processing anything, make sure that all user input is valid.
+        if (Validation.IsValid()) {
+            var screenName = Request["screenName"];
+            var faveNum = Request["faveNum"].AsInt();
+            var faveUrl = Request["faveUrl"];
+            message += @"For screen name, you entered " + screenName;
+            message += @"<br/>For favorite number, you entered " + faveNum;
+            message += @"<br/>For favorite site, you entered " + faveUrl;
+
+            // Further processing here
+        }
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Validation Demo</title>
+  <style>
+      body {margin: 10%; font-family: 'Verdana, Arial'; font-size: medium; }
+   </style>
+</head>
+<body>
+  <h1>Validation Demo</h1>
+  <p>Enter information, see if you can break the form.</p>
+  <form method="post">
+    @Html.ValidationSummary()
+    <div>
+      <label for="screenName">Your screen name (up to 10 characters): </label>
+      <input type="text" name="screenName" value="@Request["screenName"]" />
+      @Html.ValidationMessage("screenName")
+    </div>
+
+    <div>
+      <label for="faveNum">Your favorite number (1-100): </label>
+      <input type="text" name="faveNum" value="@Request["faveNum"]" />
+      @Html.ValidationMessage("faveNum")
+    </div>
+
+    <div>
+      <label for="faveUrl">Favorite website (URL): </label>
+      <input type="text" name="faveUrl" value="@Request["faveUrl"]" />
+      @Html.ValidationMessage("faveUrl")
+    </div>
+
+   <div>
+      <input type="submit" value="Submit" class="submit" />
+    </div>
+
+    <div>
+      @if(IsPost){
+        <p>@Html.Raw(message)</p>
+      }
+    </div>
+  </form>
+</body>
+</html>
