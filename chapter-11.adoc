@@ -1,5 +1,11 @@
 == ASP.NET MVC 5
 
+Eventually, you will work on a web site that is just a little too big and complex for Razor Web Pages. That is where MVC comes in; MVC is "Model-View-Controller", and is a nod to a famous Design Pattern in OO programming that is very useful for applications with heavy user interaction (like web sites!).
+
+- picture of MVC
+
+- summary of MVC (notes from last year?)
+
 TODO
 
 Could do the blog one:

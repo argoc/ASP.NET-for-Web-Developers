@@ -234,6 +234,14 @@ I mentioned earlier that subdirectories are often used to separate different sec
 
 Within a directory, ASP.NET will look for a _PageStart file to use prior to rendering the file within the directory that you have requested.
 
+=== Responsive Web Design
+
+A current theme  in web design is to have your site be responsive; in fact, this replaced the prior theme of "mobile-ready" web sites. Razor provides some capabilities for "mobile-ready" -- we will not be discussing them in this text. To make your web site responsive regardless of its target client, use the CSS/Javascript framework called Bootstrap. This framework is included in ASP.NET MVC projects due to its rich capabilities. 
+
+Bootstrap is outside the scope of this text; for more information, I recommend:
+http://getbootstrap.com/getting-started/[the official bootstrap resources] and the http://www.tutorialspoint.com/bootstrap/[Tutorials Point Bootstrap Tutorial].
+
+
 === Web Design
 
 Layouts are simply a tool; the key task behind them is designing your web application. We are looking at web applications that would have several pages, would be accessed by a variety of people (this is the internet, after all), and involve persistent data kept on the server.
