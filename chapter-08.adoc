@@ -1,3 +1,11 @@
 == Collections and Databases
 
 TODO
+
+- Collections overview
+
+. Database access; direct or with a Model!!!
+
+. two helpers:
+.. WebGrid
+.. Map http://www.asp.net/web-pages/overview/ui-layouts-and-themes/displaying-maps-in-an-aspnet-web-pages-site

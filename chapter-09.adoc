@@ -1,8 +1,14 @@
 == Security and Accessibility
 
+
+http://www.asp.net/web-pages/overview/security uses template in VS/WM
+
+http://www.mikepope.com/blog/DisplayBlog.aspx?permalink=2240 builds its own (similar result) in existing project
+
 - the user account system
-- XSRF/XSS
-- injection attacks (JS and SQL...strings)
+- SSL https://msdn.microsoft.com/en-us/library/dd163531.aspx
+- XSRF/XSS (Html.BeginForm())
+- injection attacks (JS and SQL...strings) encoding and use of strings
 - webaim
 
 http://docs.asp.net/en/latest/security/cross-site-scripting.html

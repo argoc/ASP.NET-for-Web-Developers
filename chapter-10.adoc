@@ -316,7 +316,7 @@ There are several other Helper classes provided in ASP.NET to aid in generating 
 
 We already discussed HTML encoding issues, and the use of `Html.Raw` and `Html.Encode` to protect your site against HTML/JavaScript injection attacks.
 
-We also covered the `WebGrid` Helper when we discussed collections and databases.
+We also covered the `WebGrid` and `Map` Helpers when we discussed collections and databases.
 
 However, the HtmlHelper class contains quite a variety of methods that can be very useful in generating a variety of HTML structures. 
 
