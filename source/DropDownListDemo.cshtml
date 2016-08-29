@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Drop Down List Demo</title>
+</head>
+<body>
+    <h1>Drop Down List Demo</h1>
+
+    @{
+        // build the list for the drop down list manually or
+        // pull a list of name/value pairs from a database.
+        List<SelectListItem> items = new List<SelectListItem>();
+
+        items.Add(new SelectListItem { Text = "Ford", Value = "ford" });
+        items.Add(new SelectListItem { Text = "Chevrolet", Value = "chevrolet" });
+        items.Add(new SelectListItem { Text = "GMC", Value = "gmc", Selected = true });
+        items.Add(new SelectListItem { Text = "Lincoln", Value = "lincoln" });
+
+    }
+
+    <form method="get"> <!-- choice visible in URL on submit -->
+        @Html.Label("Choose one:","choiceList")
+        @Html.DropDownList("choiceList", @items)
+        <input type="submit" />
+    </form>
+
+</body>
+</html>

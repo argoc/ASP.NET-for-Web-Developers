@@ -95,7 +95,7 @@ When we use Request as the dictionary, it is actually searching 4 different part
 2. form fields
 3. cookies
 4. client certificate
-4. server variables
+5. server variables
 
 If you want to ensure you are only looking at one of those 5 areas' available keys, and not the other 4, then look at its particular property in request, which is also available as a dictionary with key indexing:
 
@@ -354,12 +354,42 @@ For example, TextBox has these signatures:
 |TextBox(String, Object, Object) | same as the previous one, using an anonymous object rather than a dictionary
 |====
 
-You can see details of these with examples on the MSDN ...
+You can see details of these with examples on the MSDN ASP.NET Web Pages 2 Reference page on https://msdn.microsoft.com/en-us/library/system.web.webpages.html.htmlhelper_methods(v=vs.111).aspx[HtmlHelper Methods]
 
-// <<find good examples and pull one in here>>
 
-TODO
+The following sample creates a drop down list using the helper. Helpers like this are especially useful when you are displaying a form based on values in a database (the SelectListItem can be constructed when you return values from the database).
 
+.DropDownListHtmlHelperDemo.cshtml
+[source,html]
+----
+include::DropDownListDemo.cshtml[]
+----
+
+Notice that the `DropDownList` requires a collection of `SelectItem`s to provide the name/value pairs needed for the list. `ListBox` behaves similarly.
+
+The generated form looks like this on the page:
+
+[source,html]
+----
+
+<form method="get"> <!-- choice visible in URL on submit -->
+        <label for="choiceList">Choose one:</label>
+        <select id="choiceList" name="choiceList">
+<option value="ford">Ford</option>
+<option value="chevrolet">Chevrolet</option>
+<option selected="selected" value="gmc">GMC</option>
+<option value="lincoln">Lincoln</option>
+</select>
+        <input type="submit" />
+</form>
+----
+
+[TIP]
+====
+These Helpers become more useful in ASP.NET MVC, when Model class attributes also impact the HTML they generate.
+====
+
+'''
 
 === Other HTTP request data sources
 
@@ -411,6 +441,8 @@ Be careful about what you put in cookies; they travel between client and server,
 The `ClientCertificate` property holds an HttpClientCertificate object, which contains information about the client's security certificate, if one was provided in the HttpRequest. This class has several fields, and it is likely you would want to print them all out to get a complete view of the certificate.
 
 |====
+|ClientCertificate properties
+
 |Certificate
 |Cookie
 |Flags
@@ -472,7 +504,7 @@ Be careful exposing this information in a live web site, as it could compromise 
 
 - http://www.mikesdotnetting.com/article/184/html-helpers-for-forms-in-razor-web-pages
 
-- 
+- https://msdn.microsoft.com/en-us/library/system.web.webpages.html.htmlhelper(v=vs.111).aspx
 
 === Exercises
 
@@ -480,8 +512,11 @@ Be careful exposing this information in a live web site, as it could compromise 
 
 . Make your own URL testing page: start with `UrlDataDemo.cshtml` and add loops to print out any Form data, Query data, and the Anchor as well. It should print each group of data out separately and label them to say where they are from.
 +
-See the MSDN documentation for https://msdn.microsoft.com/en-us/library/system.web.httprequest(v=vs.110).aspx[System.Web.HttpRequest], the class behind the Request object, to identify the properties they are stored in. Use foreach loops on the collections, locating the keys and values.  Your page should work even if a form is submitted. Don't put a form on your page -- make a small form that targets your UrlDataDemo.cshtml to test it.
+See the MSDN documentation for https://msdn.microsoft.com/en-us/library/system.web.httprequest(v=vs.110).aspx[System.Web.HttpRequest], the class behind the Request object, to identify the properties they are stored in. Use loops on the collections, locating the keys and values.  Your page should work even if a form is submitted. Don't put a form on your page -- make a small form that targets your UrlDataDemo.cshtml to test it.
 
 === Lab
 
-TODO
+
+It is not uncommon within a project to complete one task and then move on to another. So, it's time to review your project with an eye to adding validation and helpers.
+
+Add validation to your web site's forms, and if appropriate, make use of some of the HtmlHelpers. Do any of them make it useful for you to create page-local functions or helpers of your own? If so, do it. Development is just that -- the iteration of the process of coding, striving for better code.

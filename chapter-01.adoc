@@ -698,17 +698,19 @@ Our goal for the course is to develop a full-stack web application: one that use
 
 * Pokemon Go. Yes, it's a mobile app. Consider a cut-down version that you could do with HTML forms/buttons and your current level of JavaScript skills (don't, whatever you do, put this book down and go spend three months learning a JavaScript game engine such as http://gamedevelopment.tutsplus.com/articles/how-to-learn-the-phaser-html5-game-engine--gamedev-13643[Phaser]). Pokemon Go has alot going on in it -- GPS tracking, capturing Pokemon, Gym battles, shopping, creature growth/repair, starting Gyms, placing Pokestops, and on and on -- it's a game, a shopping experience, and so much more. Pick some aspect that interests you and run with it.
 
-* Craigslist.org -- a way to post your things for sale/search and to see what others have posted. Possibly the simplest UI, but not the simplest UX. Definitely looks a bit dated, but easy to mimic with basic HTML skills.
+* Craigslist.org (or if you'd prefer Monster.com or some other job/resume posting board) -- a way to post your things for sale/search and to see what others have posted. Possibly the simplest UI, but not the simplest UX. Definitely looks a bit dated, but easy to mimic with basic HTML skills. 
 
 * AirBnB -- much prettier than craigslist, its focus is on renting rooms; has a full shopping cart experience. There are many specialty sales sites out there, this is just one possible example. 
 
 * Amazon -- go big or go home; a shopping experience with lots of organization, suggested items, wishlists, and on and on. What part of it do you find irresistible and want to explore?
 
-* Facebook (or if you'd rather, MySpace, Twitter, Instagram) -- social networking; your profile and posts make it to your friends. Find people, make friends, have flame wars, start groups, ... more here than meets the eye. What interests you?
+* Facebook (or if you'd rather, MySpace, Twitter, Instagram, LinkedIn) -- social networking; your profile and posts make it to your friends. Find people, make friends, have flame wars, start groups, ... more here than meets the eye. What interests you?
 
 * The Internet Archive -- capturing web pages and making them searchable. This has saved me so many times, I love it. It also has a way for the original author to get contents removed (not everyone wants a permanent presence). Make a craigslist wayback machine, that would be handy (the only one I've found costs money and requires a law enforcement certification to use).
 
 The internet is your oyster -- find something you'd like to figure out how to do in ASP.NET Web Pages. Make sure it has persistent server data, and write up a proposal. Nothing fancy -- we'll get into prototyping in the next chapter.
+
+Whichever one you pick as your course project, you need to make it a "best of" -- you all will be evaluating each others' a few times in the quarter, providing feedback to your peers on their work to help it improve and to highlight its strong points.
 
 
 

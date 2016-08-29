@@ -22,11 +22,15 @@ Use shall constitute acceptance of the terms listed.
 
 Microsoft, Windows, Visual Studio, IIS, and ASP.NET are either registered trademarks or trademarks of Microsoft Corporation in the United States and/or other countries.
 
+:numbered!:
+== Dedication
+
+This book is dedicated to my family for not minding me doing this project while on summer break; to my peers at Olympic College, for giving me this opportunity; and to all the developers I have enjoyed working with in the past -- isn't it crazy how the internet has taken over every facet of what we do?
 
 :numbered!:
 == Preface
 
-I wrote this book over my 2016 summer break, off-contract from my position as tenure-track Information Systems Faculty at Olympic College. My goal was to make the Introduction to ASP.NET class something approachable without requiring a heavy math background or a career in software development. It assumes that you have had some programming courses and written small (100-line or more) programs successfully in an object-oriented language (such as Java or JavaScript); put together multi-page websites in HTML and CSS succcessfully; have used SQL in database systems; and desire to learn the ASP.NET environment.
+I wrote this book over my 2016 summer break, off-contract from my position as tenure-track Information Systems Faculty at Olympic College, using only personal resources. My goal was to make the Introduction to ASP.NET class something approachable without requiring a heavy math background or a career in software development. It assumes that you have had some programming courses and written small (100-line or more) programs successfully in an object-oriented language (such as Java or JavaScript); put together multi-page websites in HTML and CSS succcessfully; have used SQL in database systems; and desire to learn the ASP.NET environment.
 
 Due to time constraints, I've made heavy use of excellent OER resources written for Java; C# and Java share many similarities. That said, this could not have been accomplished without the excellent Microsoft Developer's Network resources at http://www.asp.net/ and http://www.msdn.com/
 
