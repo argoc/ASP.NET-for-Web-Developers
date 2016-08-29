@@ -524,7 +524,7 @@ Here we have put our PigLatin method in a class called StringUtilities, in a nam
 Because it is a static method, we dot off of the class name.
 
 
-==== How do Classes create Objects?
+==== Constructors: how Classes create Objects
 
 How would we call an instance method?  First, we need to be able to create instances of the class.  We saw an early example of this with Random, where we created a new Random object by saying ``new Random()``. This was actually using something in the class: the constructor.
 
@@ -562,8 +562,9 @@ public class Car
     
     public Car()
     {
-        Car("Ford"); // "call" the other constructor; you can only call
-                     // constructors from other constructors.
+        this("Ford"); // "call" the other constructor; you can only call
+                     // constructors from other constructors, and you use the
+                     // special 'method' name `this` to do it.
                      // It's good practice to call the more specific
                      // constructor, supplying defaults.
                      // This avoids duplicating code between constructors.
@@ -996,6 +997,7 @@ protected internal:: the method is visible from this class, any *subclasses* (ev
 
 If you do not specify a visibility for a method, property, or variable then its visibility is *private* . If you do not specify a visibliity for a class, then its visibility is *internal*.
 
+If you have a class and you do not want anyone to create a subclass of it, you add the class modifier `sealed` prior to the class name.
 
 ==== Impact on types
 
@@ -1088,7 +1090,22 @@ The overriding method must declare itself to `override` in the same manner that 
 
 Properties can also be overridden, using the same rules on the overriding modifier on the property (`static`, `virtual`, `abstract`, or `override`).
 
-To access the superclass's overridden method or property within the overriding class, use 'super.' before the method or property name. This resolves to the method in the superclass rather than the local one, and is done so that your class can extend the definition found in the subclass, adding to it rather than completely replacing it.
+To access the superclass's overridden method or property within the overriding class, use 'base.' before the method or property name. This resolves to the method in the superclass rather than the local one, and is done so that your class can extend the definition found in the subclass, adding to it rather than completely replacing it.
+
+If you want to call the superclass's constructor from your class's constructor, you do that by invoking it as the special method name `base()` and pass the  arguments to match the parameters for the superclass constructor you want. This call has to be placed after the constructor's parameters and before its opening brace, like so:
+
+[source,java]
+----
+public class FlyingCar extends Car
+{
+    public FlyingCar(string model, int maxAltitude) : base(model)
+    {
+        ... rest of constructor
+    }
+    
+    ... rest of class
+}
+----
 
 For more information about how to use the **override** keyword, see https://msdn.microsoft.com/en-us/library/6fawty39.aspx[Versioning with the Override and New Keywords (C# Programming Guide)] and https://msdn.microsoft.com/en-us/library/ms173153.aspx[Knowing when to use Override and New Keywords].
 
@@ -1098,24 +1115,24 @@ We might define these on CalendarEntry like so:
 
 [source,java]
 ----
-  class CalendarEntry {
+class CalendarEntry {
     ... other contents
     
     public override bool Equals(Object obj) {
-      CalendarEntry calObj = obj as CalendarEntry; 
-      if (calObj == null)
-         return false;
-      else
-         // base it on the date and string values...
-         // not perfect, what about nulls?
-         return EntryDate.Equals(calObj.EntryDate) 
+        CalendarEntry calObj = obj as CalendarEntry; 
+        if (calObj == null)
+            return false;
+        else
+            // base it on the date and string values...
+            // not perfect, what about nulls?
+            return EntryDate.Equals(calObj.EntryDate) 
                  && Entry.Equals(calObj.Entry);
     }
    
     public override string ToString() {
-      return EntryDate+": "+Entry;
+        return EntryDate+": "+Entry;
     }
-  }
+}
 ----
 
 Notice that I want to ensure value equality; I am using the .Equals methods on DateTime and String, which check value equality. If i read the API, I can determine if they have overridden the == operator to use value equality (have they? Check their specification pages on http://msdn.microsoft.com/
