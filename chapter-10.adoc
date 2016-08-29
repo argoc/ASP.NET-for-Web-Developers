@@ -423,7 +423,7 @@ In the `Cookies` collection, each cookie is an element in the collection; it is 
 | Shareable | if true, the cookie can participate in output caching
 | Value | the cookie's value
 | Values | the cookie's key/value pairs if they are embedded within the cookie
-|===
+|====
 
 It's not likely we will be using cookies with our simple applications, but there are some Helpers for Security that will be making use of them. Cookies are one way to maintain session state if you need to retain information for a user session.
 
