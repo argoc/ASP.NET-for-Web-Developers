@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Phone Book - Collection Demo</title>
+    </head>
+<body>
+    <h2>Phone Book - Collection Demo</h2>
+
+    @using System.Collections.Generic;
+
+    @{
+        //names and numbers = phone book
+        IDictionary<string,int> phoneBook;
+
+        phoneBook = new Dictionary<string,int>();
+
+        phoneBook.Add("Sarah Adams",1234567);
+        phoneBook.Add("Jim Jones",5551212);
+        phoneBook.Add("Nancy Smith",5010001);
+        phoneBook.Add("Bill Blass",1237654);
+
+        if (phoneBook.ContainsKey("Jim Jones")) {
+            <p>Jim Jone's phone number is @phoneBook["Jim Jones"]</p>
+        } else {
+            <p>No phone number for Jim Jones.</p>
+        }
+
+        ICollection<string> names = phoneBook.Keys;
+
+            <p>Here is your current phone list:</p>
+        foreach (string name in names) {
+            <p>@name : @phoneBook[name]</p>
+        }
+    }
+</body>
+</html>

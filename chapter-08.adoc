@@ -1,11 +1,230 @@
 == Collections and Databases
 
-TODO
+A key value proposition of web sites is that they provide global access to persistent information. We typically store the persistent information in databases and files on a file system. Databases store the data as tables (or sometimes more complex structures, but for now, let's stick with tables).
 
-- Collections overview
+A table is a set of rows, where each row has the same entries (the entry is called a column in the database). In OO design, you typically define an object that holds as its properties the entries within a row; so a table can be viewed as holding a collection of rows, or objects.
+
+C# uses this model when it interacts with databases -- a query against a table returns a collection of objects; each property in a returned object maps to a column in the table or query.
+
+=== Collections
+
+C# has one built-in collection, the array. Arrays are fine, but consider what happens when you need to remove the second item in an array: if it's an array of objects, you can put a `null` there, but if it's a primitive, it has to have a value. If you wanted to "fill" the hole but maintain order, you would have to copy down all of the entries above, and then track that the array has one more entry empty at the end.  Collections are much richer: they do all of that management of entries for you, so you can add and remove entries as you need to. They can also maintain an order, based on the collection type: some maintain a sorted order, some maintain the order items were inserted.
+
+An interesting feature that makes all of this possible is the generic class. A generic class lets you specialize a class when you use it, providing additional types used by that class. This lets you say what your collection holds; so you can specialize your collection to contain a particular type of object, rather than any object at all. This is similar to how you give an element type for your array when you declare it; that type is the only type allowed in the array (if it is a class, then instances of the class or of any of its subclasses are allowed).
+
+==== Collection Interfaces
+
+Although the implementations of collections provided in C# are classes, it defines interfaces for them as well. It is wise to use the interface on your variables, and restrict use of classes to the `new` statement. This lets you replace the chosen class with another one if you need to alter its performance or sort behavior. Collections' performance differ based on the types of operations you are performing or the type of sorting that is desired, if any.
+
+[cols="1,4"]
+|====
+2+|The main Collection interfaces
+
+|ICollection | the most general interface; it mainly defines Count, ToArray, and GetEnumerator
+|IDictionary | a collection of key/value pairs; values can be accessed by keys . The Keys function on an IDictionary will return an ICollection containing just the keys.
+|IList | a collection that can be accessed by a numeric index (like an array)
+|====
+
+There are two more interfaces in `System.Collections` which we make heavy use of: `IEnumerator`and `IEnumerable`. A class that implements `IEnumerator` will provide an `IEnumerable`. This is important because `IEnumerable` lets you not only move through the collection item by item, but also lets you access the collection's elements using a foreach loop. We say that the foreach loop enumerates through the items in the collection.
+
+==== Collection Classes
+
+The popular collection classes are:
+
+[cols="1,1,3"]
+|====
+3+| Popular Collection classes
+
+| ArrayList | IList | Items are ordered in the list. This looks alot like an array, but it lets you add and remove items dynamically (resizing the array). Sort and search capabilities are provided as well.
+| Hashtable | IDictionary | Keys map to values, and you use keys to access the elements. The collection is not sorted; with a good hash function (which is used to assign storage locations), your data is dispersed in memory and both access and removal are quick.
+| SortedList | IList & IDictionary | this allows both key and index access into a list; its entries when indexed contain both key and value. It is sorted on the key values.
+| Stack | IList | the stack is a special type of list that only allows items to be pushed on top of the stack and taken off of the top of the stack. Knowing this is the main type of access lets the implementation focus on being fast for those accesses. It is often described as "Last In, First Out".
+| Queue | IList | the queue is a special type of list as well; it only allows
+items to be added at one end, and taken off of the other end. It is described as "First In, First Out".
+|====
+
+When you use these, or the interfaces, you can just use them "as-is", as they are fully-fledged classes. However, when you do that, it means the collection can contain any type of object at all; the default element type in the collection is object. And, boxing and unboxing means that primitives will get boxed up and stored in your collection as well.
+
+==== Generic Collections
+
+If you want to ensure that your collection contains only a particular type of object, you can do so by using a generic Collection type that permits adding a special type parameter to the class. This uses <> notation rather than a method's () notation for its parameters.
+
+|====
+| List<element-type> | a type-safe ArrayList, permits any instance of element-type or its subtypes
+| Dictionary<key-type,value-type> | a type-safe Hashtable, permits any instance of the key-type or its subclasses for the key, and any instance of value-type or its subclasses for the value.
+|====
+
+So, an ArrayList can hold anything: ints (boxed), Cars, Pirates, even ArrayLists. But a List<Pirate> can hold only Pirates and instance of subclasses of Pirates.
+
+When you want to ensure your collection contains only a particular type of objects, use the generic collections.  This ability is referred to as *generic classes*, since you create a new, specialized class when you provide the type parameters to it.
+
+C# provides a way for you to create your own generic classes as well; however that is advanced programming, not covered in this text.
+
+==== Example using collections
+
+[source,java]
+----
+@using System.Collections.Generic;
+
+... later in the page ...
+
+@{
+  IDictionary<string,int> phoneBook; // a map from strings to integers
+
+  phoneBook = new Dictionary<string,int>();
+
+  phoneBook.Add("Sarah Adams",1234567);
+  phoneBook.Add("Jim Jones",5551212);
+  phoneBook.Add("Nancy Smith",5010001);
+  phoneBook.Add("Bill Blass",1237654);
+
+  if (phoneBook.ContainsKey("Jim Jones")) {
+    <p>Jim Jone's phone number is @phoneBook["Jim Jones"]</p>
+  }
+  else {
+    <p>No phone number for Jim Jones.</p>
+  }
+
+  /// can also add items like so:
+  phoneBook["Sam Sanders"] = 5051122;
+  
+  // this will also update an existing item:
+  phoneBook["Nancy Smith"] = 5019999;
+  
+  ICollection<string> names = phoneBook.Keys;
+
+  <p>Here is your current phone list:</p>
+  foreach (string name in names) {
+    // the key indexes into the dictionary to retrieve the value:
+    <p>@name : @phoneBook[name]</p>
+  }
+
+}
+----
+
+=== Database Access
+
+Today there are two popular database choices: Relational or NoSQL databases. For this text, our focus is a relational database. These databases store data in tables, which have rows and columns. You can query the database, selecting which rows you want from your tables and then which columns from the rows. You do this with the language SQL.
+
+[NOTE]
+====
+This text assumes familiarity with SQL, so it will not introduce it to you, but will use it and provide descriptions of that use.
+====
+
+Let's assume we have a contact list in our database with the following data:
+
+|====
+| Id | Name | PhoneNumber | Email | TwitterHandle
+
+| 1 | Sarah Adams | 123-4567 | sarah@nowhere.com | @sarahnowhere
+| 2 | Jim Jones | 555-1212 | jjones@gmail.com | @jjones3254
+| 3 | Nancy Smith | 501-0001 | null | @flywitheagles
+| 4 | Bill Blass | 123-7654 | bblass@bblass.net | @blassisback
+|====
+
+Note that we have an Id column; this is because good database design requires having a unique identifier (called a primary key) for each row. Name may not be good enough to be unique, if we have lots of contacts. Strings are slower in comparisons than integers, so we will usually see integers used as Id values.
+
+
+In order to access a database, you first need to create one; in Visual Studio, in addition to IIS Express providing a local web server, SQL Server Express provides a local database server.
+
+==== Create a Database
+
+To create a database for your website, you must have it open in Visual Studio. If your website has an App_Data folder with a .sdf or .mdf file in it, then it already has a database; if you choose to use that one, jump ahead to "Create a Table".
+
+If you do not have an App_Data directory in your project, right click in the Solution Explorer window on your web site/project name and click Add; in its menu click Add ASP.NET directory; and select App_Data from the list provided. You want to use this menu and not create it in the file system so that your project knows it exists.
+
+Once you have an App_Data directory, right-click on that and click Add; then click Add New Item. In the dialog, under Installed>Visual C#, you should see "SQL Server database" in the list of choices. Select that, and then enter a name for your database (keep the .mdf file extension intact).
+
+Once you are done, your database should appear under App_Data.
+
+Your project Web.config file needs to have a connection string for your database. Check, and if it does not, add within the <connectionStrings> section of the file the following XML:
+
+[source,xml]
+----
+  ... if tag not found, add this as a child of <configuration>, 
+  ... after  <system.web>
+  <connectionStrings>
+    <add name="DatabaseName" connectionString="Data source=(localDB)\v11.0;DataDirectory|\DatabaseName.sdf" providerName="System.Data.SqlServerCe.4.0"/>
+    ... the rest of the element's children, if any
+  </connectionStrings>
+----
+
+Replace DatabaseName in 2 places with the name you gave your database file.
+
+==== Create a Table
+
+Creating a database is an administrative task that requires actions such as those done above; however, creating a table can be done by issuing an SQL statement. It's up to you, to do it manually or programmatically. If you code it, then you can re-run that code in the future to create the table again; if you do it manually, you will need to repeat the steps each time you want the table re-created. It is not uncommon for web developers to keep special pages for their website that will issue SQL commands to check or recreate the database.
+
+===== Manual table creation
+
+. Click on the "Server Explorer" tab to open it (it is under View if you do not have the tab visible already).
+. If it is not open, click to open the list under "Data Connections". You should see your database there, click to expand its contents if it is not showing a list within it.
+. Right-click on the Tables item (first in the list, usually) and click "Add New Table".
+. This puts you in the table designer, where you can either create the table using the chart, defining each column and its type, or enter the SQL in the window at the bottom of the page.
++
+Enter the following SQL to create our table:
+
+[source,sql]
+----
+CREATE TABLE PhoneBook( Id INT NOT NULL PRIMARY KEY,
+  Name VARCHAR(50),
+  PhoneNumber INT,
+  Email VARCHAR(100),
+  TwitterHandle VARCHAR(20)
+  )
+----
+
+Click Update in the table design window. It will then ask if you want a Script before it does the update. Typically database administration involves keeping a collection of SQL commands in scripts to re-run them at a future date to update or repair a database. This is one such script. Since we have the command here, you can skip that and just click Update Database.
+
+The log window will show if the database was successfully updated or not.
+
+Once the table is created, you will need to right-click and click Refresh on your database name in the Server Explorer window for it to appear.
+
+
+===== Code to create the table
+
+The following Razor Page presents us with buttons; when clicked, they return us to the page and execute the specified SQL command.
+
+.DBAdmin.cshtml
+[source,html]
+----
+include::source/DBAdmin.cshtml[]
+----
+
+
+=== Put Data in the Table (INSERT)
+
+
+=== View Data in the Table (SELECT, WebGrid)
+
+
+==== WebGrid Helper
+
+
+=== Change Data in the Table (UPDATE and DELETE)
+
+
+=== File upload and download
+
+Big files such as images can be stored in databases, but often are not. You can receive a file in an HTTP request and write it out to the server's file system; and take a file from the server's file system and include it in a HTTP response.
+
+TODO
 
 . Database access; direct or with a Model!!!
 
 . two helpers:
 .. WebGrid
 .. Map http://www.asp.net/web-pages/overview/ui-layouts-and-themes/displaying-maps-in-an-aspnet-web-pages-site
+
+
+
+=== Databases
+
+=== Files
+
+=== Further Reading
+
+=== Exercises
+
+=== Project
+

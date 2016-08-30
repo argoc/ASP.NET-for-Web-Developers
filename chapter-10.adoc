@@ -391,6 +391,24 @@ These Helpers become more useful in ASP.NET MVC, when Model class attributes als
 
 '''
 
+=== Other helpers
+
+ASP.NET provides several other helpers you might find useful to explore, see https://msdn.microsoft.com/en-us/library/system.web.helpers(v=vs.99)[the System.Web.Helpers] namespace for links to their specifications. Here are a few you may be interested in exploring further:
+
+[cols="1,4"]
+|====
+| Class | Description
+
+| AntiForgery | helps prevent forged requests and cross-site scripting attacks
+| Chart | generates charts from data (see http://www.asp.net/web-pages/overview/data/7-displaying-data-in-a-chart[tutorial])
+| Crypto | encryption capabilities for keys and passwords
+| Json | manipulates data in JavaScript Object Notation (JSON) format.
+| WebCache | helps improve performance by caching client-side data (see http://www.asp.net/web-pages/overview/performance-and-traffic/15-caching-to-improve-the-performance-of-your-website[tutorial])
+| WebGrid | generates a HTML table from data
+| WebImage |  image display and management 
+| WebMail |  email using Simple Mail Transfer Protocol (SMTP)
+|====
+
 === Other HTTP request data sources
 
 As we mentioned earlier, there are 5 sources of data in an HTTP Request:

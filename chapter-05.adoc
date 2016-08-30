@@ -3916,7 +3916,14 @@ for ( int i = 0; i < intList.length; i++ ) {
 ----
 
 
+
+
+=== When good code has bugs
+
+Review Chapter 1's debugging tips now that you have the core programming operations behind you. Even with that general advice, you will find that you still collect your own set of "gotchas", problems you hit due to your own style. If you're curious to see what other people hit, see https://www.javacodegeeks.com/2015/08/top-10-useful-yet-paranoid-java-programming-techniques.html[Top 10 useful yet paranoid Java programming techniques]. Yes, it's Java, but the issues listed occur in C# also.
+
 === There's more ...
+
 
 C# is rich with features that an introductory course can't reach. Explore these features of C# that add greatly to its functionality:
 
@@ -4002,8 +4009,8 @@ The form should be available for the user to enter a new expression: make this a
 . Write a Web Page application that reads
 one line of input text and breaks it up into words. Your page should give the user a text input so the user can only input one line; however, that line can be as long as they want it to be.
 The words should be output
-one per line. A word is defined to be a sequence of letters. Any characters in
-the input that are not letters should be discarded. For example, if the user
+one per line. A word is defined to be a sequence of letters. Any punctuation in
+the input that is not part of a word (i.e., apostrophes are parts of words if there is an s before and after them; semicolons, commas, quotes, and other punctuation are not parts of words) should be discarded. For example, if the user
 inputs the line `He said, "That's not a good idea."` 
 then the output of the program should be +
 +
@@ -4011,17 +4018,14 @@ then the output of the program should be +
 ----
 He
 said
-That
-s
+That's
 not
 a
 good
 idea
 ----
 +
-An improved version of the program would list "that's" as a single word. An
-apostrophe can be considered to be part of a word if there is a letter on each
-side of the apostrophe.
+Use string.Split() to break up a string into an array using the space character as the word separator. You will still need to clean up the "words" since punctuation may be on either end, or it may be punctuation in its entirety. You will need to trim punctuation (look into string.Trim() for this).
 +
 To test whether a character is a letter, you might use (ch >= 'a'
 && ch <= 'z') || (ch >= 'A' && ch <= 'Z').
@@ -4029,6 +4033,7 @@ However, this only works in English and similar languages. A better choice is
 to call the standard function ch.IsLetter(), which returns a
 boolean value of true if ch is a letter and false if
 it is not. This works for any Unicode character. You might want to look at all of the methods available on char values here: https://msdn.microsoft.com/en-us/library/system.char.aspx to determine if one will help you break up strings and handle punctuation at the same time.
+
 
 ////
 put this in the database chapter... or collections?
@@ -4136,6 +4141,19 @@ one person with a birthday on each of the 365 days of the year?
 Write **three** separate pages to answer these questions and a home page that directs the user to each of the pages. Review the elements of Web Design from chapter 2 in deciding on your flow and the content of each page. Each of your pages should simulate
 choosing people at random and checking their birthdays. (In each case, ignore
 the possibility of leap years.)
+
+. Write a page that requests a line of text from the user and then tests to see if the letters in it form a palindrome. A palindrome as the same letters forward and back; it is not case sensitive. For example,"A Man, A Plan, A Canal - Panama!" is a famous long palindrome. It informs the user where in the string the palindrome test failed, if it is not a palindrome, and lets them know it is a palindrome, if it is.
+
+. Write a page that requests a line of text from a user, and regardless of how it was typed in (all upper, all lower, or a mix), converts it to "Title Case" where every word has its first letter transformed to upper case and the rest transformed to lower case.  You will want to use string.Split() to break the line into an array of strings. You will need to ensure that any punctuation at the start of a word does not cause it to fail to be capitalized. So, for example, if the user input: `He said, "hello"` then you would output `He Said "Hello"`. 
++
+To test whether a character is a letter, you might use (ch >= 'a'
+&& ch <= 'z') || (ch >= 'A' && ch <= 'Z').
+However, this only works in English and similar languages. A better choice is
+to call the standard function ch.IsLetter(), which returns a
+boolean value of true if ch is a letter and false if
+it is not. This works for any Unicode character. You might want to look at all of the methods available on char values here: https://msdn.microsoft.com/en-us/library/system.char.aspx to determine if one will help you break up strings and handle punctuation at the same time.
++
+Remember that you have both the string and the char types here, so be sure to check both for useful methods for this exercise.
 
 === Lab
 
