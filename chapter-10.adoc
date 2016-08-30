@@ -52,7 +52,7 @@ This code would display all that were available to you; try passing "long" URLs 
 .UrlDataDemo.cshtml
 [source,java]
 ----
-include::UrlDataDemo.cshtml[]
+include::source/UrlDataDemo.cshtml[]
 ----
 
 
@@ -362,7 +362,7 @@ The following sample creates a drop down list using the helper. Helpers like thi
 .DropDownListHtmlHelperDemo.cshtml
 [source,html]
 ----
-include::DropDownListDemo.cshtml[]
+include::source/DropDownListDemo.cshtml[]
 ----
 
 Notice that the `DropDownList` requires a collection of `SelectItem`s to provide the name/value pairs needed for the list. `ListBox` behaves similarly.
