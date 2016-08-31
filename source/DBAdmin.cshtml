@@ -1,10 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using System.Data.SqlClient;
+
+<!DOCTYPE html>
 <html>
     <head>
         <title>Database Administration Tasks</title>
     </head>
     <body>
-
         @{ 
             int choice = Request.Form["choice"].AsInt();
             string command = null;
@@ -16,7 +17,8 @@
                     break;
 
                 case 2:
-                    command = @"CREATE TABLE PhoneBook( Id INT NOT NULL PRIMARY KEY,
+                    command = @"CREATE TABLE PhoneBook( 
+                                 Id INT NOT NULL PRIMARY KEY,
                                  Name VARCHAR(50), PhoneNumber INT,
                                  Email VARCHAR(100), TwitterHandle VARCHAR(20) )";
                     break;
@@ -24,14 +26,26 @@
             }
 
             if (command != null) {
-                var db = Database.Open("sourceDB");
-                db.Execute(command);
+                try
+                {
+                    //my connection name in web.config is PhoneBookDB
+                    var db = Database.Open("PhoneBookDB"); 
+                    db.Execute(command);
+                }
+                catch (SqlException se)
+                {
+                    <p>Oops, that didn't work. I got this exception: 
+                       @se.GetType()</p>
+                    <pre>@se.Message</pre>
+                    <pre>@se.StackTrace</pre>
+                }
             }
 
         }
 
         <form method="post">
-            <button type="submit" name="choice" value="1">Drop Table PhoneBook</button><br/><br/>
+            <button type="submit" name="choice" value="1">Drop Table PhoneBook</button>
+            <br/><br/>
             <button type="submit" name="choice" value="2">Create Table PhoneBook</button>
         </form>
         
