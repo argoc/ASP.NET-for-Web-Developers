@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Phone Book Delete</title>
+    <style>
+      .grid { margin: 4px; border-collapse: collapse; width: 600px; }
+      .grid th, .grid td { border: 1px solid #C0C0C0; padding: 5px; }
+      .head { background-color: #E8E8E8; font-weight: bold; color: #FFF; }
+      .alt { background-color: #E8E8E8; color: #000; }
+    </style>
+</head>
+<body>
+    <h1>Remove Phone Book Entry</h1>
+    @{
+    var db = Database.Open("PhoneBookDB");
+    var select = "SELECT * FROM PhoneBook WHERE Id=@0";
+    var id = Request["id"].AsInt();
+
+    var row = db.Query(select,id);
+    //only one row, but use Query so we can use WebGrid...
+    var grid = new WebGrid(source: row);
+
+    if (IsPost) {
+        var delete = "DELETE FROM PhoneBook WHERE Id=@0";
+        db.Execute(delete,id);
+        db.Close(); // clean up then return to the list
+        Response.Redirect("~/PhoneBookChoices.cshtml");
+    }
+
+
+    }
+
+    <div>
+      @grid.GetHtml(
+        tableStyle: "grid",
+        headerStyle: "head",
+        alternatingRowStyle: "alt",
+        columns: grid.Columns(
+          grid.Column("Name"),
+          grid.Column("PhoneNumber","Phone Number"),
+          grid.Column("Email"),
+          grid.Column("TwitterHandle", "Twitter Handle"),
+          grid.Column("Id","Confirm",
+            format: @<form method="post">
+                <button type="submit" name="id" value="item.Id">Confirm Delete</button>
+            </form>)
+        )
+      )
+    </div>
+    <div><a href="~/PhoneBookChoices.cshtml">Cancel</a></div>
+    @{
+    db.Close();
+    }
+</body>
+</html>

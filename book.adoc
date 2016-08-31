@@ -30,6 +30,7 @@ asciidoctor -a toc book.html
 
 include::frontmatter.adoc[License, Introduction]
 
+// pull in some CIS219 intro material
 include::chapter-01.adoc[Web Development]
 
 include::chapter-02.adoc[Layouts and Web Design]

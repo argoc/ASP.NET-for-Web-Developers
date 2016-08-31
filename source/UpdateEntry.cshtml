@@ -1,0 +1,93 @@
+﻿@{
+    string name = "";
+    string email = "";
+    string twitter = "";
+    int? phoneNumber = null;
+    string message = "";
+
+    var db = Database.Open("PhoneBookDB");
+    var select = "SELECT * FROM PhoneBook WHERE Id=@0";
+    var id = Request["id"].AsInt();
+
+    var row = db.QuerySingle(select,id);
+
+    //no row, 'quiet' error and return to the list page
+    if (row == null) {
+        db.Close();
+        Response.Redirect("~/PhoneBookChoices.cshtml");
+    }
+
+    if (IsPost) {
+        name = Request.Form["name"]; // required
+        phoneNumber = Request.Form["phone"].AsInt(); // 0 if blank or missing
+        email = Request.Form["email"]; // "" if blank or missing
+        twitter = Request.Form["twitter"];
+
+        // make no data turn into SQL NULL values
+        if (phoneNumber == 0) {
+            phoneNumber = null;
+        }
+        if (email.Length == 0) {
+            email = null;
+        }
+        if (twitter.Length == 0) {
+            twitter = null;
+        }
+
+        // Define the UPDATE statement. The values to assign to the
+        // columns in the PhoneBook table are defined as parameters.
+        var update =
+            @"UPDATE PhoneBook SET Name=@0, PhoneNumber=@1, Email=@2, TwitterHandle=@3
+                 WHERE Id=@4";
+
+        db.Execute(update, name, phoneNumber, email, twitter, id);
+
+        db.Close(); // clean-up
+        Response.Redirect("~/PhoneBookChoices.cshtml");
+    } else {
+        // get the values from the row to see what changes the user wants to make
+        name = row.Name;
+        email = row.Email;
+        phoneNumber = row.PhoneNumber;
+        twitter = row.TwitterHandle;
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Change PhoneBook Entry</title>
+    <style type="text/css">
+        label { float: left; width: 8em;
+            text-align: right; margin-right: 0.5em; }
+        form { padding: 1em; border: 1px solid; width: 50em; }
+    </style>
+</head>
+<body>
+    <h1>Change PhoneBook Entry</h1>
+
+    <form method="post" action="">
+        <div>
+            <label>Name:</label>
+            <input name="Name" type="text" size="50" value="@name" required />
+        </div>
+        <div>
+            <label>Phone Number:</label>
+            <input name="phoneNumber" type="text" size="50"
+                   value="@phoneNumber" />
+        </div>
+        <div>
+            <label>Email:</label>
+            <input name="email" type="text" size="50" value="@email" />
+        </div>
+        <div>
+            <label>Twitter Handle:</label>
+            <input name="twitter" type="text" size="50" value="@twitter" />
+        </div>
+        <div>
+            <label>&nbsp;</label>
+            <input type="submit" value="Update" class="submit" />
+        </div>
+    </form>
+</body>
+</html>
