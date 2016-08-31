@@ -1,0 +1,77 @@
+﻿@{
+    string name = "";
+    string email = "";
+    string twitter = "";
+    int? phoneNumber = null;
+    string message = "";
+
+    if (IsPost) {
+        var db = Database.Open("PhoneBookDB");
+        name = Request.Form["name"]; // required
+        phoneNumber = Request.Form["phone"].AsInt(); // 0 if blank or missing
+        email = Request.Form["email"]; // "" if blank or missing
+        twitter = Request.Form["twitter"];
+
+        // make no data turn into SQL NULL values
+        if (phoneNumber == 0) {
+            phoneNumber = null;
+        }
+        if (email.Length == 0) {
+            email = null;
+        }
+        if (twitter.Length == 0) {
+            twitter = null;
+        }
+
+        // Define the INSERT statement. The values to assign to the
+        // columns in the PhoneBook table are defined as parameters.
+        var insertStatement =
+            @"INSERT INTO PhoneBook (Name, PhoneNumber, Email, TwitterHandle) 
+                 VALUES (@0, @1, @2, @3)";
+        db.Execute(insertStatement, name, phoneNumber, email, twitter);
+        ;
+        message = "Phone Book entry "+ db.GetLastInsertId()+" created.";
+
+        db.Close(); // clean-up
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add PhoneBook Entry</title>
+    <style type="text/css">
+        label { float: left; width: 8em;
+            text-align: right; margin-right: 0.5em; }
+        form { padding: 1em; border: 1px solid; width: 50em; }
+    </style>
+</head>
+<body>
+    <h1>Add PhoneBook Entry</h1>
+
+    <form method="post" action="">
+        <div>
+            <label>Name:</label>
+            <input name="Name" type="text" size="50" value="@name" required />
+        </div>
+        <div>
+            <label>Phone Number:</label>
+            <input name="phoneNumber" type="text" size="50"
+                   value="@phoneNumber" />
+        </div>
+        <div>
+            <label>Email:</label>
+            <input name="email" type="text" size="50" value="@email" />
+        </div>
+        <div>
+            <label>Twitter Handle:</label>
+            <input name="twitter" type="text" size="50" value="@twitter" />
+        </div>
+        <div>
+            <label>&nbsp;</label>
+            <input type="submit" value="Insert" class="submit" />
+        </div>
+    </form>
+    <p>@message</p>
+</body>
+</html>

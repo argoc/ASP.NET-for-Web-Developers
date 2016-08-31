@@ -108,7 +108,7 @@ Today there are two popular database choices: Relational or NoSQL databases. For
 
 [NOTE]
 ====
-This text assumes familiarity with SQL, so it will not introduce it to you, but will use it and provide descriptions of that use.
+This text assumes familiarity with SQL, so it will not introduce it to you, but will use it and provide descriptions of that use. We use Microsoft SQL Server Compact Edition through Visual Studio and IIS Express; applications developed in this manner transfer seamlessly to Microsoft SQL Server when deployed. But to deploy onto Oracle, MySQL, or some other database, you would need to adjust the connection mechanism and possibly the SQL syntax, as each database system has its own dialect of SQL.
 ====
 
 Let's assume we have a contact list in our database with the following data:
@@ -137,6 +137,8 @@ Once you have an App_Data directory, right-click on that and click Add; then cli
 
 Once you are done, your database should appear under App_Data.
 
+==== Database Configuration in Web.config
+
 Your project Web.config file needs to have a connection string for your database. Check, and if it does not, add within the <connectionStrings> section of the file the following XML:
 
 [source,xml]
@@ -144,12 +146,12 @@ Your project Web.config file needs to have a connection string for your database
   ... if tag not found, add this as a child of <configuration>, 
   ... after  <system.web>
   <connectionStrings>
-    <add name="DatabaseName" connectionString="Data source=(localDB)\v11.0;DataDirectory|\DatabaseName.sdf" providerName="System.Data.SqlServerCe.4.0"/>
+    <add name="DatabaseName" connectionString="Data source=(LocalDB)\MSSQLLocalDB;|DataDirectory|\DatabaseName.mdf;Initial Catalog=DatabaseName;Integrated Security=true" providerName="System.Data.SqlClient"/>
     ... the rest of the element's children, if any
   </connectionStrings>
 ----
 
-Replace DatabaseName in 2 places with the name you gave your database file.
+Replace DatabaseName in 3 places with the name you gave your database file. If you need to make this change, you will want to check that the setting in Tools->Options->Database Tools->Data Connections says `(LocalDB)\MSSQLLocalDB`. If you need to make either of these changes, exit and restart Visual Studio to ensure the changes are used when you access the database from within Visual Studio (before you create the table).
 
 ==== Create a Table
 
@@ -166,7 +168,8 @@ Enter the following SQL to create our table:
 
 [source,sql]
 ----
-CREATE TABLE PhoneBook( Id INT NOT NULL PRIMARY KEY,
+CREATE TABLE PhoneBook( 
+  Id INT NOT NULL IDENTITY PRIMARY KEY,
   Name VARCHAR(50),
   PhoneNumber INT,
   Email VARCHAR(100),
@@ -191,17 +194,171 @@ The following Razor Page presents us with buttons; when clicked, they return us 
 include::source/DBAdmin.cshtml[]
 ----
 
+This is an interesting Razor example since it uses several features of Razor, C#,and HTML:
+
+* @using -- to import the namespace that SQLException lives in
+* try..catch -- so we can tell the user if something went wrong with the SQL command; note that returning stack traces is not good in live sites, you would want to protect this by requiring that the page only be used by administrators (see the next chapter for security information).
+* we also used a finally block; it's important to free up the database connection when you are done with it, as it is holding onto quite a few system resources. If you don't explicitly close it, eventually the garbage collector will clean it up, but it's not a good idea to rely on that happening. We use a finally because it ensures the connection is closed no matter what exception was thrown.
+* We use a special string value syntax, opening it with C#'s @",so that our long SQL command string can span lines in the file.
+* The form has two submit buttons with the same name and different values; this is how the POST action can tell which button was clicked -- the value of the clicked button is the value of the buttons' name in the `Request.Form` dictionary.
+* Notice if a form submission is manufactured with a bad choice, no command is run -- we don't even tell the user it was an invalid choice. This was a design decision, to give back minimal information to malicious users (since only spoofed POSTs could use bad values).
 
 === Put Data in the Table (INSERT)
 
+Once you have a table, you need to be able to put data into it. If your table's data is static, you can do this through the Server Explorer view of the table in Visual Studio. If you right-click on the table in the Server Explorer view, you can see its data with the "Show Table Data" menu item. This shows you the data, and if you enter additional rows, they are saved to the table.
+
+However, it is likely you will want to update your tables from your website; either as an administrative action or to let users share data with one another. You could request data directly from the user with a form, or you could collect the data more indirectly, such as a GPS location request or to save the results of a game they played in their browser.
+
+[WARNING]
+====
+When passing user data to an SQL command, do not ever just concatenate a user string to
+your SQL command. If you do, you open up your system to an *SQL Injection* attack, which can wreak havoc within your database system. For a hint at how to do this, see the XKCD comic usually referred to as https://xkcd.com/327/[Little Bobby Tables] (http://creativecommons.org/licenses/by-nc/2.5/[CC-BY-NC-2.5]):
+
+image::images/exploits_of_a_mom.png[]
+
+We will always use safe strings, either checking values or passing them through *dynamic parameters* to prevent SQL injection attacks.
+====
+
+In order to issue an INSERT command, we have to connect to the database, and then we can issue commands to it. Database connections use the connection name assigned in the Web.config file, so we make the connection like this:
+
+[source,java]
+----
+var db = Database.Open("PhoneBookDB"); 
+----
+
+Notice we are just letting C# determine the type of the variable `db`; in fact it is a Database, which is a helper class in `WebMatrix.Data`, supplied to make direct database interactions available.
+
+``PhoneBookDB`` is the name I gave this database in the Web.config file. It is usually the database name without the .mdf file extension.
+
+Once you have a connection, you can issue an INSERT into a table that exists in that database. If the table does not exist, you will get an SQLException.  The INSERT needs to list the columns and then list its parameters in the same order. Here is an insert into our PhoneBookDB:
+
+[source,java]
+----
+    var insertQuery = "INSERT INTO Product (Name, Description, Price) " +
+                "VALUES (@0, @1, @2)";
+    db.Execute(insertQuery, Name, Description, Price);
+----
+
+The @0, @1, and @2 are not Razor @'s, here they are SQL @'s, marking the parameters to the SQL statement. This protects against SQL injection because the values supplied are kept separate and not simply concatenated into the SQL string. 
+
+[CAUTION]
+====
+Never, ever, ever, do this instead:
+
+----
+var insertQuery = "INSERT INTO Product (Name, Description, Price) " +
+                "VALUES (\""+@Name+"\",\""+Description+"\","+@Price+")";
+db.Execute(insertQuery);
+----
+
+Why not? because if Name came directly from a form field, it can contain malicious content that will take over the command and turn it into whatever SQL command the malicious user wants to make your database do, such as dropping all the tables or pulling out private data.
+====
+
+When you create your INSERT statement, you need to list all of the columns that you want to supply data for. If a column is not listed, then a SQL NULL value is put into that column in the new row.
+
+Here is a page that will insert data into our table; note that if the form has no data, it is going to put in empty strings or 0's for numbers -- we really need validation on the values prior to this; you will see how to add validation in <<Validation and Helpers,Validation and Helpers>>.
+
+.AddPhoneBookEntry.cshtml
+[source,html]
+----
+include::source/AddPhoneBookEntry.cshtml[]
+----
+
+This is a very basic page; when the insert succeeds, the user is given a brief note, but if there is a problem, the page is replaced with an error page. There is almost no data validation -- all the code does is make sure SQL NULL values will be inserted when the form fields were left blank. It assumes the required field (name) will be present. We will see how to address this in a later chapter with the Validation helper.
+
+[TIP]
+====
+Notice that we do not insert into the Id column -- because it was defined as an IDENTITY column, unique values will be automatically generated for us. Most SQL engines have this capability, though the syntax is often different.
+====
+
+We used the same `Execute` method that the CREATE TABLE and DROP TABLE statements used in our admin page, and could have used the same try..catch around it to determine what went wrong. Execute takes a variable number of parameters, so that you can specify the number to match all of the SQL parameters you have defined in your statement. If you specify fewer values than you have parameters, the Execute statement will throw an SQLException.
+
+The database class has a useful method, `GetLastInsertId`, that you see used in the page.  Because we inserted into a table with an identity column, the database will give us back the value it generated for that column. We give it to the user (though usually you would not, but you might use it for some other, internal purpose).
 
 === View Data in the Table (SELECT, WebGrid)
 
+Once you have data in your database, you will want to display it to the user. This means getting the data back out of the database. There are three methods on `Database`  that return data:
+
+* `Query` -- for a SELECT statement that you expect to return any number of rows (including zero).
+* `QuerySingle` -- for a SELECT statement that you expect to return exactly one row (just a single row)
+* `QueryValue` -- for a SELECT statement that you expect to return exactly one column in one row (just a single value).
+
+These methods all have the same parameters as `Execute`: the SELECT statement as a string, followed by any needed parameter values for parameters in the statement.
+
+The Query method returns a collection as an `IEnumerable` -- it is typical to use a foreach loop on the query result, to generate an HTML table. Toward this end, there is a `WebGrid` helper which will transform your IEnumerable not only to a HTML table, but to one with multiple pages.
+
+But let's explore that returned type, first. It is an IEnumerable of ... objects. C# transforms the row in the result to an anonymous object. Anonymous objects are objects created on the fly without an associated class. The row is transformed into an object by making each column value in it a property of the object. The property names are the SELECT column names -- so it's important to name expressions in your SELECT list, or understand how SQL Server names columns that are computed from expressions in SELECTs. If you look at the type of the variable of a row, you see it is `dynamic`. That means that the compiler doesn't know its type, and the runtime will only know it at the moment it gets created.
+
+Let's generate our own table first, and then look at WebGrid.
+
+.SelectTable.cshtml
+[source,html]
+----
+include::source/SelectTable.cshtml[]
+----
+
+As you can see, we can dot off of our foreach variable row (which has the type dynamic) with the column names from our table. If you try to dot off of it with a different name, the compiler won't detect the error -- at runtime, you would get an exception.
+
+The row is actually a `WebMatrix.Data.DynamicRecord`, and there are three different ways to access a given column:
+
+. row.ColumnName as used in the code above
+. row["ColumnName"]
+. row[1] if ColumnName is column number 1 (remember, numbering starts at 0), returns that column
+
+In addition to those access methods, `DyanmicRecord` provides the property `Columns`, which returns a list containing the column names. This can be useful if you do not know the names -- you can use that list to index into the rows with the column names, or to get the count of columns to use the integer indexing.  You can read more about `DynamicRecord` here: https://msdn.microsoft.com/en-us/library/webmatrix.data.dynamicrecord(v=vs.111).aspx.
 
 ==== WebGrid Helper
 
 
+.SelectWebGrid.cshtml
+[source,html]
+----
+include::source/SelectWebGrid.cshtml[]
+----
+
 === Change Data in the Table (UPDATE and DELETE)
+
+TODO
+
+=== Database class
+
+We've used several methods of the Database class. Here is a list of its property and methods to review:
+
+|====
+| Static property |description
+
+| Connection | the current connection
+|====
+
+|====
+| Static methods | description
+
+| Open(string) |	Opens a connection using the specified connection name or file name.
+| OpenConnectionString(string) |	Opens a connection to a database using the specified connection string (these are like the values in our Web.config file).
+| OpenConnectionString(String, String) |	Opens a connection to a database using a connection string and a provider.
+|====
+
+|====
+|Method |description
+
+| Close() |	Closes the database.
+| Dispose() |	Releases all resources used by the database.
+| Execute(string)	| Executes an SQL statement.
+| Execute(string,object,..) | Executes an SQL statement with the specified values for its parameters.
+| GetLastInsertId()	| Returns the generated identity column value of the most recently inserted row.
+| Query |	Executes a SQL query that returns a list of rows as the result (as an IEnumerable); can specify parameter values
+| QuerySingle	| Executes a SQL query that returns a single row as the result (as an anonymous object); can specify parameter values
+| QueryValue	| Executes a SQL query that returns a single value as the result (as an object); can specify parameter values
+|====
+
+When using this class, it's important to remember to clean up. Otherwise, you may use up more system resources than you need to. So, once you are done with the database, use the Close method to release the connection. If you don't call this explicitly, the resources will be released when the garbage collector realizes no-one is using the database object any longer; but that relies on something that may not occur for a while.
+
+As you saw with the Query, it returns a collection of objects; each object is made up of properties that match the columns in the query. C#'s support for anonymous objects lets this happen automatically. If you define a class to match your query row result, you can cast the SQL result's anonymous class to your class. This lets you treat the rows in your tables like object instances, and your class can define additional behaviours and checks above the database to control how the values are set. You do have to pull them back out to properties to do an INSERT, but you could choose to write behaviors for your objects that handled that for you.
+
+[NOTE]
+====
+ASP.NET provides an automatic object-to-relational mapping called the Entity Framework and an additional language integrated into C# called LINQ for manipulating databases. Those are beyond the scope of this text, but we will walk through it in ASP.NET Extreme.
+====
 
 
 === File upload and download
@@ -220,11 +377,25 @@ TODO
 
 === Databases
 
+TODO
+
 === Files
+
+TODO
 
 === Further Reading
 
+* https://msdn.microsoft.com/en-us/library/webmatrix.data.database(v=vs.111).aspx
+http://www.asp.net/web-pages/overview/getting-started/introducing-aspnet-web-pages-2/form-basics
+* http://www.asp.net/web-pages/overview/getting-started/introducing-aspnet-web-pages-2/entering-data
+* http://www.asp.net/web-pages/overview/data/5-working-with-data
+* http://www.mikesdotnetting.com/article/214/how-to-check-if-a-query-returns-data-in-asp-net-web-pages
+
+
 === Exercises
+
+TODO
 
 === Project
 
+TODO

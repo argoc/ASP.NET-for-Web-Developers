@@ -2,52 +2,56 @@
 
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Database Administration Tasks</title>
-    </head>
-    <body>
-        @{ 
-            int choice = Request.Form["choice"].AsInt();
-            string command = null;
+<head>
+    <title>Database Administration Tasks</title>
+</head>
+<body>
+    @{
+        int choice = Request.Form["choice"].AsInt();
+        string command = null;
 
-            switch (choice)
-            {
-                case 1:
-                    command="DROP TABLE PhoneBook";
-                    break;
+        switch (choice)
+        {
+            case 1:
+                command = "DROP TABLE PhoneBook";
+                break;
 
-                case 2:
-                    command = @"CREATE TABLE PhoneBook( 
-                                 Id INT NOT NULL PRIMARY KEY,
+            case 2:
+                command = @"CREATE TABLE PhoneBook(
+                                 Id INT NOT NULL IDENTITY PRIMARY KEY,
                                  Name VARCHAR(50), PhoneNumber INT,
                                  Email VARCHAR(100), TwitterHandle VARCHAR(20) )";
-                    break;
-
-            }
-
-            if (command != null) {
-                try
-                {
-                    //my connection name in web.config is PhoneBookDB
-                    var db = Database.Open("PhoneBookDB"); 
-                    db.Execute(command);
-                }
-                catch (SqlException se)
-                {
-                    <p>Oops, that didn't work. I got this exception: 
-                       @se.GetType()</p>
-                    <pre>@se.Message</pre>
-                    <pre>@se.StackTrace</pre>
-                }
-            }
+                break;
 
         }
 
-        <form method="post">
-            <button type="submit" name="choice" value="1">Drop Table PhoneBook</button>
-            <br/><br/>
-            <button type="submit" name="choice" value="2">Create Table PhoneBook</button>
-        </form>
-        
-    </body>
+        Database db = null;
+        if (command != null) {
+            try {
+                //my connection name in web.config is PhoneBookDB
+                db = Database.Open("PhoneBookDB");
+                db.Execute(command);
+            } catch (SqlException se) {
+                <p>
+                    Oops, that didn't work. I got this exception:
+                    @se.GetType()
+                </p>
+                <pre>@se.Message</pre>
+                    <pre>@se.StackTrace</pre>
+            } finally {
+                if (db != null) {
+                    db.Close();
+                }
+            }
+
+        }   
+    }
+
+    <form method="post">
+        <button type="submit" name="choice" value="1">Drop Table PhoneBook</button>
+        <br /><br />
+        <button type="submit" name="choice" value="2">Create Table PhoneBook</button>
+    </form>
+
+</body>
 </html>

@@ -10,17 +10,19 @@ v0.7, August 26, 2016: under development
 :toc: left
 :toclevels: 2
 :numbered:
+:sectlinks:
+:sectanchors:
 
 
 ////
 Formerly: New to ASP: Razor, C#, ASP.NET
 
 Generate PDF from directory with book.adoc in it with the command
-asciidoctor-pdf book.adoc
-prepare to be amazed
+asciidoctor-pdf -a toc book.adoc
+prepare to be amazed 
 
 Generate HTML:
-asciidoctor book.html
+asciidoctor -a toc book.html
 
 ////
 

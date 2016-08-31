@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Phone Book</title>
+</head>
+<body>
+    <h1>Phone Book</h1>
+@{
+    var db = Database.Open("PhoneBookDB");
+    var select = "SELECT * FROM PhoneBook";
+
+    var rows = db.Query(select);
+
+    <table border="1">
+        <tr><th>Name</th><th>Phone Number</th><th>Email</th><th>Twitter Handle</th></tr>
+        @foreach (var row in rows)
+        {
+            <tr><td>@row.Name</td><td>@row.PhoneNumber</td>
+                <td>@row.Email</td><td>@row.TwitterHandle</td></tr>
+        }
+    </table>
+
+    db.Close();
+}
+</body>
+</html>

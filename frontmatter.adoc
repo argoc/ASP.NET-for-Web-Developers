@@ -46,7 +46,7 @@ If you need a refresher on SQL, I recommend http://sqlzoo.net/[SQLZoo's Tutorial
 
 * Either CIS 255, Web Development II, which covers programming in JavaScript, or CIS 142, Java Programming I, which covers OO programming in Java.
 +
-If you need a refresher on programming, I recommend finding a "learn to program" course on Java or C# on Udemy, EdX, Coursera, or other platform. (If you have a specific one you recommend, let me know). 
+If you need a refresher on programming, I recommend finding a "learn to program" course on JavaScript, Java or C# that includes Object Orientation (OO) in its description; look on Udemy, EdX, Coursera, or other platform. (If you have a specific one you recommend, let me know). 
 
 It's always a good idea to know the history behind what you are learning, so here is a short look into the history behind this technology:
 
