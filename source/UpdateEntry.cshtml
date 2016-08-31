@@ -9,6 +9,7 @@
     var select = "SELECT * FROM PhoneBook WHERE Id=@0";
     var id = Request["id"].AsInt();
 
+    // using QuerySingle because id selections have to return 0 or 1 rows:
     var row = db.QuerySingle(select,id);
 
     //no row, 'quiet' error and return to the list page
@@ -40,7 +41,10 @@
             @"UPDATE PhoneBook SET Name=@0, PhoneNumber=@1, Email=@2, TwitterHandle=@3
                  WHERE Id=@4";
 
-        db.Execute(update, name, phoneNumber, email, twitter, id);
+        int numRows = db.Execute(update, name, phoneNumber, email, twitter, id);
+        if (numRows != 1) {
+            @: <script>alert("Oops, @numRows rows were altered.")</script>
+        }
 
         db.Close(); // clean-up
         Response.Redirect("~/PhoneBookChoices.cshtml");

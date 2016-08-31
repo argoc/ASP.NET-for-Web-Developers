@@ -415,6 +415,8 @@ include::source/UpdateEntry.cshtml[]
 
 As you can see, before we display data or make any changes, we validate that we got a row back from `QuerySingle`. If there is no row, we return to the list page (a quiet error) rather than let the user know they phished us, if they were malicious.
 
+We also check the number of rows updated by looking at the value returned by Execute; up until now, we've been ignoring this value; but we can use it to code more defensively. On an Update, Insert, or Delete, it returns the number of rows affected by the statement.  In order for our Update to fail to find the 1 row, we'd need to have a very busy website with multiple users making changes at the same time -- so it is possible, but highly unlikely. I've coded a simple JavaScript alert but it would be more appropriate to say something like "please reissue request", or just bounce the user back to the home page to try again.
+
 This collection of 4 pages: the list of entries, add, delete, and update lets us control the contents of our table. You will see this model again in ASP.NET MVC. These are the 4 basic operations on persistent storage; knowing how to do these 4 lets you then use the operations within other contexts to suit your application's needs.
 
 === Database class
