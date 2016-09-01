@@ -1,3 +1,4 @@
+[[methodsclassesobjects]]
 == C# Methods, Classes, and Objects
 
 ////

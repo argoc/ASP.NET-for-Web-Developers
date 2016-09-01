@@ -1,0 +1,58 @@
+﻿@functions {
+    // validate that it is an image file
+    bool isImageFile(HttpPostedFileBase file)
+    {
+        string mimeType = file.ContentType.ToLower();
+        // image types we want to allow:
+        return (mimeType == "image/jpeg" ||
+                mimeType == "image/gif" ||
+                mimeType == "image/png");
+        // should also check file extension and
+        // actual file contents to be more secure
+    }
+}
+
+@{
+    var fileName = "";
+    bool uploadedFile = false;
+    if (IsPost)
+    {
+        var fileSavePath = "";
+        var file = Request.Files[0];
+        if (file.ContentLength != 0 && isImageFile(file))
+        {
+            fileName = Path.GetFileName(file.FileName);
+            // under App_Data protects files from access
+            // this directory does not protect from access
+            fileSavePath = Server.MapPath(@"~/uploads/" + fileName);
+            file.SaveAs(fileSavePath);
+            uploadedFile = true;
+        }
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload</title>
+</head>
+<body>
+    <h1>Image Upload</h1>
+    <p>Choose your file image and click Upload.</p>
+    <!-- use a multipart form so the file is delineated in the post -->
+    <form action="" method="post" enctype="multipart/form-data">
+        <label for="file">Filename:</label>
+        <input type="file" name="file" id="file" />
+        <input type="submit" name="submit" value="Upload" />
+    </form>
+
+    @{ 
+        if (IsPost) {
+            if (uploadedFile) {
+                <p>@fileName uploaded.</p>
+            } else {
+                <p>No file uploaded.</p>
+            }
+        }
+    }
+</body>
+</html>

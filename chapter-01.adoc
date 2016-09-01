@@ -692,7 +692,7 @@ We have only touched on concepts in this chapter, no concrete programming as of 
 
 . What is the difference between a mobile application and a web application? How are they similar?
 
-=== Lab
+=== Project
 
 Our goal for the course is to develop a full-stack web application: one that uses a database, server-side code, client-side code, HTML, and CSS. What that may be is wide open.  Here are some suggestions:
 
@@ -704,13 +704,15 @@ Our goal for the course is to develop a full-stack web application: one that use
 
 * Amazon -- go big or go home; a shopping experience with lots of organization, suggested items, wishlists, and on and on. What part of it do you find irresistible and want to explore?
 
+* RottenTomatoes (Flixster, AngiesList) -- a site that posts in a particular genre (RottenTomatos is movies, AngiesList is services) and lets users rate them and post comments about them. It maintains an overall average score of ratings.
+
 * Facebook (or if you'd rather, MySpace, Twitter, Instagram, LinkedIn) -- social networking; your profile and posts make it to your friends. Find people, make friends, have flame wars, start groups, ... more here than meets the eye. What interests you?
 
 * The Internet Archive -- capturing web pages and making them searchable. This has saved me so many times, I love it. It also has a way for the original author to get contents removed (not everyone wants a permanent presence). Make a craigslist wayback machine, that would be handy (the only one I've found costs money and requires a law enforcement certification to use).
 
 The internet is your oyster -- find something you'd like to figure out how to do in ASP.NET Web Pages. Make sure it has persistent server data, and write up a proposal. Nothing fancy -- we'll get into prototyping in the next chapter.
 
-Whichever one you pick as your course project, you need to make it a "best of" -- you all will be evaluating each others' a few times in the quarter, providing feedback to your peers on their work to help it improve and to highlight its strong points.
+Whichever one you pick as your course project, know that you all will be evaluating each others' a few times in the quarter, providing feedback to your peers on their work to help it improve and to highlight its strong points.
 
 
 

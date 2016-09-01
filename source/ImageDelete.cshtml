@@ -1,0 +1,44 @@
+﻿@{
+    bool deleted = false;
+    var filename = "";
+    if (IsPost) {
+        filename = Request["filename"];
+        var fullPath = Server.MapPath("~/uploads/" + filename);
+
+        if (File.Exists(fullPath)) {
+            File.Delete(fullPath);
+            deleted = true;
+        }
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Delete</title>
+</head>
+<body>
+    <h1>Image Delete</h1>
+    <form name="deletePhoto" action="" method="post">
+        <p>Choose file to delete:</p>
+
+        @{
+            string[] files = Directory.GetFiles(Server.MapPath(@"~/uploads/"));
+
+            foreach (var file in files ) {
+                string justfile = Path.GetFileName(file);
+
+                <text>
+                  <input type="radio" name="filename"
+                       value="@Html.AttributeEncode(justfile)" />
+                  @(Html.Encode(justfile)) <br />
+                </text>
+            }
+        }
+        <p><input type="submit" value="Submit" /></p>
+    </form>
+
+    @if(deleted) {
+        <p>@filename deleted!</p>
+    }
+</body>
+</html>

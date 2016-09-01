@@ -11,15 +11,15 @@
 </head>
 <body>
     <h1>Phone Book at @DateTime.Now</h1>
-    <div>
+
         @{
             var db = Database.Open("PhoneBookDB");
             var select = "SELECT * FROM PhoneBook";
 
             var rows = db.Query(select);
-            var grid = new WebGrid(source: rows, defaultSort: "Name", rowsPerPage: 3);
+            var grid = new WebGrid(source: rows, defaultSort: "Name", rowsPerPage: 4, ajaxUpdateContainerId: "grid");
         }
-
+    <div id="grid">
         @grid.GetHtml(
         tableStyle: "grid",
         headerStyle: "head",

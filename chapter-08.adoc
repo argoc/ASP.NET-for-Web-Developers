@@ -337,17 +337,37 @@ To generate the HTML, call WebGrid's `GetHtml` method. This lets you specify:
 You can rely on information from the database, and get a basic table, by passing just the SELECT result to WebGrid:
 [source,HTML]
 ----
-    var grid = new WebGrid(rows);
+  var grid = new WebGrid(rows);
 ----
 and then calling GetHtml with no styling options:
 [source,HTML]
 ----
-    @grid.GetHtml()
+  @grid.GetHtml()
 ----
 This displays all of the data returned in one table, with default table styling.
 
 
-WebGrid is a very rich helper; as used here, we require all of the data to come back to the client when we define the grid. However, it has the ability to only pull data from the server when it is requested, using AJAX callbacks. To read more about this, see https://msdn.microsoft.com/en-us/library/system.web.helpers.webgrid(v=vs.111).aspx
+WebGrid is a very rich helper; as used here, it repeats the call whenever the next/previous page links are clicked. However, it has the ability to only update the table portion and not the whole page with a callback. This uses AJAX, Asynchronous Javascript And XML -- the link is turned into a JavaScript call that interacts with the server independently of the rest of the page, updating just the table to display the next (or previous) page of data.
+
+// can't get this to work...
+////
+The most basic form of this requires adding one parameter to the WebGrid constructor call, to specify a container for the grid in the page; and then putting that id on the grid's `GetHtml` call (we do that below with a div element).
+
+[source,java]
+----
+  var grid = new WebGrid(source: rows,  .., ajaxUpdateContainerId: "grid" );
+----
+
+[source,java]
+----
+  <div id="grid">
+    @grid.GetHtml(..)
+  </div>
+----
+////
+
+
+To read more about this, see https://msdn.microsoft.com/en-us/library/system.web.helpers.webgrid(v=vs.111).aspx
 
 === Change Data in the Table (UPDATE and DELETE)
 
@@ -417,7 +437,7 @@ As you can see, before we display data or make any changes, we validate that we 
 
 We also check the number of rows updated by looking at the value returned by Execute; up until now, we've been ignoring this value; but we can use it to code more defensively. On an Update, Insert, or Delete, it returns the number of rows affected by the statement.  In order for our Update to fail to find the 1 row, we'd need to have a very busy website with multiple users making changes at the same time -- so it is possible, but highly unlikely. I've coded a simple JavaScript alert but it would be more appropriate to say something like "please reissue request", or just bounce the user back to the home page to try again.
 
-This collection of 4 pages: the list of entries, add, delete, and update lets us control the contents of our table. You will see this model again in ASP.NET MVC. These are the 4 basic operations on persistent storage; knowing how to do these 4 lets you then use the operations within other contexts to suit your application's needs.
+This collection of 4 pages: the list of entries, add, delete, and update lets us control the contents of our table. You will see this "CRUD" (create, update, delete) model again in ASP.NET MVC. These are the 4 basic operations on persistent storage; knowing how to do these 4 lets you then use the operations within other contexts to suit your application's needs.
 
 === Database class
 
@@ -454,23 +474,109 @@ When using this class, it's important to remember to clean up. Otherwise, you ma
 
 As you saw with the Query, it returns a collection of objects; each object is made up of properties that match the columns in the query. C#'s support for anonymous objects lets this happen automatically. If you define a class to match your query row result, you can convert the SQL result's anonymous class to your class. This lets you treat the rows in your tables like object instances, and your class can define additional behaviours and checks above the database to control how the values are set. You do have to pull them back out to properties to do an INSERT, but you could choose to write behaviors for your objects that handled that for you.
 
+One thing we have not explored is a multi-table database and joins to reconnect their data; with any sizeable application, your database will end up with several tables related to each other in particular ways. 
+
 [NOTE]
 ====
 ASP.NET provides an automatic object-to-relational mapping called the Entity Framework and an additional language integrated into C# called LINQ for manipulating databases. Those are beyond the scope of this text, but we will walk through it in ASP.NET Extreme.
 ====
 
 
-=== File upload and download
+=== File Handling
 
 Big files such as images can be stored in databases, but often are not. You can receive a file in an HTTP request and write it out to the server's file system; and take a file from the server's file system and include it in a HTTP response.
 
-TODO
+We are going to look at images and what is particular to them, as they are a common upload/display item on a web page. C#'s file operations include the ability to open and read through text files, and you can find third-party helpers that will display PDF file contents on a page as well.
 
-=== Using Maps
+==== Uploading files
 
-TODO
+HTML5 forms provide the ability to locate a file and have it sent to the server in a POST request. The operations you need to handle are the server-side storage of the file. Most databases (including SQL Server) have a Binary Large Object (BLOB) data type that could be used to save a file; however, you may want to simply put the file on the server's disk rather than loading it into the database.
 
-Map http://www.asp.net/web-pages/overview/ui-layouts-and-themes/displaying-maps-in-an-aspnet-web-pages-site
+[WARNING]
+====
+When you start allowing file uploads, be aware that file size can cause serious issues in the server (memory use) and on the server's permanent storage. Use caution and set limits to prevent too many uploads or uploads of large files. Also be careful what you do with the file contents -- user files can cause injection attacks if you use their content as HTML or SQL content or allow it to execute in some other fashion on the server.
+====
+
+We will walk through the server side code shown in this example:
+
+.ImageUpload.cshtml
+[source,html]
+----
+include::source/ImageUpload.cshtml[]
+----
+
+Notice that at the top, I've defined a function isImageFile; I've separate this out as it is a complex check which I may want to expand later to check for image files more thoroughly.
+
+The files in the post are stored in the collection Request.Files; their contents are streamed within the HTTP request (yes, all of them) -- so client-side JavaScript checks for file size would be a very good thing to add.
+
+Before saving the file, we check that it has content and that it is an image file. Once we have that, we look for the actual file name. The full path on the client side is provided in the file's `FileName` property, so we use the static method `Path.GetFileName` to get just the actual file name, stripped of any path above it. Then we create a server-side absolute file name using `Server.MapPath` and providing a target directory, `~/uploads/` and the user's file name.  The `uploads` directory needs to already exist in your project - the first time you will need to create it manually. You could choose a different location - it is not uncommon to store the files in a diretory under `App_Data`; `App_Data` is a protected location, files in it cannot be viewed by users -- attempts will get a 404.8, Not Found, HTTP Response Code.
+
+
+[TIP]
+====
+You may, actually, want to make up your own file names on the server -- one user could overwrite another user's files by uploading a file with the same name. This type of file management  requires a database to map users' file names to the file names you've used in the server-side file system.
+====
+
+==== Displaying Image Files
+
+To display an image file stored on the server, you actually don't do anything special; it appears in an HTML <img> tag just like any other image.
+
+The tricky part is knowing the file names, if the files were previously uploaded to the server. You might store them in a database, or you might simply browse your image directory on the server to display the files found there.
+
+In our example, we will look in our UploadedFiles directory for files ending in .jpg, .png, or .gif to display on our page.
+
+[source,html]
+----
+include::source/ImageDisplay.cshtml[]
+----
+
+First, you see a helper function, `IsImageFile`, which is similar to our last method. This one checks file extensions, as the file is not embedded in a POST request with a MIME type any longer.
+
+Then in the main body of the page, we use a system class (in the System.IO namespace) Directory. This class contains quite a few methods helpful for listing and traversing directory structures. In particular,
+
+[source,java]
+----
+Directory.GetFiles(Server.MapPath(@"~/uploads/"));
+----
+
+First, you see `Server.MapPath`: that creates a server path, replacing the ~ with the local file system path. So this provides the name of the directory on the server where we expect the files to be. 
+
+The outer call, `Directory.GetFiles` looks in the specified directory for files. It returns an array of file names as strings. These names include the full path to the file.
+
+Once we have the array of files, we can go through it and generate <img> links to the images. First, though, instead of a server filesystem path, we need a URL. This is constructed with the builtin helper `Href`, similar to the `MapPath` call earlier. Notice the special call `Html.AttributeEncode`: that makes sure the attribute values parse correctly. We do this because the original file name may contain characters that cannot be used in an attribute value, such as a ", <, or &. (This also prevents filename-based injection attacks.)
+
+
+
+[NOTE]
+====
+There is a Helper named WebImage -- this helper does a lot of useful activities on images, including resizing, flipping, and watermarking; we could even rewrite our pages to just use WebImage and not HttpPostedFileBase at all. However, we wanted to give you an overview of file handling regardless of file type in this text, so we've used the general form file class.
+====
+
+Making files downloadable is very similar to the image display code; enough that we will leave that as an exercise. Instead of generating <img> tags that users can right-click and do "Save As" on, you would generate file names that users could then right-click and do "Save As" on.
+
+
+==== Deleting Files
+
+If you are doing any sort of file/image upload and saving them as files on the server, you are going to have to do some mop-up operations at some point, to remove files. You may, for example, be storing a profile image for a user, and then when it is updated, you need to delete the old image and save the new one.
+
+.ImageDelete.cshtml
+[source,java]
+----
+include::source/ImageDelete.cshtml[]
+----
+For our delete page, we've listed all of the files with radiobuttons; one is chosen, and when the Submit button is pressed, it is deleted. You see many of the same calls we've made in our other pages: Server.MapPath to get the file server path; Directory.GetFiles to list all of the files; and Html.AttributeEncode to protext the attribute value. You will notice that we used Html.Encode on the value next to the radio button, again to prevent an injection attack through file names.
+
+The other new calls you will notice are File.Exists and File.Delete; these look at the local filesystem to see if the file exists, and to remove it. 
+
+[WARNING]
+====
+When you write code that changes files on the server disk, consider it very carefully, and think through the potential ways your code or system could be attack. Consider the impact of a flood of requests; of large files; of files with malicious content; of file names. Protect carefully access to files shared among all of your users. Think about the models on the internet: the user who installs a file typically has the right to remove it, while other users may see it but not modify it. To implement such a system, we will need to add user accounts, which we will look at in the next chapter.
+====
+
+==== WebImage Helper
+
+If you are only uploading and displaying image files, there is a helper tailored to images, `WebImage`. This is described in https://msdn.microsoft.com/en-us/library/system.web.helpers.webimage(v=vs.111).aspx.
+In addition to basic file information, this allows you to create images from an array of bytes, and to flip, watermark, or resize an image. It is used in the MSDN tutorial http://www.asp.net/web-pages/overview/ui-layouts-and-themes/9-working-with-images.
 
 
 
@@ -482,11 +588,41 @@ Map http://www.asp.net/web-pages/overview/ui-layouts-and-themes/displaying-maps-
 * http://www.asp.net/web-pages/overview/data/5-working-with-data
 * http://www.mikesdotnetting.com/article/214/how-to-check-if-a-query-returns-data-in-asp-net-web-pages
 * http://www.mikesdotnetting.com/article/211/adding-a-footer-to-the-razor-webgrid
+* http://www.asp.net/web-pages/overview/data/working-with-files
+* http://www.asp.net/web-pages/overview/ui-layouts-and-themes/9-working-with-images
+* http://suika.fam.cx/www/manakai-core/lib/Whatpm/ContentType.html
+* http://www.hanselman.com/blog/ABackToBasicsCaseStudyImplementingHTTPFileUploadWithASPNETMVCIncludingTestsAndMocks.aspx 
+* https://msdn.microsoft.com/en-us/library/system.io.path(v=vs.110).aspx
+* https://msdn.microsoft.com/en-us/library/system.guid.newguid(v=vs.110).aspx
+* https://msdn.microsoft.com/en-us/library/gg427611.aspx
+// * http://www.asp.net/web-pages/overview/ui-layouts-and-themes/displaying-maps-in-an-aspnet-web-pages-site
 
 === Exercises
 
-TODO
+. Build a 4-page phone book application that combines databases and images: start with PhoneBookDB and its 4 pages, and enable uploading images when adding an entry.  The database row should record the image file name so that you know how to find it, or a null if there is no image. This will require adding a column to the table.
++
+Once you have that working, update it so that when images are uploaded, don't use the original file name; generate a unique name using
+the system class `Guid` (GUID is Globally Unique Identifier) like so:
++
+[source,java]
+----
+ string g = Guid.NewGuid().ToString();
+----
++
+You will need to save and append the original file's file extension on the guid; `Path.GetExtension` will provide this information.
++
+Save both the original file name and the GUID-based file name in the database (yes, another column in the table is needed) so that you can display the user's file name to them rather than the internal, server-side GUID-based name.
++
+When you display the full record (on the Update page) show the current image and give the user the ability to replace it. The replace should delete the old file and save the new one.
++
+Modify the site to have a common layout and appearance using _SiteLayout.cshtml and _PageStart.cshtml.
+
+. Rewrite the word-guessing page from the exercises in the chapter <<methodsclassesobjects,C# Methods, Classes, and Objects>>. Have the words stored in a database, so that you don't have to generate an array on every load of the page, but rather access the database to see the list of words.
++
+Move out common look and feel portions of the page to a _SiteLayout.cshtml file and then add an administrative panel that also uses that layout. The Administrative panel for your game should, in one page (not 4 separate pages) let you add, remove, or alter words all on the same page; this is a design exercise, so consider how you would go about it in a way that fits our word list and is clear to the user how to add, remove, or modify words.
 
 === Project
 
-TODO
+This chapter represents a huge step forward: you can now make your data persistent, and provide users with the ability to alter it, whether that is through the direct 4-page "CRUD" style or more indirect, as actions taken when they move around your website.
+
+Add a persistent backing store to your project, replacing any hard-coded arrays with database accesses.

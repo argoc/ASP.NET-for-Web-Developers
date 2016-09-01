@@ -1,0 +1,37 @@
+﻿@functions {
+    // validate that it is an image file
+    bool IsImageFile(string file)
+    {
+        string fileExtension = Path.GetExtension(file).ToLower();
+        // image files we want to allow:
+        return (fileExtension == ".jpeg" ||
+                fileExtension == ".jpg" ||
+                fileExtension == ".gif" ||
+                fileExtension == ".png");
+        // should check actual file contents to be more secure
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Display Images</title>
+</head>
+<body>
+    <h1>Display Images</h1>
+
+    @{
+        string[] files = Directory.GetFiles(Server.MapPath(@"~/uploads/"));
+
+        foreach (var file in files ) {
+
+            if (IsImageFile(file)) {
+                string fileURL=Href(@"~/uploads/"+Path.GetFileName(file));
+                <img width="50"src="@Html.AttributeEncode(fileURL)" 
+                     alt="@Html.AttributeEncode(Path.GetFileName(file))"/>
+            }
+        }
+    }
+
+</body>
+</html>

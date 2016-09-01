@@ -423,6 +423,10 @@ When you access the Form fields, you usually know the names of the fields; howev
 
 All five are actually collections, and so could be accessed with foreach loops, iterating through their contents.
 
+////
+There are additional helpers for Captcha validation, Twitter profile and search boxes, Gravatars, Video, Bing search, site analytics or themes, available in packages you add to your project. These additional Web Helpers can be added to your project; use Tools->NuGet Package Manager->Manage Nuget Packages For Solution.. . In that window, select the "Browse" tab and then search for Microsoft.AspNet.WebHelpers. If it is not installed (no green check), select it and click Install. This adds the Microsoft.Web.Helpers namespace.
+////
+
 ==== Cookies
 
 In the `Cookies` collection, each cookie is an element in the collection; it is an instance of https://msdn.microsoft.com/en-us/library/system.web.httpcookie(v=vs.110).aspx[`System.Web.HttpCookie`], with several cookie properties: 
