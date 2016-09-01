@@ -621,6 +621,12 @@ Modify the site to have a common layout and appearance using _SiteLayout.cshtml 
 +
 Move out common look and feel portions of the page to a _SiteLayout.cshtml file and then add an administrative panel that also uses that layout. The Administrative panel for your game should, in one page (not 4 separate pages) let you add, remove, or alter words all on the same page; this is a design exercise, so consider how you would go about it in a way that fits our word list and is clear to the user how to add, remove, or modify words.
 
+. One common activity on websites is to upload files and have them analyzed. Write a web page that requests a text file upload, then performs a word count of the contents. Save the file locally as a GUID and delete it once the count is completed. See http://www.asp.net/web-pages/overview/data/working-with-files for examples of how to read files and split up their lines and words.
++
+What other analysis might you do? think of one, write a specification for it, and implement it. This is an exercise in writing a precise-enough specification, and then implement it. Consider if you need to add more detail to the specification if you were not the implementer, but had to hand it over to someone else to implement.
++
+This exercise uses two skills from this chapter, collections and File I/O. Get comfortable with the power of the foreach loop with collections, and with the variety of methods and properties on File I/O.
+
 === Project
 
 This chapter represents a huge step forward: you can now make your data persistent, and provide users with the ability to alter it, whether that is through the direct 4-page "CRUD" style or more indirect, as actions taken when they move around your website.
