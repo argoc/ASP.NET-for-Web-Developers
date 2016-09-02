@@ -19,7 +19,7 @@ ____
 
 === What you write
 
-When you develop a website or web application in the ASP.NET environment, you write HTML, JavaScript, and CSS, and then you add server-side coding and databases using Razor to embed C# in your page/application and call out to your own C# classes and those of the ASP.NET library. The database access can be done in several ways; Microsoft provides LINQ, with provides both a library and _another_ language for database access. The LINQ language is like SQL -- similar to how C# is like Java.
+When you develop a website or web application in the ASP.NET environment, you write HTML, JavaScript, and CSS, and then you add server-side coding and databases using Razor to embed C# in your page/application and call out to your own C# classes and those of the ASP.NET library. The database access can be done in several ways; we will be executing SQL classes using the ASP.NET SQLClient. Microsoft also provides LINQ, with provides both a library and _another_ language for database access. The LINQ language is like SQL -- similar to how C# is like Java.
 
 You write your application code in Visual Studio, and when it is run within Visual Studio, it runs in a local web server using IIS Express. IIS is Internet Information Services, Microsoft's web server; IIS Express is a lightweight version for development use. In deployed mode, your application would be packaged and deployed in Internet Information Services (IIS) for Windows® Server or some other web server supporting ASP.NET.
 
@@ -31,6 +31,37 @@ Web applications can be a bit more disorganized than a typical computer program 
 The code you write is meant to live on a file system that is managed by a web server. When a person puts a URL in their browser (or clicks on a search result linking to a URL), that URL is fed to a web server. URLs identify the target machine and then the target page on that machine. The web server takes the target page as input and locates the data to return. It doesn't actually have to go directly to a file, but in our case it will. 
 
 Our users' URLs will map to pages in our web sites. The web server will find the page, and then it will run the C# code on that page and return an HTML page free of Razor and C# to the requesting browser. That means all of your C# code runs on the web server; only JavaScript code runs on the browser. You will need to keep this in mind as you develop your web site: the user's only interaction with your web site is via HTML, that is, links being clicked, forms being submitted, and JavaScript requests being issued. Your only way to communicate back is to provide HTML that is rendered in the user's browser. Keep that in mind, because it is both very limiting and very freeing, like trying to rent an apartment when you have a cat. Some things aren't going to be feasible, or require solutions unlike those you use in traditional stand-alone applications.
+
+
+=== Microsoft's Alphabet Soup
+
++.NET+, ASP.NET, CLR, MSIL, MVC -- there are many different names behind the Microsoft technologies. Let's take a look at how they fit together and where we will be working in this text.
+
+image::images/NETBlocks.png[]
+
+[TIP]
+====
++.NET+ stands for "dot-net". The N-E-T is not an acronym. It's meant to imply network, internet -- those netty things that drive computers. All of our other letter-words are acronyms.
+====
+
+The .NET framework is the underpinning of all *managed code* that runs on a Windows machine. If you write unmanaged code, you are writing raw code that runs against the operating system unchecked. Managed code is run inside the Common Language Runtime (CLR), where there are services for memory management, type safety, thread management, and other features to provide additional security and robustness to your code. The CLR requires that your code be compiled down to Microsoft Intermediate Language (MSIL). It has a just-in-time compiler within it that compiles that code down to machine code.  Microsoft provides compilers (such as those within Visual Studio) that will compile C#, Visual Basic, F#, C++, and other languages to MSIL to be run in the CLR.
+
+The .NET Framework class library provides a large library of classes that can be used by any language compiled to MSIL. This includes basic type services such as string manipulation, file services, database access (often referred to separately as ADO.NET), and collection types. There are also a variety of environments provided in the .NET Framework for developing GUI applications -- we won't be looking into those in this course, as our focus is web applications.
+
+For Web support, ASP.NET provides additional libraries and classes to write richly-functional web sites. Best practices for this, and emerging web technologies, has resulted in 5 different ASP.NET technologies. They share a common core set of classes for HTTP support on the server side, but provide different envirnoments for developing.
+
+* Web Forms provides a very GUI-like experience for users, with widgets on the web page that interact with the server side. This was the first ASP.NET technology and is in wide use. However, it "breaks" several key philosophies in web-site development, and so has been overshadowed by MVC. ASP.NET provides the widgets and the framework for supporting their execution. If you see a URL ending in .aspx, it is using Web Forms.
+
+* Web Pages is a very light-weight framework providing direct hooks between web page content and the server. It uses Razor as a templating language to embed C# in HTML pages. ASP.NET provides a rich set of Helpers and its core functionality to enable rapid development. Web Pages' light-weight ness means it doesn't tend to scale to large web-sites. For that, developers move to MVC. If you see a web page ending in .cshtml, it is using Web Pages.
+
+* MVC is Microsoft's version of the Model-View-Controller design pattern done with C# and Razor. It provides a rich environment for developing web applications in that pattern, as well as rich add-ons such as the Entity Framework for automatic database migration and object-relational mapping. MVC web pages typically are 'just words', with no file extension (on disk, your web pages end in .cshtml, but MVC includes a rich routing engine that maps names to web pages).
+
+* Web API is a way to develop not a web site, but a web service. It relies on the four HTTP verbs (GET, POST, PUT, DELETE) to provide those services. This makes your URL available to service a wider variety of requests, not just web page requests. Microsoft has been folding this technology into MVC, as web sites often want to provide services as well, such as the "APIs" we see that let you put Paypal checkout buttons on boutique websites.
+
+* Signal R provides a web sockets experience, where client and server communicate bidirectionally. It uses web sockets in modern browsers, and provides fall-back support in older browsers. This lets servers push information to clients without a prior client request, useful in situations such as auction sites and near-real-time information sharing.
+
+In this text we will be exploring Web Pages. This is a good entry point for programmers learning C# from another language, giving you time to play with the language in the small before entering the much more rigorous MVC environment.
+
 
 
 === Pobody's nerfect 
@@ -680,6 +711,12 @@ Or even better, you will learn to avoid that type of bug for good.
 Remember, the goal is not just to make the application
 work. The goal is to learn how to make the application work.
 
+=== Further Reading
+
+- ASP.NET 4.5 overview
+- .NET 4.5 overview
+- SignalR, WebAPI, MVC, Web Forms, Web Pages home pages on asp.net
+
 === Exercises
 
 We have only touched on concepts in this chapter, no concrete programming as of yet has been covered. So our "exercises" are thought exercises to consider as we move into technical aspects of programming Web Pages.
@@ -694,19 +731,27 @@ We have only touched on concepts in this chapter, no concrete programming as of 
 
 === Project
 
-Our goal for the course is to develop a full-stack web application: one that uses a database, server-side code, client-side code, HTML, and CSS. What that may be is wide open.  Here are some suggestions:
+Our goal for the course is to develop a full-stack web application: one that uses a database, server-side code, client-side code, HTML, and CSS. What that may be is wide open.  Here are some suggestions, or perhaps you have a favorite website or app you'd like to pursue:
 
-* Pokemon Go. Yes, it's a mobile app. Consider a cut-down version that you could do with HTML forms/buttons and your current level of JavaScript skills (don't, whatever you do, put this book down and go spend three months learning a JavaScript game engine such as http://gamedevelopment.tutsplus.com/articles/how-to-learn-the-phaser-html5-game-engine--gamedev-13643[Phaser]). Pokemon Go has alot going on in it -- GPS tracking, capturing Pokemon, Gym battles, shopping, creature growth/repair, starting Gyms, placing Pokestops, and on and on -- it's a game, a shopping experience, and so much more. Pick some aspect that interests you and run with it.
+* Pokemon Go (Ingress). Yes, it's a mobile app. Consider a cut-down version that you could do with HTML forms/buttons and your current level of JavaScript skills (don't, whatever you do, put this book down and go spend three months learning a JavaScript game engine such as http://gamedevelopment.tutsplus.com/articles/how-to-learn-the-phaser-html5-game-engine--gamedev-13643[Phaser]). Pokemon Go has alot going on in it -- GPS tracking, capturing Pokemon, Gym battles, shopping, creature growth/repair, starting Gyms, placing Pokestops, and on and on -- it's a game, a shopping experience, and so much more. Pick some aspect that interests you and run with it.
 
-* Craigslist.org (or if you'd prefer Monster.com or some other job/resume posting board) -- a way to post your things for sale/search and to see what others have posted. Possibly the simplest UI, but not the simplest UX. Definitely looks a bit dated, but easy to mimic with basic HTML skills. 
+* craigslist.org (or if you'd prefer Monster.com or some other job/resume posting board) -- a way to post your things for sale/search and to see what others have posted. Possibly the simplest UI, but not the simplest UX. Definitely looks a bit dated, but easy to mimic with basic HTML skills. Or perhaps you want to make a more modern craigslist -- and you can name it after yourself, since https://en.wikipedia.org/wiki/Craigslist[Craig] did.
 
 * AirBnB -- much prettier than craigslist, its focus is on renting rooms; has a full shopping cart experience. There are many specialty sales sites out there, this is just one possible example. 
+
+* Uber (Lyft) -- connecting people who are near one another, one giving a ride, one needing a ride; so not only a service provider and a customer, but also location information.
 
 * Amazon -- go big or go home; a shopping experience with lots of organization, suggested items, wishlists, and on and on. What part of it do you find irresistible and want to explore?
 
 * RottenTomatoes (Flixster, AngiesList) -- a site that posts in a particular genre (RottenTomatos is movies, AngiesList is services) and lets users rate them and post comments about them. It maintains an overall average score of ratings.
 
 * Facebook (or if you'd rather, MySpace, Twitter, Instagram, LinkedIn) -- social networking; your profile and posts make it to your friends. Find people, make friends, have flame wars, start groups, ... more here than meets the eye. What interests you?
+
+* Wikipedia: community-driven information site. Fan wikipedias include comments, not just community editing with editorial approval.
+
+* Yummly (allrecipes). Sharing recipes, comments and ratings on recipes, sharing photos of results of cooking them. ... could be any sort of sharing site, perhaps sharing photos, parenting advice, or something else.
+
+* Yelp. Restaurants, their menus and statistics, and customer reviews. (Yelp actually https://www.yelp.com/dataset_challenge[publishes their data] as a huge JSON bundle to see if programmers could come up with interesting new analyses of it.)
 
 * The Internet Archive -- capturing web pages and making them searchable. This has saved me so many times, I love it. It also has a way for the original author to get contents removed (not everyone wants a permanent presence). Make a craigslist wayback machine, that would be handy (the only one I've found costs money and requires a law enforcement certification to use).
 

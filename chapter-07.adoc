@@ -1361,7 +1361,7 @@ Decide if you want to just use code blocks on your page or a separate class hold
 
 . Write a performance test on the two versions of PigLatin: call one PigLatinS and the other PigLatinSB; run each within a loop 1000 times and see which is faster. If they are the same speed, run them 10000 times. Once you see a difference, double the number and see if the difference doubles or not. Write a report summarizing your testing and its results. This type of analysis of performance and reporting of the results often happens as part of the prototyping cycle, when you are exploring alternatives and want to determine which is better, and by how much.
 
-=== Lab
+=== Project
 
 We are early for the database portion, but consider the data you would want to have be persistent. Databases store data in tables, with each row representing an object. Design the objects you will want to store in your database; create a class for each object, if you have more than one (there will be one type of object per table).
 

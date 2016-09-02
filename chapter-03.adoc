@@ -329,6 +329,15 @@ One thing our page lacks is error handling; we will see that there are calls we 
 * https://msdn.microsoft.com/en-us/library/gg606533(v=vs.100).aspx
 http://blog.slaks.net/2011/01/dissecting-razor-part-1-pieces-of.html and Slak's other posts on Razor - very informative, something to return to once you've had some time with Razor.
 
-=== Lab
+=== Exercises
 
-. Forms are a big deal -- they bring a website to life, getting input from the user for a tailored experience in the app. In this chapter you were given a simple example that processes form results on the same page as the form. Build a form that collects interesting data from the user, and have it route its results to a _different_ page that then processes and displays the data entered. You can use either GET or POST as the action, since the target page is only used to process form results. It will not need to check IsPost, it can assume there is a Request with the values available.  Make your form be something you might want to collect data about, such as movies, a bucket list, songs, goals, magic cards, pokemon, flowers, birds, yarns, or beers. We can use this in later labs when we have a backing database.
+. The http://www.asp.net/web-pages/overview/getting-started/introducing-aspnet-web-pages-2/getting-started[Introducing ASP.NET Web Pages - Getting Started] tutorial steps you through a "hello, world" style razor page. Complete this walkthrough in Visual Studio (just this page's information, not the pages that follow).
+
+. The http://www.asp.net/web-pages/overview/getting-started/introducing-razor-syntax-c[Microsoft Introduction to Razor] page steps through several code examples. Take the one called "Add Numbers" and get it working in Visual Studio.
+
+. The https://msdn.microsoft.com/en-us/library/gg606533(v=vs.100).aspx[Walkthrough: Creating a Web Site using Razor Syntax in Visual Studio] walks through one example, adding to it as it goes. Do the walkthrough starting after the VS update (with VS 2015 you already have Razor), and get the final page working in Visual Studio.
+
+
+=== Project
+
+. Forms are a big deal -- they bring a website to life, getting input from the user for a tailored experience in the app. In this chapter you were given a simple example that processes form results on the same page as the form. Build a form that collects interesting data from the user, and have it route its results to a _different_ page that then processes and displays the data entered. You can use either GET or POST as the action, since the target page is only used to process form results. It will not need to check IsPost, it can assume there is a Request with the values available.  Make your form be something you might want to collect data about, such as movies, a bucket list, songs, goals, magic cards, pokemon, flowers, birds, yarns, or beers. You can use this  later in your project when you have a backing database.

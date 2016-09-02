@@ -398,11 +398,14 @@ Design a wire-frame and then implement your layout in Web Pages. Have a common l
 This will be a sequential layout.
 
 
-=== Lab
+=== Project
 
-Design a layout for your application. Use the Layouts and Render, and start with the default Razor 3 application so that user logins are a part of your website. Rewrite the About and Contact pages (mythical email addresses are fine.) Introduce a _PageLayout.cshtml file so that you do not repeat the code to set the Layout property in every page.
+Design a layout for your application. Use the Layouts and Render, and start with the default Razor 3 application so that user logins are a part of your website. Rewrite the About and Contact pages. Make the contact information reflect how you would like to be contacted - only include information for the methods of contact you want to respond to. Introduce a _PageLayout.cshtml file so that you do not repeat the code to set the Layout property in every page.
 
 Start looking into Geolocation in HTML, using this: http://apress.jensimmons.com/v5/pro-html5-programming/ch5.html
 
-Make one of the pages of your website show your current location on a map, using the code or methods supplied in that web page. Be sure to include a citation of your source in your HTML.
+and this: https://developers.google.com/maps/
 
+Make a You Are Here webpage that shows the user's current location by latitude and longitude.
+Or go for it, and show it on a map. Be sure to include a citation of sources used in your HTML.
+To display a map you will have to have a google account so that you can get a Google Maps key. This is available at no charge at the google link above. (Bing also has a map service, if you prefer using a Microsoft account; theirs also requires a key.)

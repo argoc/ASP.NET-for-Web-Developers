@@ -1545,7 +1545,7 @@ Your initials are MS
 ----
 
 
-=== Lab
+=== Project
 
 One feature you may be using in your project is Geolocation, which is available in browsers as shown here http://www.w3schools.com/html/html5_geolocation.asp.
 
@@ -1582,4 +1582,4 @@ var d = R * c; // km results, use the other vars for their results
 http://www.movable-type.co.uk/scripts/latlong.html a bit too nerdy but interesting explanation
 
 
-https://msdn.microsoft.com/en-us/library/system.math_methods(v=vs.110).aspx C#'s Math class contains the PI property and the methods needed. You will have to repeat the code to convert values to radians many times as we have not yet discussion functions, and there is no toRad function in ASP.NET.
+https://msdn.microsoft.com/en-us/library/system.math_methods(v=vs.110).aspx C#'s Math class contains the PI property and the methods needed. You will have to repeat the code to convert values to radians many times as we have not yet discussion functions, and there is no toRad function in ASP.NET. You will be able to make it a function after chapter 7, when methods are introduced.

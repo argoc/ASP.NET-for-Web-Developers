@@ -627,6 +627,41 @@ What other analysis might you do? think of one, write a specification for it, an
 +
 This exercise uses two skills from this chapter, collections and File I/O. Get comfortable with the power of the foreach loop with collections, and with the variety of methods and properties on File I/O.
 
+. Suppose that the user gives you a file contains information about sales 
+figures for a company in various cities.
+Each line of the file contains a city name, followed by a colon (:) followed by the data for that
+city.  The data is a number of type double.
+However, for some cities, no data was available.  In these lines, the data is replaced by
+a comment explaining why the data is missing.  For example, several lines from the file might
+look like:
++
+[source,java]
+----
+San Francisco:  19887.32
+Chicago:  no report received
+New York: 298734.12
+----
++
+Write a program that will compute and print the total sales from all the cities together. The
+program should also report the number of cities for which data was not available.  The name of the
+file is "sales.dat".
++
+To complete this program, you'll need to save the file locally, then open the file and read from it. You will need to learn to read from a file and determine when the end of a file is reached. In psuedocode this is:
++
+----
+open file
+read a line
+while not EOF(file)
+  process the line read before
+  read the next line
+close the file
++
+Suggestion:  For each line, split it on the colon into two strings using Split with the ':' character.
+See if the second string is a valid number with IsDouble(), and convert it with AsDouble().
++
+Remember to use iterative development; you might expand the pseudocode above into pseudocode containing the processing of the lines. Make small changes to your code so that when you hit a problem, you have only a few things to look at to determine the cause.
+
+
 === Project
 
 This chapter represents a huge step forward: you can now make your data persistent, and provide users with the ability to alter it, whether that is through the direct 4-page "CRUD" style or more indirect, as actions taken when they move around your website.
