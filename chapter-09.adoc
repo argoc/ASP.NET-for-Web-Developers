@@ -1,14 +1,539 @@
-== Security and Accessibility
+== Security and Accessibility 
+
+Once you start exposing pages on the internet, security becomes a huge concern. Websites suffer from vulnerabilities if data from users is not handled carefully. With the ability for multiple users to access a website, any that offer persistent storage need to be careful about how data sharing between users occurs.
+
+https://www.owasp.org/index.php/Main_Page[OWASP] (Open Web Application Security Project) has developed guidelines for secure development and testing of web applications such as ours. This chapter touches on key features of secure web applications based on their top .NET issues. Issues for other web frameworks and languages may present in a different manner or need different methods of handling.
+
+The top 10 security issues collected by OWASP are:
+- A1 Injection
+- A2 Broken Authentication and Session Management
+- A3 Cross-Site Scripting (XSS)
+- A4 Insecure Direct Object References (can't happen in HTTP)
+- A5 Security Misconfiguration
+- A6 Sensitive Data Exposure
+- A7 Missing Function Level Access Control
+- A8 Cross-Site Request Forgery (CSRF) (same as A3 in Web Pages)
+- A9 Using Components with Known Vulnerabilities
+- A10 Unvalidated Redirects and Forwards
+
+Material in this section is based on https://www.owasp.org/index.php/.NET_Security_Cheat_Sheet[.NET Security Cheat Sheet] by Bill Sempf, Troy Hunt, and Jeremy Long (https://creativecommons.org/licenses/by-sa/3.0/[CC-BY-SA-2.0])
+
+=== Injection Attacks
 
 
-http://www.asp.net/web-pages/overview/security uses template in VS/WM
+The most common vulnerability for security remains Injection. In particular, SQL commands can be an attack vector through SQL injection attacks.
 
-http://www.mikepope.com/blog/DisplayBlog.aspx?permalink=2240 builds its own (similar result) in existing project
+In <<Collections and Databases,Collections and Databases>>, we issued SQL commands against a database. This is a particular issue with web applications that base queries or results on user input, such as search values or insert values. We showed safe programming in that chapter, using SQL parameters rather than string concatenation to build up our SQL commands. Any time you use a user's value, it should come into your system as an SQL Parameter. 
 
-- the user account system
-- SSL https://msdn.microsoft.com/en-us/library/dd163531.aspx
-- XSRF/XSS (Html.BeginForm())
-- injection attacks (JS and SQL...strings) encoding and use of strings
-- webaim
+There are limits to where parameters are accepted in SQL; for example, they can be compared to column values, but you cannot let a user provide you with a table name, as table names cannot be passed in SQL parameters. If you need users to provide you with table names, have them choose the names from a list on the client-side, and then make sure the name chosen is one of the values from the list on the server-side, to prevent introduction of SQL injection. This is often called *white-listing*, where you check a value is on a list of allowed values.
 
-http://docs.asp.net/en/latest/security/cross-site-scripting.html
+Never, ever, just concatenate user input into an SQL command string; whitelisting or SQL parameter use will protect against SQL injection.
+
+If you use enums to limit values, note that enums are still vulnerable to unexpected values. .NET only
+validates a successful cast to the underlying data type, integer by default. https://msdn.microsoft.com/en-us/library/system.enum.isdefined[Enum.IsDefined] can validate whether the input value is valid within the list of defined constants.
+
+Be aware of how your application connects to the database; its connection specifies a role or user. Apply the principle of least privilege when setting up the Database
+ User in your database of choice. The database user should only be able
+to access items that make sense for the use case.
+
+Use of the http://msdn.microsoft.com/en-us/data/ef.aspx[Entity Framework] (EF) is a very effective http://msdn.microsoft.com/en-us/library/ms161953%28v=sql.105%29.aspx[SQL injection] prevention mechanism. Remember that building your own ad hoc queries in EF is just as susceptible to SQL injection as a plain SQL query. LINQ can reduce SQL injection even more.
+
+When using SQL Server, prefer integrated authentication over SQL authentication. This removes the need to define roles and users for the system, using the own user's authentication for the connection. This may only be possible in an intranet environment when users of the Windows OS are those who will be accessing the database. When your database is used by those without Windows accounts, you have to find an alternative solution. It is not unusual for a single connection to the database to exist, tied to the application. If you take this approach, be careful to ensure that the application's access is limited only to data it needs to access, and that you have as many checks in place at the database level as possible to protect each user's data from other users. Triggers and other SQL features may provide additional layers of protection.
+
+
+
+
+=== Authentication and Session Management
+
+Never, ever write your own encryption. User passwords are typical values that need encryption; user management in general is a huge issue. To this end, Microsoft has begun supplying user login management code within its Web Pages and MVC templates. Use their code -- it undergoes more rigorous testing than you are likely to do. However, note that as provided it does still have some weaknesses.
+
+The ASP.NET Membership provider and role provider is a good start, but review
+the password storage. The default storage hashes the password with asingle iteration of SHA-1 which is rather weak. The ASP.NET MVC4 template uses http://www.asp.net/identity/overview/getting-started/introduction-to-aspnet-identity[ASP.NET Identity] instead of ASP.NET Membership, and ASP.NET Identity uses PBKDF2 by default which is better. Review the OWASP https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet[Password Storage Cheat Sheet] for more information.
+
+Once you have a user-based system, implement proper access controls; compare a user-provided username with the session's username, and check that the user is in the appropriate role.
+
+
+==== ASP.NET Membership
+
+The ASP.NET Membership template is available in Visual Studio if you create your project with File->New->Web Site...->(Templates->Visual C#)ASP.NET Web Site (Razor v3). This gives you a template web site with Default, About, and Contact pages and also a full user login/registration module with Registration, Login, Forgotten Password, and additional pages, and a backing database for them.
+
+[NOTE]
+====
+This database relies on SQL Server Compact Edition (SQLCE), which is not supported within Visual Studio 2015 (VS2015). It runs fine in IIS Express. You will not be able to view or alter the database contents within Visual Studio due to lack of support for SQLCE in VS2015.
+====
+
+You will see an Account directory which contains these files:
+
+* _ExternalLoginsList.cshtml - portion of Login page for external logins
+* AccountLockedOut.cshtml - too many failed logins, lets user know to wait before trying to log in again.
+* Confirm.cshtml - registration confirmed, ready to log in
+* ExternalLoginFailure.cshtml - external login failed
+* ForgotPassword.cshtml - page to generate an email to reset a password
+* Login.cshtml - login page
+* Logout.cshtml - code processed on logout (redirects to page that invoked it)
+* Manage.cshtml - change password or remove external login
+* PasswordReset.cshtml - change password
+* Register.cshtml - create local account
+* RegisterService.cshtml - create account with external login
+* Thanks.cshtml - completed registration
+
+There is also an App_Data directory with this file:
+
+* StarterSite.sdf - the membership database
+
+The root directory has these additional files:
+
+* _AppStart.cshtml - first file loaded, ensures login database exists
+* _SiteLayout.cshtml - puts common header on all pages with login/register links 
+* About.cshtml - template about page found on most websites.
+* Contact.cshtml - template contact page found on most websites.
+* Default.cshtml - template home page founc on most websites.
+* favicon.ico - small image used in browser tab
+
+The Web.config file's <connectionStrings> element contains an <add> element to allow access to the membership database (StarterSite.sdf).
+
+Once you have a new site, you will need to configure it. The first configuration is in `_AppStart.cshtml` for email, so that "forgot your password" emails can come through your mail account. This is sensitive information, so changes made should not be shared; erase it before sharing source code with others, and _do not_ put this file in a public place.
+
+[source,java]
+----
+// uncomment and assign values to these lines in _AppStart.cshtml
+WebMail.SmtpServer = "mailserver.example.com"; // replace with your SMTP server
+WebMail.EnableSsl = true;
+WebMail.UserName = "username@example.com";     // replace with your email
+WebMail.Password = "your-password";            // replace with your password - SENSITIVE
+WebMail.From = "your-name-here@example.com";   // replace with your email
+----
+
+I did find one open relay, new.toad.com, however email sent through it is likely to be black listed and unlikely to reach its intended recipient.  To use this relay, the values are "new.toad.com", true, "no-reply@no-reply.com", "", "your-real@email.com" (replace that last one with your real email address). 
+
+If you don't configure WebMail:
+* the "forget your password?" functionality of the website will let the user know that it is not available (see `Account\ForgotPassword.cshtml` in your web site)
+* email validation is not performed on new accounts
+
+
+To ensure that ASP.NET Membership works when you deploy your site, add the following to your web.config file just before `</configuation>`, the closing configuration tag:
+
+[source,html]
+----
+<appSettings>
+    <add key="enableSimpleMembership" value="true" />
+</appSettings>
+----
+
+
+[NOTE]
+====
+The new ASP.NET user login management system is called ASP.NET Identity; this is the membership system supported in ASP.NET MVC, and it should eventually become part of Web Pages as well. At the time of this writing, there is one non-MSDN writeup on itegrating it into Web Pages: http://www.mikesdotnetting.com/article/253/using-asp-net-identity-with-razor-web-pages[Using ASP.NET Identity with Razor Web Pages].
+====
+
+Your site is now configured with user logins. You will notice when someone is logged in, the upper right corner changes. Let's step through the code that does this (in `_SiteLayout.cshtml`):
+
+[source,html]
+----
+<section id="login">
+    @if (WebSecurity.IsAuthenticated) { <1>
+        <text>
+            Hello, <a class="email" href="~/Account/Manage" title="Manage">@WebSecurity.CurrentUserName</a>! <2>
+            <form id="logoutForm" action="~/Account/Logout" method="post">
+                @AntiForgery.GetHtml() <3>
+                <a href="javascript:document.getElementById('logoutForm').submit()">Log out</a> <4>
+            </form>
+        </text>
+    } else {
+        <ul>
+            <li><a href="~/Account/Register">Register</a></li> <5>
+            <li><a href="~/Account/Login">Log in</a></li>
+        </ul>
+    }
+</section>
+----
+
+<1> `WebSecurity.IsAuthenticated` is true if there is currently a logged-in user in the session.
+<2> `WebSecurity.CurrentUserName` is the name of the currently logged-in user. As you can see here, if the user clicks their name, it will go to the page ~/Account/Manage.cshtml, which is for account management.
+<3> We see here a use of the anti-forgery token; it is the first line within the form
+<4> The form is "just" a `Log out` link -- but notice that it is hooked to javascript so it actually submits the form, which will post to `~/Account/Logout.cshtml`.
+<5> When no-one is logged in, the Register and Log in links are presented, routing to their respective pages.
+
+==== Using Authentication
+
+[CAUTION]
+====
+ASP.NET Web Pages send credentials to the server in clear text (unencrypted). A production site should use HTTPS (secure HTTP, using SSL) to encrypt sensitive information between the client and the server. For more information about SSL, see http://www.c-sharpcorner.com/uploadfile/225740/what-is-ssl-and-how-to-implement-in-asp-net-web-aaplication/[What is SSL and How to Implement in ASP.NET Web Application] and https://msdn.microsoft.com/en-us/library/dd163531.aspx[Securing Communications with Secure Socket Layer (SSL)]
+If you are not running with SSL, be very clear to the user that their password is _**unsafe**_.
+====
+
+// TODO : set up self-signing and test under deployment also!!
+
+Once you have account management and authentication, you can block off access to that portion of your website that requires user account; or make pages behave differently for guests than for logged-in users.
+
+If you want a portion of your website to not present itself until a user is logged in, you can accomplish that with these steps:
+
+1. Make a subdirectory, let's call it `subset`.
+
+2. In `subset`, make a `_PageStart.cshtml` file that contains the following code:
++
+.~/subset/_PageStart.cshtml
+[source,html]
+----
+@{
+    if (!WebSecurity.IsAuthenticated) {
+        Response.Redirect("~/Account/Login?returnUrl="
+            + Request.Url.LocalPath);
+    }
+    Layout = "~/_SiteLayout.cshtml";
+}
+----
++
+We redirect to the login page if the user is not logged in -- thus preventing the current page from rendering. Notice also that the login will return to this page once it completes. The `returnUrl` parameter is used in `Login.cshtml` to redirect upon a successful login.
++
+Using `_PageStart.cshtml` ensures that all pages in the current directory require logging in prior to their use.
+
+The WebSecurity class provides several useful properties and methods:
+
+|====
+|
+|====
+
+==== Roles
+
+Roles are useful when groups of users have access to specific areas of your web site that other users do not. For example, administration is usually assigned to a role rather than a single user; or you may have a group functionality that lets groups share files, but limit cross-group file sharing.
+
+Roles may be fixed, or roles may be something that administrators (or, role administrators) can create and drop.
+
+Roles can be created through ASP.NET once a connection to the membership database is made with `WebSecurity.InitializeDatabaseConnection()` using the `Roles` property of a page to access the https://msdn.microsoft.com/en-us/library/webmatrix.webdata.simpleroleprovider(v=vs.111).aspx[`SimpleRoleProvider`] instance for the Membership database.
+
+For example, your administrative page might have code to create an admin role if one does not exist, and then if there are no users in the role, to put the user "admin" into that role.
+
+[source,java]
+----
+if (!Roles.RoleExists("admin")) {
+    Roles.CreateRole("admin");
+}
+
+if (Roles.GetUsersInRole().Length == 0) {
+    string[] admin = { "admin" };
+    Roles.AddUsersToRoles(admin,admin); // requires array of strings
+}
+----
+
+[TIP]
+====
+This particular design decision, to make sure there is an admin user in an admin role, is not very secure, since it is plain in our code what the login and group names are. One improvement is to put this code, or constants for the strings, in `_AppStart.cshtml`. Another would be to further isolate these values to environment variables that can then be configured on the server completely outside of the source code and accessed through the `Request` object.
+====
+
+Your administrative page may provide you with a list of users that allows you to add or remove administrative privilege from them, disable or remove their accounts, or create new accounts (for example, some sites do not have independent registration). 
+
+If there is a portion of your website that is only for administrators, you could use a similar organization to what we did with authorization to limit access to all pages in a diretory:
+
+
+1. Make a subdirectory, let's call it `admin`.
+
+2. In `admin`, make a `_PageStart.cshtml` file that contains the following code:
++
+.~/admin/_PageStart.cshtml
+[source,html]
+----
+@{
+    if (!WebSecurity.IsAuthenticated) {
+        Response.Redirect("~/Account/Login?returnUrl="
+            + Request.Url.LocalPath);
+    }
+    if(!Roles.IsUserInRole(AdminRole)) { <1>
+        Response.Redirect("~/NotAuthorized"); <2>
+    }
+    Layout = "~/_SiteLayout.cshtml";
+}
+----
++
+As before, we redirect to the login page if the user is not logged in -- thus preventing the current page from rendering. Notice also that the login will return to this page once it completes. The `returnUrl` parameter is used in `Login.cshtml` to redirect upon a successful login.
++
+If the user is logged in, we will check to see if they are in the admin role; that value is set elsewhere, as a constant value. If the current user is not an admin, they are sent to a page letting them know they are not authorized. For security's sake, you may actually want this to route to a Not Found page.
++
+Using `_PageStart.cshtml` ensures that all pages in the current directory require logging in prior to their use.
+
+SimpleRoleProvider provides its functionality through in its instance methods, available on the `Roles` property of the Page object:
+
+[cols="1,4"]
+|====
+| method | description
+
+|AddUsersToRoles(string[],string[])	| Adds the user names to the roles; throws an exception if a user listed is in one of the roles listed already.
+|CreateRole(string) |	Creates a new role. Throws an exception if the role already exists.
+|bool DeleteRole(string) |	Deletes the specified role; returns true on success, false if not removed. 
+|string[] FindUsersInRole(string) |	Returns all of the specified users who are in the specified role. 
+|string[] GetAllRoles() | Returns a list of all roles. 
+|string[] GetRolesForUser(string) |	Returns a list of the roles that a specified user is in. Throws an exception if the user does not have an account.
+|string[] GetUsersInRole(string) | Returns the user names that are in the specified role. 
+|bool IsUserInRole(string) |	Returns true if the current user is in the specified role, false otherwise.
+|bool IsUserInRole(string,string) |	Returns true if the specified user is in the specified role, false otherwise.
+|RemoveUsersFromRoles(string[],string[]) |	Removes the specified user names from the specified roles. Throws an exception if a user isn't in a role or a role does not exist.
+|bool RoleExists(string) |	Returns true if the role exists, false otherwise.
+|====
+
+
+Microsoft provides additional functionality in ASP.NET Membership including external authentication services such as Google and Facebook, and ReCaptcha validation of human interaction. For information on using those services, see http://www.asp.net/web-pages/overview/security/16-adding-security-and-membership.
+
+
+=== Cross-site scripting
+
+Next to SQL Injection, HTML injection also needs to be considered. If you allow user data to be displayed as HTML, that data can create a client-side injection attack. This is usually called *cross-site scripting* because its goal is to spoof the form from another site or send it to another site upon rendering. This data need not come from a form; it can be data previously stored in a database or a file. Consider that the database could be attacked from another source than your website and thus the virus may not appear until you select the data. So view any source of data as suspicious, and protect it upon display.
+
+ASP.NET provides you with the ability to protect against user data by *HTML encoding* such data before displaying it. This turns any character that could signal an injection into its named entity; < is turned into &lt;, & is turned into &amp;, and so on. This is an automatic conversion when you display the content of a variable or expression using `@something` in your page.
+
+If, for some reason, you need the value not to be encoded, then be certain the value contains only the HTML tags you expect or whatever your allowed values are before displaying it. You can stop the automatic encoding by wrapping the expression or variable in `Html.Raw()` like so:
+
+
+[source,java]
+----
+    string message = "<b>This is a test</b>";
+    
+    <p>Encoded: @message</p>
+    <p>Raw: @Html.Raw(message)</p>
+----
+
+
+
+[TIP]
+====
+You might wonder why ASP.NET encodes  _even for data in a database_. It does because even if we clean the data going into the database, a malicious user could corrupt the database contents. So, ASP.NET always encodes on the way to the user, rather than on the input data. Yes, you can, and should, check the incoming data to rule out injection attacks as much as you reasonably can, but know that attacks can occur at any level in your web stack, at any time, so ASP.NET always acts defensively unless explicitly told not to by an `Html.Raw()` call.
+====
+
+
+In addition to automatic encoding of output, ASP.NET Web Pages validates incoming form data, and rejects any that contain any HTML tags at all. There are times when this may not be the action you want; for example, if your page allows user text that contains simple HTML tags such as <p>, <em>, or <code>. 
+
+[TIP]
+====
+One way around this is to use a markup language such as markdown for comments, rather than allow HTML in forms; or to integrate a package that provides WYSIWYG editing with HTML safety in forms such as https://www.nuget.org/packages/RichTextEditor/[Rich Text Editor].
+====
+
+To access data that would fail incoming validation requests, you have to access it through the `Request.Unvalidated` method rather than through `Request`, `Request.Form`, or `Request.QueryString`. This causes the user's data to be passed to you directly without validation.
+
+For example, instead of accessing it this way:
+[source,java]
+----
+  string line = Request.Form["line"];
+----
+
+You would access it this way:
+[source,java]
+----
+  string line = Request.Unvalidated().Form["line"];
+----
+
+If you were to try to access the data through the Form field directly, you would get an error. 
+
+It is _very important_ that you perform whitelisting validation on this input yourself if you bypass validation. https://msdn.microsoft.com/en-us/library/hh882339(v=vs.110).aspx[Request Validation in ASP.NET] proposes a very smooth approach:
+
+Encode the whole input, and then only decode the tags that you want to allow. 
+[source,java]
+----
+// Encode the string input
+StringBuilder sb = new StringBuilder(Html.Encode(line));
+// Selectively allow <b> and <i>
+sb.Replace("&lt;b&gt;", "<b>");
+sb.Replace("&lt;/b&gt;", "</b>");
+sb.Replace("&lt;i&gt;", "<i>");
+sb.Replace("&lt;/i&gt;", "</i>");
+----
+
+This type of bypassing should be done with extreme caution: if you forget to check or make a mistake in your code, then you have a security flaw that can be exploited.
+
+
+You can also add checks to your forms and the processing of their contents to detect if a form request was forged.
+
+To do this, add to the form like so:
+
+[source,java]
+----
+<form ...>
+@AntiForgery.GetHtml() <!-- first line within the form -->
+... continue with form
+</form>
+----
+
+And then when you process the posted data, add a check first for forgery:
+
+[source,java]
+----
+if (IsPost) {
+    AntiForgery.Validate();
+    ... continue with form processing
+}
+----
+
+This adds an anti-forgery token to a form and then has the server-side validate that token after a post. The form submission has to come from the expected client for the anti-forgery check to pass.
+
+
+=== Security Configuration
+
+Whenever there is a way to specify security, it must be carefully configured. This includes not only your web application's security configuration but also the web server's security configuration, the database's security configuration, and any underlying server operating system security configuration.
+
+For your web application, you should lock down the web.config file:
+
+    **   Remove all aspects of configuration that are not in use.
+    ** Do not provide debug information in a deployed application.
+    **   https://msdn.microsoft.com/en-us/library/dtkwfdky.aspx[Encrypt sensitive parts of the web.config] 
+
+
+
+
+=== Sensitive Data
+
+If you put account numbers, passwords, or other sensitive data in URLs or forms, then malicious users have access to data that they could use to compromise your web application. Never expose sensitiive data in URLs -- always use a level of indirection that keeps all sensitive data on the server under its security.
+
+Always use http://support.microsoft.com/kb/324069[HTTPS]. You may have noticed that our web sites are just using HTTP. HTTPS requires an SSL certificate; a real SSL certificate costs money, but for testing purposes you can write your own certificate and put it in place. There is a writeup on that here: http://www.c-sharpcorner.com/UploadFile/225740/what-is-ssl-and-how-to-implement-in-Asp-Net-web-aaplication/
+
+Note that since you are not using SSL on your deployed application, you should make it very clear in your web pages that users should not use a password they use elsewhere; your site does not provide the security that commercial sites have.
+
+To make it less obvious to clients what software you are using:
+
+*   Remove the version header in your web.config.
+
+[source,java]
+----
+   <httpRuntime enableVersionHeader="false" /> 
+
+----
+
+*   Also remove the Server header (doing this in _PageStart.cshtml removes it in each response).
+
+[source,java]
+----
+   HttpContext.Current.Response.Headers.Remove("Server");
+
+----
+
+
+=== Check at every level
+
+Previously in this text we've stressed checking data both in the client and in the server. Often developers think if the data has been checked once, that is sufficient. But because malicious users can spoof requests and potentially even get into the database directly, we need to check at every level.
+
+When users are introduced, they also need to be revalidated at each level; it's not enough to check the user name on the client side and then let server or database access proceed; the server and database should also check the user name against allowed permissions. That way, malicious users going in below the client, entering the server or database directly, will be prevented from access.
+
+
+=== Updating the .NET Framework
+
+A key vulnerability (https://www.owasp.org/index.php/Top_10_2013-A9-Using_Components_with_Known_Vulnerabilities[A9 Using Components with Known Vulnerabilities]) is not keeping libraries up to date, allowing known security issues to be used; this was a key issue with HeartBleed issues and has led to the demise of Java in the browser. ASP.NET is no different, as a library it, too, needs to be kept up to date so that security holes are quickly closed.
+
+The .NET Framework is kept up-to-date by Microsoft with the Windows 
+Update service. Developers do not normally need to run seperate updates 
+to the Framework. Windows update can be accessed at http://windowsupdate.microsoft.com/[Windows Update] or from the Windows Update program on a Windows computer.
+
+Individual frameworks can be kept up to date using http://nuget.codeplex.com/wikipage?title=Getting%20Started&referringTitle=Home[NuGet].  Watch the
+updates on your development setup, and plan updates to your applications
+ accordingly.
+
+Any third party library your application might use will also need to be updated. If it does not use Nuget, then you will need to update it explicitly through its update mechanism.
+
+If you have a version of .NET running in a web server, it is the administrator's role to ensure updates are applied in a timely manner. If you are using a cloud service such as AppHarbor or AWS, check on their update policy to be aware of what your exposure might be to exploitation of a known bad version.
+
+Always check the MD5 hashes of the .NET Framework assemblies to
+prevent the possibility of rootkits in the framework. Altered assemblies
+ are possible and simple to produce. Checking the MD5 hashes will prevent using altered assemblies on a server or client machine. See https://www.owasp.org/index.php/File:Presentation_-_.NET_Framework_Rootkits_-_Backdoors_Inside_Your_Framework.ppt[File:Presentation - .NET Framework Rootkits - Backdoors Inside Your Framework.ppt]
+
+
+=== Redirects and Forwards
+
+The tenth issue in the OWASP Top 10 is unvalidated redirects and forwards. These occur in C# when your page does a `Response.Redirect` call to change the page you land on when a form is processed. You may also do redirects in JavaScript, consult https://www.owasp.org/index.php/Unvalidated_Redirects_and_Forwards_Cheat_Sheet[OWASP's information sheet on redirects and forwards].
+
+ASP.NET provides you with the ability to redirect to another URL. A form of attack is to take over the redirect or forward with a phishing URL rather than the intended one. So, whenever you code a redirect or forward in your web page that may have come from a user's choice or input, you should use a white-list test to ensure the URL is value. 
+
+One check you can make in ASP.NET MVC is to validate that the URL is local, that is, remains on the same domain. For more information on MVC's approach to this see http://www.asp.net/mvc/overview/security/preventing-open-redirection-attacks[Preventing Open Redirection Attacks (C#)].
+
+
+
+
+=== Accessibility
+
+On the one hand, security aims at coding your pages to keep out users who are being malicious. Web accessibility is about coding your pages to allow users who want to view your page but have limitations in vision, mobility, hearing, or otherwise have difficulty accessing a web site.
+
+http://webaim.org/standards/wcag/checklist[WebAIM.org] compiled a set of guidelines for web pages. These are primarily at the HTML level, and are relatively straight-forward to implement, but can be extensive if not considered up front for a large site. Here are their guidelines:
+
+. Perceivable
+* Provide text alternatives for any non-text content such as images, buttons, and videos
+* Provide alternatives for time-based media, such as transcripts for videos
+* Content can be presented in different ways without losing information or structure
+* Make it easier for users to see and hear content including separating foreground from background, consider the impact of color-blindness
+. Operable
+* Make all functionality available from a keyboard
+* Provide users enough time to read and use content
+* Do not design content in a way that is known to cause seizures
+* Provide ways to help users navigate, find content, and determine where they are
+. Understandable
+* Make text content readable and understandable
+* Make Web pages appear and operate in predictable ways
+* Help users avoid and correct mistakes
+. Robust
+* Maximize compatibility with current and future user agents, including assistive technologies
+
+
+Many of these can be achieved by actions such as:
+* use alt attributes to describe images 
+* use HTML tags semantically; that means the tag is used correctly, i.e.:
+** use table column and row headers to mark column and row headers, not to style the table
+** use headers (<h1>, ... <h6>) appropriately, not to get certain styles
+** use headers, don't just use styles to present text as if it was a headers
+** forms use appropriately tagged labels for fields
+* videos/audio tracks have transcripts and subtitles
+* use a logical layout that reacts well to screen readers and re-sizing and doesn't rely on colors, shapes, or sizes of items
+* do not require a mouse; for example, provide keyboard alternatives
+
+In addition to WebAIM's general guidelines, some organizations have to satisfy regulations such as Section 508 of the Rehabilitation Act, §1194.22. These check even more deeply into page layout, content, and use.
+
+With ASP.NET's Web Pages, accessibility is driven by the HTML and the content; if you use the HTML Helpers to generate HTML, provide argument values for alt tags and others appropriate to provide accessibility.
+
+
+
+=== Further Reading
+
+- https://www.owasp.org/index.php/.NET_Security_Cheat_Sheet
+- https://www.owasp.org/images/5/57/OWASP_Proactive_Controls_2.pdf
+- http://www.mikepope.com/blog/DisplayBlog.aspx?permalink=2240
+- http://www.asp.net/web-pages/overview/security/16-adding-security-and-membership
+- https://msdn.microsoft.com/en-us/library/system.web.httputility(v=vs.110).aspx
+- https://msdn.microsoft.com/en-us/library/hh882339(v=vs.110).aspx
+- http://webaim.org/standards/wcag/checklist
+- http://webaim.org/standards/508/checklist
+- http://web.archive.org/web/20150317082715/http://www.microsoft.com/web/post/securing-web-communications-certificates-ssl-and-https
+- http://www.c-sharpcorner.com/uploadfile/225740/what-is-ssl-and-how-to-implement-in-asp-net-web-aaplication/
+- https://www.macaw.nl/artikelen/configuring-an-asp-net-project-for-development-with-ssl
+
+
+=== Exercises
+
+. Time for another round of "Stump the Newbie". Design a page with a security hole, and have a peer try to find the hole. You might do this by providing them source, or by providing them with a deployed application to "hack".
+
+. Take the template Web Site's user management functionality and add an admin role to it along with management for that role.
++
+The management of the admin role should include:
++
+* the ability to make a user an admin
+* the ability to take away admin privilege from a user
+* the requirement that there be at least one user in the admin role
+* the ability to delete a user
+* the ability to lock a user's account (so they can log in, but get sent to an 'Account Locked' page).
+* the ability to unlock a user's account
+* the ability to take on admin privilege outside of being given it in some manner (you design and document the manner), such as one of these:
+** the very first account created gets admin
+** a hard-coded user name gets admin given when the account is created
+** the database is seeded with an admin account
++
+In all cases, that specially-granted admin can be taken away if/when admin is given to another user, and won't re-occur unless explicitly handed admin privilege through the admin management page.
++
+Note, this is in part a web site design exercise; we have at least two "management" activiities: user management and admin management. Consider how you want to lay this out and present it to the user.
+
+. Pick an earlier exercise and check it against the WebAIM or Section 508 check-lists; make appropriate changes to satisfy those checklists. Have someone review your work to see if you overlooked any of the items, and review their page to see if they overlooked any of the items.
+
+. Research the availability of tools to probe a website for security holes. Run them against your admin page web site.
+
+
+
+=== Project
+
+Review your project for attack vectors. Identify its weaknesses and apply appropriate hardening.
+
+Add user management to your project using the provided ASP.NET Membership set-up from the template Web Site. Note that since you are not using SSL on your deployed application, you should make it very clear in your web pages that users should not use a password they use elsewhere; your site does not provide the security that commercial sites have.
+
+Consider if your site needs an admin role that has more permissions, and if so implement an admin role and add checks to adminstrative functions so they are only carried out by users in the admin role.
+
+Also do a review of your project against the WebAIM checklist and make any needed adjustments.

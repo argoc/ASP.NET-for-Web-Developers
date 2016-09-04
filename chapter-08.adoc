@@ -646,21 +646,30 @@ Write a program that will compute and print the total sales from all the cities 
 program should also report the number of cities for which data was not available.  The name of the
 file is "sales.dat".
 +
-To complete this program, you'll need to save the file locally, then open the file and read from it. You will need to learn to read from a file and determine when the end of a file is reached. In psuedocode this is:
-+
-----
-open file
-read a line
-while not EOF(file)
-  process the line read before
-  read the next line
-close the file
+To complete this program, you'll need to save the file locally, then open the file and read from it. C# provides a convenient File method `ReadAllLines` that ties file reading into collections. The method `File.ReadAllLines` opens a file and makes all of the lines available as an IEnumerable<string>. This means you can use a foreach loop to look at each line in turn, and know that when it completes, you have reached the end of the file.
 +
 Suggestion:  For each line, split it on the colon into two strings using Split with the ':' character.
 See if the second string is a valid number with IsDouble(), and convert it with AsDouble().
 +
+The file class has all of the methods you need to read the file; see https://msdn.microsoft.com/en-us/library/system.io.file(v=vs.110).aspx[the .NET Class specification]. Notice that `ReadAllLines` opens the file, reads all of the lines, and closes it. This does use alot of memory, since the file's contents are held in memory.
++
 Remember to use iterative development; you might expand the pseudocode above into pseudocode containing the processing of the lines. Make small changes to your code so that when you hit a problem, you have only a few things to look at to determine the cause.
++
+How might you process the file if it was too large to hold in memory? Add a check of the file size before opening it, and only uses your solution for small files. What do you think the line between large and small should be?
++
+Challenge: Implement an alternative solution for large files that avoids bringing the file into memory at one time; this is complex, as it requires reading from the file a byte or chunk at a time, processing that, and then continuing.
 
+. Develop a web application that provides you with a file server. It should:
++
+* list the directory structure and files on the server under some "root" upload location
+* let you create or remove a directory there
+* let you upload a file to a particular remote directory
+* let you download a file from a particular remote directory
+* let you delete a previously uploaded file
++
+To make this task manageable, start with just uploading/downloading/listing remote files in a single directory, and then add directory management as a second exercise.
++
+This isn't very secure, since anyone with the web page can access all of these files; in a future chapter, you will add user management, so each user has their own file server. Consider how you might make this file server specific to one user, perhaps with a root directory that is a GUID specific to that user; the user should not need to know the GUID to use their files.
 
 === Project
 

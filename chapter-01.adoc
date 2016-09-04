@@ -753,6 +753,8 @@ Our goal for the course is to develop a full-stack web application: one that use
 
 * Yelp. Restaurants, their menus and statistics, and customer reviews. (Yelp actually https://www.yelp.com/dataset_challenge[publishes their data] as a huge JSON bundle to see if programmers could come up with interesting new analyses of it.)
 
+* Google Drive. Users upload files, download, browse. Each user sees only their own files. Then there's sharing: you let someone see a file or directory of yours, with either read or delete access. Google docs takes this even further with multi-user editing, but that's a bit beyond the scope of this text.
+
 * The Internet Archive -- capturing web pages and making them searchable. This has saved me so many times, I love it. It also has a way for the original author to get contents removed (not everyone wants a permanent presence). Make a craigslist wayback machine, that would be handy (the only one I've found costs money and requires a law enforcement certification to use).
 
 The internet is your oyster -- find something you'd like to figure out how to do in ASP.NET Web Pages. Make sure it has persistent server data, and write up a proposal. Nothing fancy -- we'll get into prototyping in the next chapter.
