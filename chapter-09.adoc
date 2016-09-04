@@ -24,7 +24,7 @@ Material in this section is based on https://www.owasp.org/index.php/.NET_Securi
 
 The most common vulnerability for security remains Injection. In particular, SQL commands can be an attack vector through SQL injection attacks.
 
-In <<Collections and Databases,Collections and Databases>>, we issued SQL commands against a database. This is a particular issue with web applications that base queries or results on user input, such as search values or insert values. We showed safe programming in that chapter, using SQL parameters rather than string concatenation to build up our SQL commands. Any time you use a user's value, it should come into your system as an SQL Parameter. 
+In <<collections,Collections and Databases>>, we issued SQL commands against a database. This is a particular issue with web applications that base queries or results on user input, such as search values or insert values. We showed safe programming in that chapter, using SQL parameters rather than string concatenation to build up our SQL commands. Any time you use a user's value, it should come into your system as an SQL Parameter. 
 
 There are limits to where parameters are accepted in SQL; for example, they can be compared to column values, but you cannot let a user provide you with a table name, as table names cannot be passed in SQL parameters. If you need users to provide you with table names, have them choose the names from a list on the client-side, and then make sure the name chosen is one of the values from the list on the server-side, to prevent introduction of SQL injection. This is often called *white-listing*, where you check a value is on a list of allowed values.
 
@@ -93,7 +93,7 @@ The root directory has these additional files:
 
 The Web.config file's <connectionStrings> element contains an <add> element to allow access to the membership database (StarterSite.sdf).
 
-Once you have a new site, you will need to configure it. The first configuration is in `_AppStart.cshtml` for email, so that "forgot your password" emails can come through your mail account. This is sensitive information, so changes made should not be shared; erase it before sharing source code with others, and _do not_ put this file in a public place.
+Once you have a new site, you will need to configure it. The first configuration is in `_AppStart.cshtml` for email, so that "forgot your password" emails can come through your mail account. This is sensitive information, so changes made should not be shared; erase it before sharing source code with others, and __do not__ put this file in a public place.
 
 [source,java]
 ----
@@ -430,7 +430,7 @@ If you have a version of .NET running in a web server, it is the administrator's
 
 Always check the MD5 hashes of the .NET Framework assemblies to
 prevent the possibility of rootkits in the framework. Altered assemblies
- are possible and simple to produce. Checking the MD5 hashes will prevent using altered assemblies on a server or client machine. See https://www.owasp.org/index.php/File:Presentation_-_.NET_Framework_Rootkits_-_Backdoors_Inside_Your_Framework.ppt[File:Presentation - .NET Framework Rootkits - Backdoors Inside Your Framework.ppt]
+ are possible and simple to produce. Checking the MD5 hashes will prevent using altered assemblies on a server or client machine. See https://www.owasp.org/index.php/File%3APresentation_-_.NET_Framework_Rootkits_-_Backdoors_Inside_Your_Framework.ppt (.NET Framework Rootkits (ppt))
 
 
 === Redirects and Forwards

@@ -1,3 +1,4 @@
+[[collections]]
 == Collections and Databases
 
 A key value proposition of web sites is that they provide global access to persistent information. We typically store the persistent information in databases and files on a file system. Databases store the data as tables (or sometimes more complex structures, but for now, let's stick with tables).
