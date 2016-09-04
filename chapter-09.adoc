@@ -5,6 +5,7 @@ Once you start exposing pages on the internet, security becomes a huge concern. 
 https://www.owasp.org/index.php/Main_Page[OWASP] (Open Web Application Security Project) has developed guidelines for secure development and testing of web applications such as ours. This chapter touches on key features of secure web applications based on their top .NET issues. Issues for other web frameworks and languages may present in a different manner or need different methods of handling.
 
 The top 10 security issues collected by OWASP are:
+
 - A1 Injection
 - A2 Broken Authentication and Session Management
 - A3 Cross-Site Scripting (XSS)
