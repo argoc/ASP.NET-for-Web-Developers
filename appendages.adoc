@@ -3,6 +3,7 @@
 
 === Razor Quick-Reference
 
+[cols="2,2,3"]
 |====
 | Syntax/Sample | Razor | remarks
 
@@ -18,7 +19,7 @@
 
 So ``Hello @title. @name.`` knows the variables are ``title`` and ``name`` since there is whitespace after the .'s
 
-| Expression (Unencoded) | ``<span>@Html.Raw(model.Message)</span>``
+| Expression (Unencoded) | ``<span>@Html.Raw(message)</span>``
 | Html is a Razor Helper (utility that provides methods)
 
 | Combining Control and Text |  ``@foreach(var item in items) {`` +
