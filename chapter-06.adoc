@@ -105,7 +105,7 @@ The number of files will change based on what was changed since your last commit
 +
 Do this step each time you want to update the code on AppHarbor. It will be updated to the currently committed code on your local git repository (see step 4.c. above for how to do that).
 
-Once you deploy to AppHarbor, there may be issues.
+Once you deploy to AppHarbor, there may be issues. So next you will need to go to your live application and start testing it. Continue with <<deployed-on-appharbor>>.
 
 
 ==== How do I get Git?
