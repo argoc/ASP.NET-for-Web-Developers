@@ -220,6 +220,22 @@ http://simplecalculator-1.apphb.com/SimpleCalculator.cshtml
 
 will bring up my calculator page. (Note, I deleted it, so that link won't take you to it.)
 
+=== Got Database?
+
+We haven't covered databases yet, but if you have the ASP.NET Web Site Starter Site, you already have a database. You are going to need to locate and add database support for this to work.
+
+Go to your application's main administration panel and look for "Add ons". Click this, then page down until you find "Shared SQL Server"; click that service, and then add the Free level of support. This provides 20 MB of storage (something to keep in mind).
+
+Now, on your local machine, you have connection strings configured. These will be different on the server, and so you will have to do a few more configuration steps to get your application talking to the database.
+
+On the Application Console, you will see a "Configuration variables" link by your SQL Server add-on (below the builds). Click this link. Three keys are listed there:
+
+* SQLSERVER_CONNECTION_STRING 	
+* SQLSERVER_CONNECTION_STRING_ALIAS
+* SQLSERVER_URI
+
+...more to determine (Stay tuned)
+
 === Your Second Application
 
 You can have multiple applications available on your AppHarbor account. Use all of the steps provided earlier in this chapter for each deployed application:
@@ -315,6 +331,8 @@ Since we are using AppHarbor, we have these choices:
 - put output in our web page to show what is happening on the live server
 - use try/catch to trap exceptions so our pages work around the error
 - debug on the local machine (not the live server) with Visual Studio's debugger
+
+Note that AppHarbor offers you advice on this also here https://support.appharbor.com/kb/getting-started/frequently-asked-questions.
 
 ==== Put output on a web page
 
@@ -444,6 +462,7 @@ For more information on the Visual Studio debugger, see https://msdn.microsoft.c
 - https://try.github.io/levels/1/challenges/1
 - https://dzone.com/refcardz/getting-started-git
 - http://www.asp.net/web-pages/overview/testing-and-debugging/aspnet-web-pages-razor-troubleshooting-guide
+- http://www.devcurry.com/2012/05/deploying-your-aspnet-app-on-appharbor.html
 
 
 === Exercises
