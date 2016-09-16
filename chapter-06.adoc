@@ -224,8 +224,17 @@ will bring up my calculator page. (Note, I deleted it, so that link won't take y
 
 We haven't covered databases yet, but if you have the ASP.NET Web Site Starter Site, you already have a database. You are going to need to locate and add database support for this to work.
 
-Go to your application's main administration panel and look for "Add ons". Click this, then page down until you find "Shared SQL Server"; click that service, and then add the Free level of support. This provides 20 MB of storage (something to keep in mind).
+Go to your application's main administration panel and look for "Add ons". Click this, then page down until you find "Shared SQL Server"; click "See More" for that service, and then add the Free level of support. This provides 20 MB of storage (something to keep in mind).
 
+Upon a successful install, you are returned to the Application Console. Click the "SQL Server" service that appears under so that you go back to the Add On console for SQL Server -- you need to return to do some more configuration.
+
+On the SQL Server add-on page, you need to click "Go to SQL Server" to configure the connection string. This puts you on a page with private configuration information (not the kind of information to publish yourself -- these are the private keys that get you to your private SQL Server instance).
+
+On that page click the "Edit database configuration" button. In the Alias box, put the name of your connection -- this is the name that you used in the Web.config file, with the starter site template it is StarterSite. Click Apply. This returns you to the previous page, and the alias now shows up in the information there. 
+
+Why did you do this? So that AppHarbor will find its database server rather than the one you developed with. It has to do this, as it has a shared database server, not private ones for each application.
+
+////
 Now, on your local machine, you have connection strings configured. These will be different on the server, and so you will have to do a few more configuration steps to get your application talking to the database.
 
 On the Application Console, you will see a "Configuration variables" link by your SQL Server add-on (below the builds). Click this link. Three keys are listed there:
@@ -235,6 +244,7 @@ On the Application Console, you will see a "Configuration variables" link by you
 * SQLSERVER_URI
 
 ...more to determine (Stay tuned)
+////
 
 === Your Second Application
 
