@@ -40,6 +40,7 @@ AppHarbor is actually running within Amazon Web Services -- so their service lay
 For more information, visit https://appharbor.com/page/how-it-works
 
 The basic setup can be found in a variety of services like this; ASP.NET C# cloud service include:
+
 * AppHarbor
 * http://azure.microsoft.com/[Microsoft Azure]
 * http://docs.aws.amazon.com/gettingstarted/latest/wah/web-app-hosting-intro.html[Amazon Web Services for ASP.NET]
@@ -134,7 +135,7 @@ Before your first deployment of a given application you will need to create a lo
 ====
 AppHarbor uses Git and not FTP since it expects you to be working on code that is under active development or maintenance -- that means version control to any professional developer. Git provides that version control, so AppHarbor doesn't have to.
 
-AppHarbor even supports deployemnt from GitHub accounts, so true multi-user cloud-based development can be done with several users sharing code through GitHub and deploying to AppHarbor when they have a stable codeline.
+AppHarbor even supports deployment from GitHub accounts, so true multi-user cloud-based development can be done with several users sharing code through GitHub and deploying to AppHarbor when they have a stable codeline.
 ====
 
 In a git command window (start with git-bash or git-cmd in our portable Git) do:
