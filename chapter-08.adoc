@@ -138,6 +138,13 @@ Once you have an App_Data directory, right-click on that and click Add; then cli
 
 Once you are done, your database should appear under App_Data.
 
+[NOTE]
+====
+If you are deploying to AppHarbor, or some other cloud ASP.NET PaaS, check to see if it allows more than one database. You may need to put all of your tables in a single database, rather than separate ones. This can be an issue if you are already using ASP.NET Identity, which assumes it can use a database named Identity with the connection name DefaultConnection.
+
+You can add tables to the Identity database for your application's database functionality; it's just not the cleanest design to do so.
+====
+
 ==== Database Configuration in Web.config
 
 Your project Web.config file needs to have a connection string for your database. Check, and if it does not, add within the <connectionStrings> section of the file the following XML:
@@ -204,7 +211,7 @@ This is an interesting Razor example since it uses several features of Razor, C#
 * The form has two submit buttons with the same name and different values; this is how the POST action can tell which button was clicked -- the value of the clicked button is the value of the buttons' name in the `Request.Form` dictionary.
 * Notice if a form submission is manufactured with a bad choice, no command is run -- we don't even tell the user it was an invalid choice. This was a design decision, to give back minimal information to malicious users (since only spoofed POSTs could use bad values).
 
-=== Put Data in the Table (INSERT)
+==== Put Data in the Table (INSERT)
 
 Once you have a table, you need to be able to put data into it. If your table's data is static, you can do this through the Server Explorer view of the table in Visual Studio. If you right-click on the table in the Server Explorer view, you can see its data with the "Show Table Data" menu item. This shows you the data, and if you enter additional rows, they are saved to the table.
 
@@ -276,7 +283,7 @@ We used the same `Execute` method that the CREATE TABLE and DROP TABLE statement
 
 The database class has a useful method, `GetLastInsertId`, that you see used in the page.  Because we inserted into a table with an identity column, the database will give us back the value it generated for that column. We give it to the user (though usually you would not, but you might use it for some other, internal purpose).
 
-=== View Data in the Table (SELECT, WebGrid)
+==== View Data in the Table (SELECT, WebGrid)
 
 Once you have data in your database, you will want to display it to the user. This means getting the data back out of the database. There are three methods on `Database`  that return data:
 
@@ -370,7 +377,7 @@ The most basic form of this requires adding one parameter to the WebGrid constru
 
 To read more about this, see https://msdn.microsoft.com/en-us/library/system.web.helpers.webgrid(v=vs.111).aspx
 
-=== Change Data in the Table (UPDATE and DELETE)
+==== Change Data in the Table (UPDATE and DELETE)
 
 In addition to having data entered, you may wish to allow users to update or delete their data.
 
@@ -440,7 +447,7 @@ We also check the number of rows updated by looking at the value returned by Exe
 
 This collection of 4 pages: the list of entries, add, delete, and update lets us control the contents of our table. You will see this "CRUD" (create, update, delete) model again in ASP.NET MVC. These are the 4 basic operations on persistent storage; knowing how to do these 4 lets you then use the operations within other contexts to suit your application's needs.
 
-=== Database class
+==== Database class
 
 We've used several methods of the Database class. Here is a list of its property and methods to review:
 
@@ -482,6 +489,42 @@ One thing we have not explored is a multi-table database and joins to reconnect 
 ASP.NET provides an automatic object-to-relational mapping called the Entity Framework and an additional language integrated into C# called LINQ for manipulating databases. Those are beyond the scope of this text, but we will walk through it in ASP.NET Extreme.
 ====
 
+=== Application Database Design
+
+Good database design is a topic in itself, and beyond the scope of this text. Good application database use is a programming design exercise.
+
+You can see a clean example of application-database design in the ASP.NET Identity system and its use in the ASP.NET Web Site with Identity template.
+
+In particular, there is a UserManager class that controls all changes made to the User table, and a User class that holds instances created from rows of the table. Microsoft calls this style of use *Entity Framework*; in the wider general design literature, it is called *Object-Relational Mapping* (ORM), as objects in your application are representations of rows in the table, and the manager for them ensures that changes are made to the underlying table.
+
+UserManager does not expose the SQL it uses, but rather provides the user with specific actions given a User or values that help identify a user, with methods such as:
+
+* FindUserById(username) -- returns the user from the database with the given user name
+* FindUserByEmail(email address) -- returns a user given an email address
+* DeleteUser(user) -- given a user object, removes it from the underlying table
+* ChangeUserPassword(username, oldpassword, newpassword) -- changes the user's password in the object and in the database
+* CheckEmail(username, email address) -- returns true if the email address is the one for the user, or false otherwise
+* CreateUser (username, email, password, ...) -- creates a new user and puts it into the database
+
+The User class is a simple class with properties for each of the columns in the database.
+
+The UserManager instance also manages connecting to the database. These connections are expensive and must be released when database access completes. In the web universe, this can lead to a lot of churning, since HTTP is a session-less protocol. A typical mature web application will reuse a database connection within the session it thinks it has with a user, but will release it after a certain length without activity, assuming the user has left the web site.
+
+You can ensure that your database connections are closed by cleaning them up by wrapping the connection and database access in a try block with a finally clause. The finally of a try always runs, even if an exception is thrown.
+
+Another way to ensure the connection is closed is to use a C# using statement. This statement ensures that the instance held in its variable declaration is disposed of, no matter how the using block completes.
+
+[source,java]
+----
+using (var db = Database.Open("PhoneBookDB") ) 
+{
+    ... SQL operations
+}
+----
+
+The dispose action will close the database and ensure all resources are released; it invokes the Close operation on the database.
+
+For more information on using, see  https://msdn.microsoft.com/en-us/library/yh598w02.aspx[using Statement (C# Reference, MSDN)]
 
 === File Handling
 
@@ -579,6 +622,10 @@ When you write code that changes files on the server disk, consider it very care
 If you are only uploading and displaying image files, there is a helper tailored to images, `WebImage`. This is described in https://msdn.microsoft.com/en-us/library/system.web.helpers.webimage(v=vs.111).aspx.
 In addition to basic file information, this allows you to create images from an array of bytes, and to flip, watermark, or resize an image. It is used in the MSDN tutorial http://www.asp.net/web-pages/overview/ui-layouts-and-themes/9-working-with-images.
 
+
+==== Deployment and file management
+
+If you are using a PaaS such as AppHarbor, check its file management policy; many limit where files can be uploaded to, and may not keep files persistently -- they may disappear when your app cycles off of their server, and in complex scenarios may disappear mid-way due to your app getting relocated within their server farm.
 
 
 === Further Reading

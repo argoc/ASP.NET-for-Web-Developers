@@ -154,4 +154,4 @@ The tilde can be used in any string value that is interpretted as a file path; i
 :numbered!:
 == Colophon
 
-Produced using AsciiDocFX, AsciiDoctor, Google Drive, GitHub, and AppHarbor. Using material from other Open Educational Resources noted in the bibliography.
+Produced using AsciiDocFX, AsciiDoctor, Vim, Google Drive, GitHub, Portable Git, Visual Studio 2015, ASP.NET 4.6.1, and AppHarbor. Using material from other Open Educational Resources noted in the bibliography.
