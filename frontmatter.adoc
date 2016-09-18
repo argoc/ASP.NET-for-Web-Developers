@@ -13,6 +13,8 @@ Like those that came before it, this book can be distributed in unmodified form 
 
 The website for this book is: http://faculty.olympic.edu/agarripoli/New2ASP .
 
+The source of this book and all sample code can be downloaded from https://github.com/argoc/ASP.NET-for-Web-Developers/archive/master.zip
+
 This book is provided “as-is”. It may contain errors of spelling, grammar, or semantics. Information and views expressed in this document may change without notice. You bear the risk of using it.
 Examples depicted herein are provided for illustration only and are fictitious. 
 

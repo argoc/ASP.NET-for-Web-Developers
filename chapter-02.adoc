@@ -39,12 +39,30 @@ How does IIS know where to find the root page? It looks in the root directory fo
 
 === Visual Studio
 
-You get a bare-bones website if you start in Visual Studio with File -> New -> Web Site -> ASP.NET Web Site (Razor v3). Your bare-bones website will already have six directories and 8 files in the project directory.
 
+
+For this book, I have assembled a template available through the Visual Studio Gallery. This section describes that template's organization, which follows Microsoft conventions.
+
+To start your project with that template, in Visual Studio 2015's menu, choose File -> New -> Project. On the left column of the New Project panel, select Templates -> Visual C# -> Web. 
+
+To install the template the first time, click the link at the bottom of the center panel that reads "Click here to go online and find templates.". In the search box (upper right corner, with the text "Search Online Templates" in it), enter "Identity,Razor". The template named "ASP.NET Web Pages Starter Site with Identity" will appear in the list. Select that template, replace "WebPagesSite1" with the name of your project, make sure "create directory for solution" is unclicked, verify the location for your project, and then click OK. This will create a new project with that template for you. Here is the screen showing that selection:
+
+.First Project in Visual Studio
+image::images/VSfirstproject.png[]
+
+All future projects will find ASP.NET Web Pages Starter Site with Identity listed under the Visual C# Web templates, along with the Empty web site:
+
+.Template in Visual Studio
+image::images/VSnthproject.png[]
+
+You can select the template there, enter an appropriate Name and Location, and click OK to start from that template in your next projet.
+
+
+If you choose File -> New -> Project -> C# ASP.NET Web Application -> Empty or File -> New -> Web Site -> ASP.NET Empty Web Site, you will get just a single file (Web.config) and no supporting infrastructure to work with. We will use that for some of our smaller examples, but want to make use of the template site for our more complete projects.
+
+[NOTE]
 ====
-If you choose File -> New -> Web Site -> ASP.NET Empty Web Site, you will get just a single file (Web.config) and no supporting infrastructure to work with. We will use that for some of our smaller examples, but want to make use of the template site for our more complete projects.
-
-If you choose File -> New -> Project -> C# ASP.NET Web Application -> Empty, you will not get that infrastructure. There are no templates for Web Pages in the Project menu, only in the Web Site menu.
+There is a Microsoft-supplied template available in Visual Studio when you create your site with File -> New -> Web Site -> ASP.NET Web Site (Razor v3). This creates you something similar to what is described here, but uses the old user login system of ASP.NET Membership, which relies on SQLCE. This isn't compatible with deploying (Chapter 6) and so we use an alternative template that provides a user login system using the current ASP.NET Identity library.
 ====
 
 
@@ -55,12 +73,15 @@ image::images/VSdirectory.png[]
 --
 WebSite1
 |--Account
+|--App_Code
 |--App_Data
-|--Bin
+|--bin
 |--Content
 |--Images
+|--obj
 |--Scripts
 |--_AppStart.cshtml
+|--_PageStart.cshtml
 |--_SiteLayout.cshtml
 |--About.cshtml
 |--Contact.cshtml
@@ -71,18 +92,22 @@ WebSite1
 --
 ////
 
+If there is no App_Data directory, create it by right-clicking on the prject name, and selecting Add -> Add ASP.Net Folder -> App_Data. This ensures the project knows about this special folder.
+
 ==== Review of website initial directories
 
-* `Account` holds the registration/login system provided by Microsoft. This is a basic system, sufficient for our needs, and well-tested from wide distribution. It is unlikely you will need to alter the contents of this directory. 
+* `Account` holds the pages that access the Microsoft ASP.NET Identity system. This is a basic system, sufficient for our needs, and well-tested from wide distribution. It is unlikely you will need to alter the contents of this directory unless you choose to expand it with Identity plug-ins such as external authentication or two-factor authorization. 
 
 [TIP]
 ====
 The files in `Account` are a great, in-depth collection of code for a single purpose; review their contents as you learn Razor, C#, and ASP.NET until you can understand how they work.
 ====
 
-*  `App_Data` holds the database(s) for your website; you start out with one for the user accounts, and can add to it or create a second one for your application data. You would also put text data files in this directory.
+* `App_Code` holds some startup code for the identity system (`Startup.cs`). You will add any C# files you create to this directory; the parent directory contains only configuration and Razor-enhanced html files (.cshtml)
 
-* `Bin` contains libraries to make your application self-contained; it is populated by Visual Studio when your C# code is compiled. "Bin" is short for "Binary", i.e. compiled code -- taken from text to a binary format, MSIL (MicroSoft Intermediate Language), that is understood and executed by the CLR (Common Language Runtime). You never directly change the contents of this directory.
+*  `App_Data` holds the database(s) for your website; you start out with one for the user accounts, and may add to it or create a second one for your application data. You would also put text data files in this directory. The Identity database is usually stored in a file named `Identity.mdf`, and is created the first time you access the identity system on your website (create a login or attempt to login).
+
+* `bin` contains libraries to make your application self-contained; it is populated by Visual Studio when your C# code is compiled. "bin" is short for "binary", i.e. compiled code -- taken from text to a binary format, MSIL (MicroSoft Intermediate Language), that is understood and executed by the CLR (Common Language Runtime). You never directly change the contents of this directory.
 
 * `Content` contains the CSS used by your web application. It is pre-populated with the CSS used by the template website, which includes JQuery.
 
@@ -93,9 +118,10 @@ The `Content` and `Scripts` directories have the same file twice, once with `.mi
 
 * `Images` contains the image files used by your web application. It is pre-populated with the images used by the template website.
 
+* `obj` contains the compiled files before they are packaged up and put in the `bin` directory. You should never need to directly alter the contents of this directory.
+
 * `Scripts` contains the JavaScript used by your web application. It is pre-populated with JQuery, Knockout, and Modernizr, three well-known frameworks used by the template website.
 
-* You will create another directory called `Code` for any C# files you need to create; the parent directory contains only configuration and Razor-enhanced html files (.cshtml).
 
 ==== Review of website initial files
 
@@ -104,28 +130,24 @@ The `Content` and `Scripts` directories have the same file twice, once with `.mi
 Only the top-level files are discussed here; the ones within the directories are mentioned in the previous section.
 ====
 
-* `_AppStart.cshtml` contains HTML that is executed at the first request of any page in the site. (Not each page, the very first request only.) It is hooked into the user account system to set up its status at the start.
+* `_AppStart.cshtml` contains HTML that is executed at the first request of any page in the site. (Not each page, the very first request only.) It is used if you have application-wide setup or values to prepare.
+
+* `_PageStart.cshtml`. This will let us use a common layout among our pages.
 
 * `_SiteLayout.cshtml` sets up to use the Web Pages templating convention, complete with a common title bar for user account login/registration and the outer tags of any HTML page. This is a powerful tool, used to give all of your pages a common look and feel.
 
-[TIP]
-====
-We will be making one more file like these two, `_PageStart.cshtml`. This will let us use a common layout among our pages more easily.
-====
-
-* `About.cshtml`, `Contact.cshtml`, and `Default.cshtml` are template pages provided to jump-start your website. You can see that they are not stand-alone HTML pages; they rely on Web Pages integrating it with _SiteLayout.cshtml to become complete web pages.
+* `About.cshtml`, `Contact.cshtml`, and `Default.cshtml` are template pages provided to jump-start your website. You can see that they are not stand-alone HTML pages; they rely on Web Pages integrating it with _SiteLayout.cshtml and _PageStart.cshtml to become complete web pages.
 
 [TIP]
 ====
-You may be wondering where the Login pages are? They are in the `Accounts` folder. It is common to organize a website so that separate portions are kept in their own subdirectories.
+You may be wondering where the Login pages are? They are in the `Account` folder. It is common to organize a website so that separate portions are kept in their own subdirectories.
 ====
 
 * `favicon.ico` is a small image file used as the icon in the web browser's tab bar for your website. It must be a 16-pixel by 16-pixel bitmap file; you can create them, or edit this one, in Microsoft Paint or from within Visual Studio.
 
 * `packages.config` lists all external packages your web application depends on.
 
-* `Web.config`, you may notice, appears to be both a file and a directory. In File Explorer, you will find it is just a file, and that there is another file right after it, `Web.debug.config`. The debug file sets up additional parameters for removing items you don't want visible in production code such as stack traces.
-
+* `Web.config`, you may notice, appears to be both a file and a directory. In File Explorer, you will find it is just a file, and that there are two more files right after it, `Web.debug.config` and `Web.release.config`. The debug file sets up additional parameters for removing items you don't want visible in production code such as stack traces. `Web.release.config` does the opposite, removing configuration that makes a website easier to debug but less secure.
 
 
 === Web Pages Layouts
@@ -142,17 +164,14 @@ Web Page Layouts let you lay out a "parent file" that specifies the layout of al
 This Web Pages feature embodies an important programming concept: D.R.Y.: Don't Repeat Yourself. (oops)
 ====
 
-Layouts are done using the ASP.NET library. This requires that you learn the first step of Razor: how to embed a simple ASP.NET function call in your code.
+Layouts are done using the ASP.NET library. This requires that you learn the first step of Razor: how to embed an ASP.NET function call in your code.
 
 This is done by prefixing the function call with the @ symbol.
 
-Here are the ASP.NET functions used to manage layouts:
-
-@RenderPage("header.cshtml")
-@RenderBody()
-@RenderSection("header", required: false)
 
 === Layout Functions
+
+Here are the ASP.NET functions used to manage layouts:
 
 .ASP.NET Layout Functions
 [options="header"]
@@ -163,9 +182,10 @@ Here are the ASP.NET functions used to manage layouts:
 |RenderSection   |@RenderSection("help", required:false)     |Pulls in the named section from the file this template is being applied to; if required is true or not specified, the section must exist.
 |=======================
 
+
 ==== Identifying the Template
 
-You get the template by creating a layout file (_SiteLayout.cshtml is the one supplied) and then having all of the .cshtml files in your site refer to that filein their opening lines, like so:
+You get the template by creating a layout file (_SiteLayout.cshtml is the one supplied) and then having a _PageStart.cshtml that identifies it in a Razor code block, like so:
 
 [source,java]
 ----
@@ -179,6 +199,11 @@ This is doing several things:
 * @{..} embeds a C# code block -  this is our second Razor construct.
 * Layout=... is a C# assignment statement that assigns a value to the page Layout property, which will cause the template to be pulled in and used along with the contents of this file. Layout is a page property, which says what layout to use for the page. That layout file will contain instructions on how to use the rest of the content of your page.
 * "~/_SiteLayout.cshtml" is a C# string value that will be used to find the template file. This one in particular uses the ASP.NET convention for a file name, ~ represents the root directory of the website. You should always use either ~ rooted references or relative references, since your website's location in a particular directory is not guaranteed and will be different in deployment than in development.
+
+[TIP]
+====
+Alternatively to using a _PageStart.cshtml, you can have each page in your site set the Layout variable directly in a Razor code block at the top of the file. This lets you have a different layout for each page if you want it -- but usually it's best to have one layout shared among the files in your site, for a consistent experience.
+====
 
 ==== Identifying a section
 
@@ -203,7 +228,7 @@ You identify a section named help within your .cshtml file like so:
 
 You have seen that you can apply different layouts to different pages in your website by setting the `Layout` property at the start of each page. However, what if you forget one page?
 
-This is handled at a directory-wide level with a _PageStart.cshtml file. When a target page is identified, _PageStart is read and rendered before the file for the page itself. So you can ensure that all the files in a given directory use the same layout file by creating a _PageStart.cshtml file that sets the Layout property like so:
+This is handled at a directory-wide level with a _PageStart.cshtml file. When a target page is identified, a _PageStart.chtml file in the same directory is read and rendered before the file for the page itself. So you can ensure that all the files in a given directory use the same layout file by creating a _PageStart.cshtml file that sets the Layout property like so:
 
 ._PageStart.cshtml
 [source,java]
@@ -216,6 +241,8 @@ This is handled at a directory-wide level with a _PageStart.cshtml file. When a 
 You can put any other common processing in that file as well.
 
 If you need to override the Layout property for a single file in the same directory, you can reset it at the start of your individual .cshtml file -- it will change the property's value onces _PageStart completes and your actual page begins rendering.
+
+If you create a subdirectory, you would create a _PageStart.cshtml file in it to have each page in the new subdirectory use the same Layout.
 
 ==== Other uses for _PageStart
 
@@ -234,12 +261,7 @@ I mentioned earlier that subdirectories are often used to separate different sec
 
 Within a directory, ASP.NET will look for a _PageStart file to use prior to rendering the file within the directory that you have requested.
 
-=== Responsive Web Design
 
-A current theme  in web design is to have your site be responsive; in fact, this replaced the prior theme of "mobile-ready" web sites. Razor provides some capabilities for "mobile-ready" -- we will not be discussing them in this text. To make your web site responsive regardless of its target client, use the CSS/Javascript framework called Bootstrap. This framework is included in ASP.NET MVC projects due to its rich capabilities. 
-
-Bootstrap is outside the scope of this text; for more information, I recommend:
-http://getbootstrap.com/getting-started/[the official bootstrap resources] and the http://www.tutorialspoint.com/bootstrap/[Tutorials Point Bootstrap Tutorial].
 
 
 === Web Design
@@ -251,6 +273,13 @@ Layouts are simply a tool; the key task behind them is designing your web applic
 You probably already have favorite places on the internet -- consider what you like about them, and how they are organized. You can always take a peek at how they did their HTML with a simple right-click and View Source... on the pop-up menu that appears. You won't see their client-side code, but you will see their HTML, and any links to additional CSS and JavaScript files there can be clicked on to bring those up as well.
 
 When you do this, remember: there is an implicit copyright on anything you see on the internet, unless they have released it with an explicit statement or license such as Creative Commons (for content) or Open Source (for code). You can't simply copy and paste what is there, you need to learn from it, internalize it, and then put it aside when you work on your own web applications. Copying code is a copyright violation, and in the workplace can be grounds for losing your job or legal prosecution.
+
+==== Responsive Web Design
+
+A current theme  in web design is to have your site be responsive; in fact, this replaced the prior theme of "mobile-ready" web sites. Razor provides some capabilities for "mobile-ready" -- we will not be discussing them in this text. To make your web site responsive regardless of its target client, use the CSS/Javascript framework called Bootstrap. This framework is included in ASP.NET MVC projects due to its rich capabilities. 
+
+Bootstrap is outside the scope of this text; for more information, I recommend:
+http://getbootstrap.com/getting-started/[the official bootstrap resources] and the http://www.tutorialspoint.com/bootstrap/[Tutorials Point Bootstrap Tutorial].
 
 ==== Basic Design Principles
 
@@ -369,18 +398,17 @@ There are conventions for web pages that are there for very good reasons, such a
 
 
 === Further Reading
-. [[[ASPLAYOUTTUT]]] http://www.asp.net/web-pages/overview/ui-layouts-and-themes/3-creating-a-consistent-look
-. [[[ASPLAYOUTTUT2]]] http://www.asp.net/web-pages/overview/ui-layouts-and-themes/18-customizing-site-wide-behavior
-. [[[W3CLAYOUTTUT]]] http://www.w3schools.com/aspnet/webpages_layout.asp
-. https://www.smashingmagazine.com/2008/01/10-principles-of-effective-web-design/
-. https://www.smashingmagazine.com/2012/01/stop-designing-pages-start-designing-flows/
-. http://shortiedesigns.com/2014/03/10-top-principles-effective-web-design/
-. http://conversionxl.com/8-universal-web-design-principles-you-should-to-know/
-. http://conversionxl.com/how-to-design-user-flow/
-. http://www.digital-web.com/articles/principles_of_design/
-. https://www.webaim.org/
-
-- https://msdn.microsoft.com/en-us/library/hh145667 builds a sample website using layouts
+- http://www.asp.net/web-pages/overview/ui-layouts-and-themes/3-creating-a-consistent-look[Creating a Consistent Layout in ASP.NET Web Pages (Razor) Sites] @ asp.net
+- http://www.asp.net/web-pages/overview/ui-layouts-and-themes/18-customizing-site-wide-behavior[Customizing Site-Wide Behavior for ASP.NET Web Pages (Razor) Sites] @ asp.net
+- http://www.w3schools.com/aspnet/webpages_layout.asp[ASP.NET Web Pages - Tutorial] @ w3schools.com
+- https://www.smashingmagazine.com/2008/01/10-principles-of-effective-web-design/[10 Principles Of Effective Web Design] @ smashingmagazine.com
+- https://www.smashingmagazine.com/2012/01/stop-designing-pages-start-designing-flows/
+- https://www.smashingmagazine.com/2012/01/stop-designing-pages-start-designing-flows/[Stop Designing Pages And Start Designing Flows] @smashingmagazine.com
+- http://conversionxl.com/8-universal-web-design-principles-you-should-to-know/[8 Effective Web Design Principles You Should Know] @ conversionxl.com
+- http://conversionxl.com/how-to-design-user-flow/[Buld it With the User in Mind] @ conversionxl.com
+- http://www.digital-web.com/articles/principles_of_design/[The Principles of Design] @ digital-web.com
+- https://www.webaim.org/[WebAIM: Web Accessibility In Mind] @webaim.org
+- https://msdn.microsoft.com/en-us/library/hh145667[Exercise 1 - Creating the Base Application from a Template] @ msdn.microsoft.com builds a sample website in WebMatrix using layouts
 
 
 === Exercises
@@ -400,7 +428,7 @@ This will be a sequential layout.
 
 === Project
 
-Design a layout for your application. Use the Layouts and Render, and start with the default Razor 3 application so that user logins are a part of your website. Rewrite the About and Contact pages. Make the contact information reflect how you would like to be contacted - only include information for the methods of contact you want to respond to. Introduce a _PageLayout.cshtml file so that you do not repeat the code to set the Layout property in every page.
+Design a layout for your application. Use the Layouts and Render, and start with the default Razor 3 application so that user logins are a part of your website. Rewrite the About and Contact pages. Make the contact information reflect how you would like to be contacted - only include information for the methods of contact you want to respond to. Use a _PageLayout.cshtml file so that you do not repeat the code to set the Layout property in every page.
 
 Start looking into Geolocation in HTML, using this: http://apress.jensimmons.com/v5/pro-html5-programming/ch5.html
 

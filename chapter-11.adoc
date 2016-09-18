@@ -2,11 +2,11 @@
 
 Eventually, you will work on a web site that is just a little too big and complex for Razor Web Pages. That is where MVC comes in; MVC is "Model-View-Controller", and is a nod to a famous Design Pattern in OO programming that is very useful for applications with heavy user interaction (like web sites!).
 
-- picture of MVC
+.Model View Controller Architecture https://commons.wikimedia.org/wiki/File:MVC_Diagram.jpg[by BlueSky23] http://creativecommons.org/licenses/by-sa/3.0[CC BY-SA 3.0]
+image::images/MVC_Diagram.jpg[]
 
-- summary of MVC (notes from last year?)
 
-TODO
+TODO summary of MVC
 
 Could do the blog one:
 https://github.com/madskristensen/MiniBlog

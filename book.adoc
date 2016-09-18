@@ -1,6 +1,6 @@
 = ASP.NET for Web Developers
 Amelia Garripoli <agarripoli@olympic.edu>
-v0.95, August 31, 2016: under development
+v1.0, September 18, 2016
 
 :doctype: book
 :source-highlighter: coderay
@@ -17,15 +17,17 @@ v0.95, August 31, 2016: under development
 ////
 Formerly: New to ASP: Razor, C#, ASP.NET
 
-Generate PDF from directory with book.adoc in it with the command
+Generate PDF:
 asciidoctor-pdf -a toc book.adoc
-prepare to be amazed 
 
 Generate HTML:
 asciidoctor -a toc book.html
 
-////
+Rev to github:
+git status / git add / git commit
+git push origin master
 
+////
 
 
 include::frontmatter.adoc[License, Introduction]
@@ -58,6 +60,4 @@ include::appendages.adoc[Addenda]
 include::bibliography.adoc[Resources]
 
 // include::glossary.adoc[]
-
 // include::index.adoc[]
-
