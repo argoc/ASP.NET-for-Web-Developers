@@ -25,7 +25,7 @@ asciidoctor -a toc book.html
 
 Rev to github:
 git status / git add / git commit
-git push origin master
+git push github master
 
 ////
 
