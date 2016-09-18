@@ -105,7 +105,7 @@ The number of files will change based on what was changed since your last commit
 +
 Do this step each time you want to update the code on AppHarbor. It will be updated to the currently committed code on your local git repository (see step 4.c. above for how to do that).
 
-Once you deploy to AppHarbor, there may be issues. So next you will need to go to your live application and start testing it. Continue with <<deployed-on-appharbor>>.
+Once you deploy to AppHarbor, there may be issues. So next you will need to go to your live application and start testing it. Continue with <<_deployed_on_appharbor>>.
 
 
 ==== How do I get Git?
@@ -222,7 +222,12 @@ will bring up my calculator page. (Note, I deleted it, so that link won't take y
 
 === Got Database?
 
-We haven't covered databases yet, but if you have the ASP.NET Web Site Starter Site, you already have a database. You are going to need to locate and add database support for this to work.
+We haven't covered databases yet, but if you used the ASP.NET Web Site with Identity Template, you already have a database. You are going to need to locate and add database support for this database to work in deployment. App Harbor only supports a single database in an application, so any additional tables will also need to be (re-)located in the Identity database.
+
+[CAUTION]
+====
+If you used the Web Site Starter Site Template, then you have a SQL Compact Edition (SQLCE) database (.sdf file). This textbook does not discuss how to deploy a SQLCE database, and App Harbor recommends that you not use it, as it will only be a transient database (destroyed each time the app idles).
+====
 
 Go to your application's main administration panel and look for "Add ons". Click this, then page down until you find "Shared SQL Server"; click "See More" for that service, and then add the Free level of support. This provides 20 MB of storage (something to keep in mind).
 
@@ -230,12 +235,13 @@ Upon a successful install, you are returned to the Application Console. Click th
 
 On the SQL Server add-on page, you need to click "Go to SQL Server" to configure the connection string. This puts you on a page with private configuration information (not the kind of information to publish yourself -- these are the private keys that get you to your private SQL Server instance).
 
-On that page click the "Edit database configuration" button. In the Alias box, put the name of your connection -- this is the name that you used in the Web.config file, with the starter site template it is StarterSite. Click Apply. This returns you to the previous page, and the alias now shows up in the information there. 
+On that page click the "Edit database configuration" button. In the Alias box, put the name of your connection -- this is the name that you used in the Web.config file. With the Web Pages with Identity template it is `DefaultConnection`. Click Apply. This returns you to the previous page, and the alias now shows up in the information there. 
 
 Why did you do this? So that AppHarbor will find its database server rather than the one you developed with. It has to do this, as it has a shared database server, not private ones for each application.
 
-////
-Now, on your local machine, you have connection strings configured. These will be different on the server, and so you will have to do a few more configuration steps to get your application talking to the database.
+[NOTE]
+====
+It is possible to access this deployed database, if you want to "look behind the web site". Install SQL Server 2008, and use it to access the database
 
 On the Application Console, you will see a "Configuration variables" link by your SQL Server add-on (below the builds). Click this link. Three keys are listed there:
 
@@ -243,8 +249,8 @@ On the Application Console, you will see a "Configuration variables" link by you
 * SQLSERVER_CONNECTION_STRING_ALIAS
 * SQLSERVER_URI
 
-...more to determine (Stay tuned)
-////
+You can use these values to initiate a connection to your database from your local machine using SQL Server 2008 Management Studio. For more information on the AppHarber shared SQL Server service, see https://support.appharbor.com/kb/add-ons/using-sequelizer[Using Sequelizer] and the support note on remote access https://support.appharbor.com/discussions/problems/1202-cant-connect-to-sql-server-from-management-studio[Can't connect to SQL Server from Management Studio], both on appharbor.com.
+====
 
 === Your Second Application
 
@@ -283,7 +289,8 @@ a|
 * ``git remote add appharbor MY_REPOSITORY_URL`` +
 5. Put the code on AppHarbor: +
 * ``git push appharbor master`` +
-6. Go to AppHarbor application build result page; if working, go to application, otherwise see N^th^ time.
+6. If needed, configure Shared SQL and tell it your connection name.
+7. Go to AppHarbor application build result page; if working, go to application, otherwise see N^th^ time.
 
 a|
 
@@ -338,11 +345,38 @@ If you publish to Azure, then there are hooks to let you debug your web applicat
 
 Since we are using AppHarbor, we have these choices:
 
+- expose errors as they happen in the deployed site
 - put output in our web page to show what is happening on the live server
 - use try/catch to trap exceptions so our pages work around the error
 - debug on the local machine (not the live server) with Visual Studio's debugger
 
 Note that AppHarbor offers you advice on this also here https://support.appharbor.com/kb/getting-started/frequently-asked-questions.
+
+
+==== Expose errors as they happen in the deployed site
+
+One of the differences between a Debug build and a Release build is that a Release build (which is what AppHarbor does) prevents clients from seeing stack traces that occur in your web application.
+
+You can turn this back on, but should only use it for testing and turn it off in general in a deployed site. 
+
+If you see this page:
+
+.AppHarbor default error page
+image::images/ah-runtime-error.png[]
+
+Then follow its instructions to change your Web.config file, adding
+
+[source,XML]
+----
+<customErrors mode="Off"/>
+----
+
+within the <system.web> block within <configuration>.
+
+In a live website, you would instead actually not turn the custom errors off, but add a custom error page that overrides the default AppHarbor custom error page (the one shown in the picture above). You may have seen this on another website, a typical error page displays the HTML error code and some sort of "oops" image.
+
+.https://uxmag.com/articles/the-evolution-of-fail-pets[Tumbler's 503 error page]
+image::images/tumbeasts.jpg[]
 
 ==== Put output on a web page
 
@@ -355,6 +389,11 @@ include::source/ServerInfo.cshtml[]
 ----
 
 the GetHTML generates a table that will provide you with information about the state of your server: environment variables, configuration, version, and much more. Do not use this on a production page that casual users can see, as it provides hackers with information they can use to break into the server and your application.
+
+[CAUTION]
+====
+*Do not use this on a production page that casual users can see, as it provides hackers with information they can use to break into the server and your application.*
+====
 
 Rather than display global information, pick and choose what you display. You already know how to do this in the HTML and in a Razor code block (this same line works the same way in both):
 
@@ -465,24 +504,25 @@ The "step into" item is highlighted: use that to move to the next statement. Use
 For more information on the Visual Studio debugger, see https://msdn.microsoft.com/en-us/library/sc65sadd.aspx[Debugging in Visual Studio].
 
 === Further Reading
-- https://appharbor.com/page/terms
-- https://appharbor.com/page/how-it-works
-- https://support.appharbor.com/kb/getting-started/deploying-your-first-application-using-git
-- https://git-scm.com/
-- https://try.github.io/levels/1/challenges/1
-- https://dzone.com/refcardz/getting-started-git
-- http://www.asp.net/web-pages/overview/testing-and-debugging/aspnet-web-pages-razor-troubleshooting-guide
-- http://www.devcurry.com/2012/05/deploying-your-aspnet-app-on-appharbor.html
+- https://appharbor.com/page/terms[AppHarbor Terms of Service]
+- https://appharbor.com/page/how-it-works[How AppHarbor Works]
+- https://support.appharbor.com/kb/getting-started/deploying-your-first-application-using-git[AppHarbor Support: Deploying your first application using Git]
+- https://support.appharbor.com/kb/getting-started/frequently-asked-questions[AppHarbor FAQ]
+- https://git-scm.com/[git-scm.com] a git informational site by the folks at git.
+- https://try.github.io/levels/1/challenges/1[Try Git]
+- https://dzone.com/refcardz/getting-started-git[Getting Started with Git] a DZone reference card
+- http://www.asp.net/web-pages/overview/testing-and-debugging/aspnet-web-pages-razor-troubleshooting-guide[ASP.NET Web Pages (Razor) Troubleshooting Guide]
+- http://www.devcurry.com/2012/05/deploying-your-aspnet-app-on-appharbor.html[Deploying your ASP.NET App on AppHarbor] from the DevCurry blog
 
 
 === Exercises
 
-. Pick a previous exercise or lab and deploy it. Visit its pages on the internet.
+. Pick a previous exercise and deploy it. Visit its pages on the internet.
 . Then deploy a second application and visit it on the internet. 
 . Remove an application and its local git repo. Try to visit its page on the internet -- it will no longer be there.
 . Play "Stump The Newbie" with a classmate: make a page that runs but requires some debugging for your peer to fix. See what steps they take to determine the cause of the problem and how they fix it. Would you have looked for the problem differently, or fixed it differently?
 
 
-=== Lab
+=== Project
 
-. Deploy your prototype web application. Once you have a working deployment, get some friends or classmates to try it out, collect feedback from them, make changes, and re-deploy it.
+Deploy your prototype web application. Once you have a working deployment, get some friends or classmates to try it out, collect feedback from them, make changes, and re-deploy it.
