@@ -51,9 +51,16 @@ Never, ever write your own encryption. User passwords are typical values that ne
 The ASP.NET Membership provider and role provider is a good start, but review
 the password storage. The default storage hashes the password with asingle iteration of SHA-1 which is rather weak. The ASP.NET MVC4 template uses http://www.asp.net/identity/overview/getting-started/introduction-to-aspnet-identity[ASP.NET Identity] instead of ASP.NET Membership, and ASP.NET Identity uses PBKDF2 by default which is better. Review the OWASP https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet[Password Storage Cheat Sheet] for more information.
 
+The ASP.NET Web Pages with Identity project template provided with this book also uses ASP.NET Identity and provides a simple user account subsystem written in Web Pages.
+
 Once you have a user-based system, implement proper access controls; compare a user-provided username with the session's username, and check that the user is in the appropriate role.
 
+[CAUTION]
+====
+ASP.NET Membership uses SQL Server Compact Edition, which AppHarbor does not support. The template provided with this book uses ASP.NET Identity, which uses SQL Server. Microsoft may deprecate Membership, so using Identity is recommended.
+====
 
+////
 ==== ASP.NET Membership
 
 The ASP.NET Membership template is available in Visual Studio if you create your project with File->New->Web Site...->(Templates->Visual C#)ASP.NET Web Site (Razor v3). This gives you a template web site with Default, About, and Contact pages and also a full user login/registration module with Registration, Login, Forgotten Password, and additional pages, and a backing database for them.
@@ -273,6 +280,620 @@ SimpleRoleProvider provides its functionality through in its instance methods, a
 
 
 Microsoft provides additional functionality in ASP.NET Membership including external authentication services such as Google and Facebook, and ReCaptcha validation of human interaction. For information on using those services, see http://www.asp.net/web-pages/overview/security/16-adding-security-and-membership.
+////
+
+==== ASP.NET Identity
+
+The ASP.NET Identity template is used in the ASP.NET Web Pages with Identity template, available for download as an online template under New Project in Visual Studio, or from Github as https://github.com/argoc/Web-Pages-Identity-Template[Web-Pages-Identity-Template].
+This gives you a template web site with Default, About, and Contact pages and also a full user login/registration module with Registration, Login, Forgotten Password, and additional pages, and a backing database for them.
+
+
+
+[NOTE]
+====
+This database relies on SQL Server LocalDB, and will start the database server. In VS 2015, there is often an issue with the LocalDB server not stopping when IIS Express stops. If you are having access
+issues, this may be the cause. You will need to stop and delete the LocalDB server daemon yourself. To do this, open a cmd window on
+``C:\Program Files\MS SQL Server\130\Tools\Binn`` and issue these two commands:
+
+----
+    sqllocaldb stop mssqllocaldb
+    sqllocaldb delete mssqllocaldb
+----
+
+This will shut down any active LocalDB server operating as mssqllocaldb, the database server
+name used in the default Identity configuration.
+====
+
+You will see an Account directory which contains these files:
+
+* ForgotPassword.cshtml - page to generate an email to reset a password
+* Login.cshtml - login page (redirects to home page)
+* Logout.cshtml - code processed on logout (redirects to page that invoked it)
+* Manage.cshtml - change password or remove login (redirects to login page)
+* PasswordReset.cshtml - get a password reset link sent
+* Register.cshtml - create local account (redirects to login page)
+
+One piece of code is in the project to provide login support, you will see it in App_Code:
+
+* Startup.cs - configures OWIN (the http://www.owin.net/[Open Web Interface for .NET])
+
+Once you have used Register or Login, there will be an App_Data directory with this file:
+
+* Identity.mdf - the Identity database
+
+This file (Identity.mdf) is not a project file, so you will have to click "Show All Files" in the Solution Explorer toolbar to make it visible there. Once you can see it, if you double-click it will open in the Server Explorer and you can explore the tables, their contents and shape, from the Server Explorer view.
+
+The root directory has these additional files:
+
+* _AppStart.cshtml - first file loaded, ensures login database exists
+* _PageStart.cshtml - makes _SiteLayout the default layout 
+* _SiteLayout.cshtml - puts common header on all pages with login/register links 
+* About.cshtml - template about page found on most websites.
+* Contact.cshtml - template contact page found on most websites.
+* Default.cshtml - template home page founc on most websites.
+* favicon.ico - small image used in browser tab
+
+The Web.config file's <connectionStrings> element contains an <add> element to allow access to the Identity database (Identity.mdf). It uses `defaultConnection` as the connection name.
+
+==== Confirming Login and Password Reset
+
+It is not uncommon to have registrations and forgotten passwords handled via email, so ASP.NET provides these services. 
+
+[WARNING]
+====
+The code in this section has not yet been tested. Let me know if you run into any issues with it.
+====
+
+This requires the UserManagerExtensions (which are provided through UserManager in ASP.NET), and also that you have SMTP configured in your Web.config file. To do that, have a <mailSettings> section in <system.net> like so:
+
+.in Web.config
+[source,html]
+----
+<configuration>
+  <system.net>
+    <mailSettings>
+      <smtp from="example@domain.com" deliveryMethod="Network">
+          <network host="smtp.gmail.com" port="587"
+              userName="example@domain.com" password="password"/>
+      </smtp>
+    </mailSettings>
+  </system.net>
+</configuration>
+----
+
+replace host, port, userName, and password with your information.
+
+[CAUTION]
+====
+Basic SMTP services in ASP.NET send passwords in the clear. You may want to explore SendGrid or other more secure options, or use a "burner" email that is only used for this purpose.
+
+Do not put this file in a public repository or provide it to others, as it now has your email account information in it.
+====
+
+===== Confirming Login
+
+The template provided sends users to the Login page upon completing Registration. To require email registration, that needs to be replaced with code to generation a confirmation email and a link to a page to confirm the registration.
+
+In Register.cshtml, you will need to comment out the redirect call and replace it with code as follows:
+
+.in Register.cshtml
+[source,java]
+----
+  // Response.Redirect("~/Account/Login");
+  string code = UserManager.GenerateEmailConfirmationToken(user.Id);
+  var callbackUrl = Url.Action("ConfirmEmail", "Account",
+             new { userId = user.Id, code = code }, 
+             protocol: Request.Url.Scheme);
+  manager.SendEmail(user.Id, "Confirm your account",
+            "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a> or entering the code " + code +
+            " on the confirmation page.");
+  Response.Redirect("~/Account/ConfirmEmail");
+----
+
+
+When email confirmation is used as shown above, this reroutes users to a new page, ConfirmEmail, shown here:
+
+.ConfirmEmail.cshtml
+[source,html]
+----
+@{
+    Page.Title = "Registration Confirmation Page";
+
+    string message = "";
+    var confirmationToken = Request["code"];
+    var userId = Request["userId"];
+    var askedAgain = Request["newCode"];
+
+    // Log out of the current user context, if any
+    var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
+    authenticationManager.SignOut();
+        
+    // confirming the login, not a request for a new one
+    if (!confirmationToken.IsEmpty() && !userId.IsEmpty() && askedAgain.IsEmpty()) {
+        // may need a try/catch if this is the first DB hit
+        var result = userManager.ConfirmEmail(userId, code);
+        
+        if (!result.Succeeded) {
+            foreach (var error in result.Errors) {
+                // find out what Identity thought went wrong...
+                ModelState.AddFormError(error);
+            }
+        }
+        else {
+            message = "Registration Confirmed! "+
+                "<a href='~/Account/Login'>Click login</a> to log in to the site.";
+        }
+    }
+    
+    // no problems and they want their code again...
+    if (!askedAgain.IsEmpty()) {
+        if (userId.IsEmpty() {
+            ModelState.AddFormError("Username required.");
+        }
+        string code = userManager.GenerateEmailConfirmationToken(userId);
+        var callbackUrl = Url.Action("ConfirmEmail", "Account",
+            new { userId = userID, code = code }, protocol: Request.Url.Scheme);
+        userManager.SendEmail(userID, subject,
+            "Please confirm your account by clicking <a href=\"" + 
+            callbackUrl + "\">here</a>");
+    }
+}
+
+<h1>@Page.Title.</h1>
+<h2>Use the form below to confirm your account.</h2>
+
+@if (!message.IsEmpty()) {
+    <p>@Html.Raw(message)</p>
+} else {
+    <p>
+    Check your email and use the link or enter your user name and
+    code here to confirm your account. You must be confirmed
+    before you can log in.
+    </p>
+
+    <form method="post">
+        <fieldset>
+            <legend>Confirm Account</legend>
+            <p>
+                <label for="userId">User name</label>
+                <input type="text" id="userId" name="userId" />
+            </p>
+            <p>
+                <label for="code">Confirmation code</label>
+                <input type="text" id="code" name="code" />
+            </p>
+            <p><input type="submit" name="confirm" value="Confirm" /></p>
+            <p><input type="submit" name="newCode" value="Regenerate Code" /></p>
+        </fieldset>
+    </form>
+}
+
+----
+
+The Login page should be altered to check that email confirmation has occurred:
+
+.in Login.cshtml
+[source,java]
+----
+    var user = userManager.Find(userName, password);
+
+    if (user != null)
+    {
+        // Require the user to have a confirmed email before they can log on.
+        if (!userManager.IsEmailConfirmed(user.Id)) <1>
+        {
+           // note this tells someone there is an unconfirmed account;
+           // may want to echo the "No such user or password" message instead.
+           ModelState.AddFormError("You must have a confirmed email to log on.");
+        } else {
+            var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
+            var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+
+            authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, userIdentity);
+            Context.RedirectLocal(returnUrl);
+        }
+    } else {
+        ModelState.AddFormError("The user name or password provided is incorrect.");
+    }
+----
+
+<1> marks the new if block to validate confirmation prior to the login. Note that the error provided here leaks information about the account existing; you may want to instead always reroute to the ConfirmEmail page on this failure and the login failure (so users do not know the actual reason for the failure - bad login, bad password, or unconfirmed login).
+
+Note that any login attempt should include a similar check, so Manage.cshtml should also validate confirmation before allowing the password to be altered. It might decide to let the account be deleted, but that would be up to the website designer to decide, and should be considered carefully as a potential security weakness.
+
+
+===== Resetting your password
+
+This user self-management task is linked to on the Manage page, `ForgotPassword.cshtml`. SMTP configuration is also needed for password resets.
+
+You will need to uncomment the code and set smtpSetup to true in ForgotPassword.cshtml like so:
+
+.in ForgotPassword.cshtml
+[source,java]
+----
+    if (user!=null) {
+        smtpSetup = true; 
+	   // For more information on how to enable password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+	   // Send an email with this link
+	   string code = userManager.GeneratePasswordResetToken(userId);
+	   var hostUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer,
+	                    UriFormat.Unescaped);
+	   var resetUrl = hostUrl +
+	                    VirtualPathUtility.ToAbsolute(
+	                      "~/Account/PasswordReset?resetToken=" + 
+	                      HttpUtility.UrlEncode(code) +
+            	          "&email="+ HttpUtility.UrlEncode(email));
+	    userManager.SendEmail(userId, "Reset Password", 
+	                    "Please reset your password by clicking <a href=\"" + 
+	                    resetUrl + "\">here</a>");
+    }
+----
+
+==== Other Identity Features
+
+ASP.NET Identity also provides two-factor authentication; the asp.net site discusses this in the MVC environment here: http://www.asp.net/identity/overview/features-api/two-factor-authentication-using-sms-and-email-with-aspnet-identity[Two-factor authentication using SMS and email with ASP.NET Identity].
+
+You can also enable reCaptcha authentication using Google's http://www.recaptcha.net/[recaptcha.net]. Stubs for this are present in the ASP.NET Web Pages with Identity template. This does not require any special ASP.NET Identity features to perform.
+
+
+==== Account Management Page Flow
+
+Your site is now configured with user logins. You will notice when someone is logged in, the upper right corner changes. Let's step through the code that does this (in `_SiteLayout.cshtml`):
+
+[source,html]
+----
+	<section id="login">
+		@if (User.Identity.IsAuthenticated) { <1>
+			<text>
+				Hello, <a class="email" href="~/Account/Manage"
+				          title="Manage">@User.Identity.GetUserName()</a>! <2>
+				<form id="logoutForm" action="~/Account/Logout" method="post">
+					@AntiForgery.GetHtml()  <3>
+					<a href="javascript:document.getElementById('logoutForm').submit()">
+					    Log out             <4>    
+					</a>
+				</form>
+			</text>
+		} else { <5>
+			<ul>
+				<li><a href="~/Account/Register">Register</a></li>
+				<li><a href="~/Account/Login">Log in</a></li>
+			</ul>
+		}
+	</section>
+----
+
+<1> `User.Identity.IsAuthenticated` is true if there is currently a logged-in user in the session.
+<2> `User.Identity.GetUserName()` is the name of the currently logged-in user. As you can see here, if the user clicks their name, it will go to the page ~/Account/Manage.cshtml, which is for account management. Note we don't need the .cshtml on our link, it is assumed.
+<3> We see here a use of the anti-forgery token; it is the first line within the form
+<4> The form is "just" a `Log out` link -- but notice that it is hooked to javascript so it actually submits the form, which will post to `~/Account/Logout.cshtml`.
+<5> When no-one is logged in, the Register and Log in links are presented, routing to their respective pages.
+
+Notice that much of the account management system is only found through using the login management system; only Register and Login are visible to non-users, Manage and Logout are presented to users, ForgotPassword is only visible from the Manage page, and ConfirmEmail is only accessed through the 
+email link generated by a Registration request.
+
+.Account Management Page Flow
+image::images/account-mgmt-flow.png[]
+
+==== Using Authentication
+
+[CAUTION]
+====
+ASP.NET Identity sends credentials to the server in clear text (unencrypted). A production site should use HTTPS (secure HTTP, using SSL) to encrypt sensitive information between the client and the server. For more information about SSL, see http://www.c-sharpcorner.com/uploadfile/225740/what-is-ssl-and-how-to-implement-in-asp-net-web-aaplication/[What is SSL and How to Implement in ASP.NET Web Application] and https://msdn.microsoft.com/en-us/library/dd163531.aspx[Securing Communications with Secure Socket Layer (SSL)]
+If you are not running with SSL, be very clear to the user that their password is _**unsafe**_. I recommend putting this on all pages, using `_SiteLayout.cshtml`.
+====
+
+// TODO : set up self-signing and test under deployment also!!
+
+Once you have account management and authentication, you can block off access to that portion of your website that requires a user account; or make pages behave differently for guests than for logged-in users.
+
+If you want a portion of your website to not present itself until a user is logged in, you can accomplish that with these steps:
+
+1. Make a subdirectory, let's call it `authorized`.
+
+2. In `authorized`, make a `_PageStart.cshtml` file that contains the following code:
++
+.~/authorized/_PageStart.cshtml
+[source,html]
+----
+@using Microsoft.AspNet.Identity
+
+@{
+    if (!User.Identity.IsAuthenticated) {
+        Response.Redirect("~/Account/Login?returnUrl="
+            + Request.Url.LocalPath);
+    }
+    Layout = "~/_SiteLayout.cshtml";
+}
+----
++
+We redirect to the login page if the user is not logged in -- thus preventing the current page from rendering. Notice also that the login will return to this page once it completes. The `returnUrl` parameter is used in `Login.cshtml` to redirect upon a successful login.
++
+Using `_PageStart.cshtml` ensures that all pages in the current directory require logging in prior to their use. It overrides the _PageStart.cshtml file in the parent directory, so be sure to repeat any thing needed from that starting page to this one (not exactly DRY, I know...).
+
+
+==== Roles
+
+Roles are useful when groups of users have access to specific areas of your web site that other users do not. For example, administration is usually assigned to a role rather than a single user; or you may have a group functionality that lets groups share files, but limit cross-group file sharing.
+
+Roles may be fixed, or roles may be something that administrators (or, role administrators) can create and drop.
+
+Roles can be created through ASP.NET once a connection to the identity database is made with `WebSecurity.InitializeDatabaseConnection()` using the `Roles` property of a page to access the https://msdn.microsoft.com/en-us/library/webmatrix.webdata.simpleroleprovider(v=vs.111).aspx[`SimpleRoleProvider`] instance for the Membership database.
+
+For example, your administrative page might have code to create an admin role if one does not exist, and then if there are no users in the role, to put the user "admin" into that role if such a user exists.
+
+[source,java]
+----
+@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+@using Microsoft.Owin.Security
+
+@{
+  var userStore = new UserStore<IdentityUser>();
+  var roleManager = new RoleManager(new RoleStore(userStore.Context));   
+  var userManager = new UserManager<IdentityUser>(userStore);  
+
+  const AdminRoleName = "admin";
+  const AdminUserName = "admin";
+
+  if (!roleManager.RoleExists(AdminRoleName)) {
+    var adminRole = new IdentityRole { Name = AdminRoleName };
+    roleManager.Create(adminRole);
+  }
+
+  var adminRole = roleManager.FindByName(AdminRoleName);
+
+  if (adminRole.Users.Count == 0) {
+    var adminUser = userManager.FindUserByName(AdminUserName);
+    
+    if (adminUser != null) {
+        adminUser.AddToRole(adminRoleName);
+    }
+  }
+}
+----
+
+
+[TIP]
+====
+This particular design decision, to make sure there is an admin user in an admin role, is not very secure, since it is plain in our code what the login and role names are. One improvement is to put this code, or constants for the strings, in `_AppStart.cshtml`. Another would be to further isolate these values to environment variables that can then be configured on the server completely outside of the source code and accessed through the `Request` object.
+====
+
+Your administrative page may provide you with a list of users that allows you to add or remove administrative privilege from them, disable or remove their accounts, or create new accounts (for example, some sites do not have independent registration). 
+
+If there is a portion of your website that is only for administrators, you could use a similar organization to what we did with authorization to limit access to all pages in a diretory:
+
+
+1. Make a subdirectory, let's call it `admin`.
+
+2. In `admin`, make a `_PageStart.cshtml` file that contains the following code:
++
+.~/admin/_PageStart.cshtml
+[source,html]
+----
+@using Microsoft.AspNet.Identity
+
+@{
+    if (!User.Identity.IsAuthenticated) {
+        Response.Redirect("~/Account/Login?returnUrl="
+            + Request.Url.LocalPath); <1>
+    }
+    // set AdminRole in _AppStart.cshtml
+    if(!User.IsInRole(AdminRole)) { <2>
+        Response.Redirect("~/NotAuthorized");
+    }
+    Layout = "~/_SiteLayout.cshtml";
+}
+----
++
+<1> As before, we redirect to the login page if the user is not logged in -- thus preventing the current page from rendering. Notice also that the login will return to this page once it completes. The `returnUrl` parameter is used in `Login.cshtml` to redirect upon a successful login.
++
+<2> If the user is logged in, we will check to see if they are in the admin role; that value is set elsewhere, as a constant value. If the current user is not an admin, they are sent to a page letting them know they are not authorized. For security's sake, you may actually want this to route to a Not Found page.
++
+Using `_PageStart.cshtml` ensures that all pages in the current directory require logging in prior to their use.
+
+
+With ASP.NET Identity, setting up roles is done through the RoleManager class; however, once you have a user logged in, the User property of the Page instance for the current page gives you access to its `Identity` instance and the `IsInRole()` test.
+
+The Identity instance provides access to the Name and IsAuthenticated properties; you typically would use Name only after checking IsAuthenticated, and then could use Name, and the UserManager, to locate the User object and manipulate its state, as shown in our code in this chapter.
+
+The UserManager provides these capabilities:
+
+[cols="1,3"]
+|====
+| Name | Description
+
+|  AccessFailed(TKey) 
+|
+Tracks access failures, and logs the user out if goes over the configured maximum allowed. 
+|	AddLogin(TKey, UserLoginInfo)	
+|
+Associates an external login with a user.
+|	AddPassword(TKey, String)	
+|
+Adds a user password (can't have one already).
+|	AddToRole(TKey, String)	
+|
+Adds a user to a role.
+|	AddToRoles(TKey, String[])	
+|
+Adds a user to multiple roles
+|	ChangePassword(TKey, String, String)	
+|
+Changes a user password.
+|	ChangePhoneNumber(TKey, String, String)	
+|
+Sets a user phone number with the verification token.
+|	CheckPassword(TUser, String)	
+|
+Determines whether the password is valid for the user.
+|	ConfirmEmail(TKey, String)	
+|
+Confirms the user e-mail with confirmation token.
+|	Create(TUser)	
+|
+Creates a user with no password.
+|	Create(TUser, String)	
+|
+Creates a user with the given password.
+|	Delete(TUser)	
+|
+Deletes a user.
+|	Find(String, String)	
+|
+Returns a user with the specified username and password or null if there is no match.
+|	Find(UserLoginInfo)	
+|
+Returns the user associated with this login.
+|	FindByEmail(String)	
+|
+Finds a user by his e-mail.
+|	FindById(TKey)	
+|
+Finds a user by ID.
+|	FindByName(String)	
+|
+Finds a user by user name.
+|	GenerateChangePhoneNumberToken(TKey, String)	
+|
+Generates a code that the user can use to change their phone number to a specific number.
+|	GenerateEmailConfirmationToken(TKey)	
+|
+Gets the e-mail confirmation token for the user.
+|	GeneratePasswordResetToken(TKey)	
+|
+Generates a password reset token for the user using the UserTokenProvider.
+|	GenerateTwoFactorToken(TKey, String)	
+|
+Gets a token for a specific two factor provider.
+|	GetAccessFailedCount(TKey)	
+|
+Returns the number of failed access attempts for the user.
+|	GetEmail(TKey)	
+|
+Gets a user e-mail.
+|	GetLockoutEnabled(TKey)	
+|
+Determines whether the lockout is enabled for the user.
+|	GetLockoutEndDate(TKey)	
+|
+Returns when the user is no longer locked out, dates in the past are considered as not being locked out.
+|	GetLogins(TKey)	
+|
+Gets the external logins for a user.
+|	GetPhoneNumber(TKey)	
+|
+Gets a user phone number.
+|	GetRoles(TKey)	
+|
+Returns the roles for the user.
+|	GetTwoFactorEnabled(TKey)	
+|
+Determines whether two factor authentication is enabled for a user.
+|	GetValidTwoFactorProviders(TKey)	
+|
+Returns a list of valid two factor providers for a user.
+|	HasPassword(TKey)	
+|
+Determines whether the user has a password.
+|	IsEmailConfirmed(TKey)	
+|
+Determines whether the user e-mail has been confirmed.
+|	IsInRole(TKey, String)	
+|
+Determines whether the user is in the specified role.
+|	IsLockedOut(TKey)	
+|
+Determines whether the user is locked out.
+|	IsPhoneNumberConfirmed(TKey)	
+|
+Determines whether the user phone number has been confirmed.
+|	NotifyTwoFactorToken(TKey, String, String)	
+|
+Notifies a user with a token using a specific method of two-factor authentication provider.
+|	RegisterTwoFactorProvider(String, IUserTokenProvider<TUser, TKey>)	
+|
+Registers a two factor authentication provider with the TwoFactorProviders mapping.
+|	RemoveFromRole(TKey, String)	
+|
+Removes a user from a role.
+|	RemoveFromRoles(TKey, String[])	
+|
+Remove user from multiple roles
+|	RemoveLogin(TKey, UserLoginInfo)	
+|
+Removes a user login.
+|	RemovePassword(TKey)	
+|
+Removes a user password.
+|	ResetAccessFailedCount(TKey)	
+|
+Resets the access failed count for the user to 0.
+|	ResetPassword(TKey, String, String)	
+|
+Resets a user password using a reset password token.
+|	SendEmail(TKey, String, String)	
+|
+Sends an e-mail to the user.
+|	SendSms(TKey, String)	
+|
+Sends the user a SMS message.
+|	SetEmail(TKey, String)	
+|
+Sets a user e-mail.
+|	SetLockoutEnabled(TKey, Boolean)	
+|
+Sets whether lockout is enabled for this user.
+|	SetLockoutEndDate(TKey, DateTimeOffset)	
+|
+Sets the time when a user lockout ends.
+|	SetPhoneNumber(TKey, String)	
+|
+Sets a user phone number.
+|	SetTwoFactorEnabled(TKey, Boolean)	
+|
+Sets the two factor authentication enabled property for the user.
+|	UpdateSecurityStamp(TKey)	
+|
+Generates a new security stamp for a user, used for SignOutEverywhere functionality.
+|	VerifyChangePhoneNumberToken(TKey, String, String)	
+|
+Verifies whether the code is valid for a specific user and for a specific phone number.
+|	VerifyTwoFactorToken(TKey, String, String)	
+|
+Verifies a two factor token with the specified provider.
+|====
+
+As you can see, the reset/confirm password calls are all here, as are calls for setting up and using external logins and two-factor authorization.
+
+
+Although the UserManager lets us manipulate roles for a given user, sometimes you need to manipulate the roles themselves directly.
+
+The RoleManager provides these capabilities:
+FIXFIXFIX
+[cols="1,3"]
+|====
+| method | description
+
+|	Create(TRole)	
+|
+Creates a role.
+|	Delete(TRole)	
+|
+Deletes a role.
+|	FindById(TKey)	
+|
+Finds a role by ID (a Role instance)
+|	FindByName(String)	
+|
+Finds a role by name.
+|	RoleExists(String)	
+|
+Determines whether the role exists.
+|====
+
+
+Microsoft provides additional functionality in ASP.NET Identity including external authentication services such as Google and Facebook, and you can integrate reCaptcha validation of human interaction. For information on using those services, see http://www.asp.net/web-api/overview/security/external-authentication-services. Note that the writeup is based on a MVC project, some adjustments will be needed to use this with Web Pages.
 
 
 === Cross-site scripting
@@ -487,17 +1108,25 @@ With ASP.NET's Web Pages, accessibility is driven by the HTML and the content; i
 
 === Further Reading
 
-- https://www.owasp.org/index.php/.NET_Security_Cheat_Sheet
-- https://www.owasp.org/images/5/57/OWASP_Proactive_Controls_2.pdf
-- http://www.mikepope.com/blog/DisplayBlog.aspx?permalink=2240
-- http://www.asp.net/web-pages/overview/security/16-adding-security-and-membership
-- https://msdn.microsoft.com/en-us/library/system.web.httputility(v=vs.110).aspx
-- https://msdn.microsoft.com/en-us/library/hh882339(v=vs.110).aspx
-- http://webaim.org/standards/wcag/checklist
-- http://webaim.org/standards/508/checklist
-- http://web.archive.org/web/20150317082715/http://www.microsoft.com/web/post/securing-web-communications-certificates-ssl-and-https
-- http://www.c-sharpcorner.com/uploadfile/225740/what-is-ssl-and-how-to-implement-in-asp-net-web-aaplication/
-- https://www.macaw.nl/artikelen/configuring-an-asp-net-project-for-development-with-ssl
+- https://www.owasp.org/index.php/.NET_Security_Cheat_Sheet[.NET Security Cheat Sheet]
+- https://www.owasp.org/images/5/57/OWASP_Proactive_Controls_2.pdf[OWASP Top 10 Proactive Controls 2016]
+- http://www.mikepope.com/blog/AddComment.aspx?blogid=2240[THE most basic way to implement ASP.NET Razor security] (uses the older Membership method)
+- http://www.asp.net/web-pages/overview/security/16-adding-security-and-membership[Adding Security and Membership to an ASP.NET Web Pages (Razor) Site] (the old way, with Membership)
+- http://www.mikesdotnetting.com/article/253/using-asp-net-identity-with-razor-web-pages[Using ASP.NET Identity with Razor Web Pages]
+- http://www.asp.net/identity/overview/features-api/account-confirmation-and-password-recovery-with-aspnet-identity[Account Confirmation and Password Recovery with ASP.NET Identity (C#)]
+- http://www.asp.net/mvc/overview/security/create-an-aspnet-mvc-5-web-app-with-email-confirmation-and-password-reset[Create a secure ASP.NET MVC 5 web app with log in, email confirmation and password reset (C#)]
+- https://msdn.microsoft.com/en-us/library/system.net.mail.smtpclient.usedefaultcredentials(v=vs.110).aspx[SmtpClient.UseDefaultCredentials Property]
+- https://msdn.microsoft.com/en-us/library/w355a94k(v=vs.110).aspx[<mailSettings> Element (Network Settings)]
+- https://code.msdn.microsoft.com/ASPNET-MVC-5-Security-And-44cbdb97[ASP.NET MVC 5 Security And Creating User Role]
+- https://msdn.microsoft.com/en-us/library/dn613290(v=vs.108).aspx[UserManager<TUser, TKey> Class]
+- https://msdn.microsoft.com/en-us/library/dn613286(v=vs.108).aspx[RoleManager<TRole, TKey> Class]
+- https://msdn.microsoft.com/en-us/library/system.web.httputility(v=vs.110).aspx[HttpUtility Class]
+- https://msdn.microsoft.com/en-us/library/hh882339(v=vs.110).aspx[Request Validation in ASP.NET]
+- http://web.archive.org/web/20150317082715/http://www.microsoft.com/web/post/securing-web-communications-certificates-ssl-and-https[Securing Web Communications: Certificates, SSL, and https:// (via the internet archive)]
+- http://www.c-sharpcorner.com/uploadfile/225740/what-is-ssl-and-how-to-implement-in-asp-net-web-aaplication/[What is SSL and How to Implement in ASP.Net Web Application]
+- https://www.macaw.nl/artikelen/configuring-an-asp-net-project-for-development-with-ssl[Configuring an ASPNET project for development with SSL]
+- http://webaim.org/standards/wcag/checklist[WebAIM's WCAG 2.0 Checklist for HTML documents]
+- http://webaim.org/standards/508/checklist[WebAIM's Section 508 Checklist for HTML documents]
 
 
 === Exercises
