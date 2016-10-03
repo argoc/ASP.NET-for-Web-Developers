@@ -12,6 +12,8 @@ If you want to see the book in development, view it here on GitHub by clicking o
 https://github.com/argoc/ASP.NET-for-Web-Developers/blob/master/book.adoc
 and navigating into the book from there. Please note that GitHub's rendering is not perfect, it doesn't embed variables or includes inside source blocks.
 
+The associated code (VS Template) mentioned in Chapter 2 is maintained at https://github.com/argoc/Web-Pages-Identity-Template
+
 If you wish to contribute, I'd welcome feedback, contributions, and
 corrections.
 
