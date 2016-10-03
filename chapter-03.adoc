@@ -317,17 +317,116 @@ HTTP requests are usually GET requests; forms can be submitted with either GET o
 One thing our page lacks is error handling; we will see that there are calls we can make to check the input values and ensure they are valid integers prior to converting them to integers. There are several checks we may want to make, if our code is going to be used to control peoples' bank balances or fly shuttles to Mars. (Don't believe me? see http://www.hq.nasa.gov/office/pao/History/alsj/a11/a11.1201-pa.html)
 
 
+
+=== Giving Information to Pages
+
+You can provide information to a page in your website using a Form, a URL, or a Query String.
+
+==== Form and Query String information
+
+As you've already seen, when a form is posted, the information is available in the Request object, which is held in the Request property for the page. Query information is also available in the Request object.
+
+The Request object holds a dictionary, mapping fields and parameters to their values, as shown in the calculator example above. This dictionary also holds key/value pairs for cookies, client certificates, and server variables.
+
+If you want to ensure you are looking at a URL query parameter, you can specify that you want to only look at the Query dictionary, by looking in Reqeust.QueryString rather than just Request.
+
+If you want to ensure you are looking at a Form field, you can specify that you want to only look at the Form dictionary, by looking in Request.Form rather than just Request.
+
+
+==== URL information
+
+The meaning of URLs has been shifting in recent years. URLs with file extensions, query values, and even relative links are becoming less common. These complex URLs actually provide implementation details about your site you may not want to share. They are also given lower SEO scores or not even indexed by search engines. 
+
+This has lead to a rise in routing frameworks, including ASP.NET Routing. A routing framework knows how to map URLs to actions on a web server. Those actions might be fetching pages, or more complex actions re-routing a URL to a method call or database access.
+
+ASP.NET Routing includes the ability to include information on the path portion of a URL.
+
+Given a URL of the form `http://mydomain.com/SimpleCalculator/Pi`, ASP.NET will first attempt to locate the page Pi.cshtml in the directory SimpleCalculator. If it does not find that, it will look for SimpleCalculator.cshtml. If it doesn't find that, it will report a HTTP 404 error on the original URL. However, if that is a page on our website, then it will invoke it, and will provide the unused portions of the URL in the page's UrlData property. This property is an array of values, so UrlData[0] in our example would contain the string value "Pi".
+
+If you invoked the same page with a different URL, `http://mydomain.com/SimpleCalculator/Zero`, then UrlData[0] would hold the string value "Zero", and `http://mydomain.com/SimpleCalculator/1` would have the string value "1" in UrlData[0] .
+
+We could use this value in our SimpleCalculator to initialize the field value like so:
+
+[source,html]
+----
+    ...
+    
+    @{
+        var firstValue = "";
+        if (UrlData.Count > 0) {
+            firstValue = UrlData[0];
+        }
+    }
+    <input type="text" name="num1" value="@firstValue"/>
+    ...
+----
+
+In general, this search for a page steps through each portion of the path until a page match is found. So, you could have several UrlData entries, one for each step in the directory.
+
+Once the page is running, it can access the path that came after it in the URL through the UrlData property available on the page. UrlData is a simple array of strings, with ``UrlData[0]`` holding the first (on the left) unused name in the path, and ``UrlData[1]`` holding the second one, and so on; all of the /-separated names are in the UrlData array.
+
+You can use this yourself to encode values passed to pages for course navigation, or to build URLs that will have higher SEO-scores than query-driven URLs.
+
+
+
+
+=== Passing information to Layouts
+
+The Layout page could also access Form, Query, and UrlData; however a Layout has to assume it is used by more than one page, and those structures may not be used by every page using that Layout.
+
+It is more typical to pass information to the Layout from a content page using page properties, so that each page can construct the information in the same way for the Layout. That information can then be used by the Layout to configure its own content. 
+We see this with Page.Title already.
+
+ASP.NET Web Pages provides a general way to do this, using a special dictionary property named `PageData`. This dictionary maps keys to values; you choose the keys available in the dictionary. Keys do not have to be fixed at compile-time; they could even come from a database or external source.
+
+Any `PageData` dictionary entries you make in the opening code block on your page will be 
+visible to the Layout page and any other content pulled in to the Layout page.
+
+For example, if I want to pass not only a page title but also a header for the page content, my opening codeblock on my page would look like this:
+
+[source,java]
+----
+@{
+    Page.Title = "Favorite Page";
+    PageData["PageHeading"] = "My Favorite Page";
+}
+----
+
+Then, in my Layout page, I can test to see if the value is set and if so, use it on the page:
+
+[source,java]
+----
+@{
+    // checking to make sure a heading was desired
+    // (if you know it will be there, check could be skipped)
+
+    if (PageData.ContainsKey("PageHeading")) {
+
+        <h1>PageData["PageHeading"]</h1>
+
+    }
+}
+----
+
+There are several ways to accomplish this information-passing task available in ASP.NET, PageData is just one of them. If you look into this area of ASP.NET further, you will also see that you can use the dynamic nature of the Page object to assign dynamic properties, and may see reference to AppData or ViewBag properties used in this manner. Our convention follows the Razor Web Pages convention of using PageData.
+
+
+
 === Further Reading
 
-* http://www.w3schools.com/aspnet/razor_syntax.asp
-* http://www.asp.net/web-pages/overview/getting-started/introducing-razor-syntax-c
-* http://www.asp.net/web-pages/overview/getting-started/introducing-aspnet-web-pages-2/getting-started
-* http://www.asp.net/web-pages/overview/getting-started/introducing-aspnet-web-pages-2/intro-to-web-pages-programming
-* http://www.asp.net/web-pages/overview/testing-and-debugging/aspnet-web-pages-razor-troubleshooting-guide
-* http://www.asp.net/web-pages/overview/getting-started/aspnet-web-pages-razor-faq
-* http://forums.asp.net/1224.aspx/1?ASP+NET+Web+Pages
-* https://msdn.microsoft.com/en-us/library/gg606533(v=vs.100).aspx
-http://blog.slaks.net/2011/01/dissecting-razor-part-1-pieces-of.html and Slak's other posts on Razor - very informative, something to return to once you've had some time with Razor.
+* http://www.w3schools.com/aspnet/razor_syntax.asp[ASP.NET Razor - Markup] @ W3schools
+* http://www.asp.net/web-pages/overview/getting-started/introducing-razor-syntax-c[Introduction to ASP.NET Web Programming Using the Razor Syntax (C#)] @ ASP.NET
+* http://www.asp.net/web-pages/overview/getting-started/introducing-aspnet-web-pages-2/getting-started[Introducing ASP.NET Web Pages - Getting Started] @ ASP.NET
+* http://www.asp.net/web-pages/overview/getting-started/introducing-aspnet-web-pages-2/intro-to-web-pages-programming[Introducing ASP.NET Web Pages - Programming Basics] @ ASP.NET
+* http://www.asp.net/web-pages/overview/testing-and-debugging/aspnet-web-pages-razor-troubleshooting-guide[ASP.NET Web Pages (Razor) Troubleshooting Guide] @ ASP.NET
+* http://www.asp.net/web-pages/overview/getting-started/aspnet-web-pages-razor-faq[ASP.NET Web Pages (Razor) FAQ] @ ASP.NET
+* http://forums.asp.net/1224.aspx/1?ASP+NET+Web+Pages[ASP.NET Web Pages Forum] @ ASP.NET Forums
+* https://msdn.microsoft.com/en-us/library/gg606533(v=vs.100).aspx[Walkthrough: Creating a Web Site using Razor Syntax in Visual Studio] @ ASP.NET
+* http://blog.slaks.net/2011/01/dissecting-razor-part-1-pieces-of.html[Dissecting Razor, part 1: Parts of the framework] @ SlaksBlog.com and Slak's other posts on Razor - very informative, something to return to once you've had some time with Razor.
+* https://www.asp.net/web-pages/overview/routing/creating-readable-urls-in-aspnet-web-pages-sites[Creating Readable URLs in ASP.NET Web Pages (Razor) Sites] @ ASP.NET
+* https://www.asp.net/web-pages/overview/ui-layouts-and-themes/3-creating-a-consistent-look[Creating a Consistent Layout in ASP.NET Web Pages (Razor) Sites]
+* http://www.mikepope.com/blog/AddComment.aspx?blogid=2368["Page" vs "PageData" objects  in ASP.NET Web Pages]
+
 
 === Exercises
 
