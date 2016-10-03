@@ -350,20 +350,15 @@ We could use this value in our SimpleCalculator to initialize the field value li
 [source,html]
 ----
     ...
-    
-    @{
-        var firstValue = "";
-        if (UrlData.Count > 0) {
-            firstValue = UrlData[0];
-        }
-    }
-    <input type="text" name="num1" value="@firstValue"/>
+    <input type="text" name="num1" value="@UrlData[0]"/>
     ...
 ----
 
+Notice that I assume there is a value there; if there is not, the value is "", an empty string.
+
 In general, this search for a page steps through each portion of the path until a page match is found. So, you could have several UrlData entries, one for each step in the directory.
 
-Once the page is running, it can access the path that came after it in the URL through the UrlData property available on the page. UrlData is a simple array of strings, with ``UrlData[0]`` holding the first (on the left) unused name in the path, and ``UrlData[1]`` holding the second one, and so on; all of the /-separated names are in the UrlData array.
+Once the page is running, it can access the path that came after it in the URL through the UrlData property available on the page. UrlData is a simple array of strings, with ``UrlData[0]`` holding the first (on the left) unused name in the path, and ``UrlData[1]`` holding the second one, and so on; all of the URL's /-separated names after the page name are in the UrlData array.
 
 You can use this yourself to encode values passed to pages for course navigation, or to build URLs that will have higher SEO-scores than query-driven URLs.
 
