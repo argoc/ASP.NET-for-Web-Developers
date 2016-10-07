@@ -385,7 +385,7 @@ x = x + 2;
 
 The other operators work in the same manner.
 
-There is an even shorter form for +1 and -1, the post-fix (after) ++ and-- and pre-fix (before) ++ and -- operators.
+There is an even shorter form for +1 and -1, the post-fix (after) `&#43;&#43;` and ``--`` and pre-fix (before) `&#43;&#43;` and `--` operators.
 
 These have subtle impacts when embedded within other expressions.
 
