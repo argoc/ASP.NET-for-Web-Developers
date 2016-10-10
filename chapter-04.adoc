@@ -1006,12 +1006,12 @@ Once you have a Random object instance, you have a variety of methods available 
 
 |===
 |Method | Description
-| Next()] | Returns a non-negative random integer.
-| Next(i)] | Returns a non-negative random integer that is less than the specified maximum integer i.
-| Next(low, high)] | Returns a random integer that is within a specified range of low..high.
-| NextBytes(Byte[])] | Fills the elements of a specified array of bytes with random numbers.
-| NextDouble()] | Returns a random floating-point number that is greater than or equal to 0.0, and less than 1.0.
-| Sample()] | Returns a random floating-point number between 0.0 and 1.0.
+| Next() | Returns a non-negative random integer.
+| Next(i) | Returns a non-negative random integer that is less than the specified maximum integer i.
+| Next(low, high) | Returns a random integer that is within a specified range of low..high.
+| NextBytes(Byte[]) | Fills the elements of a specified array of bytes with random numbers.
+| NextDouble() | Returns a random floating-point number that is greater than or equal to 0.0, and less than 1.0.
+| Sample() | Returns a random floating-point number between 0.0 and 1.0.
 |===
 
 You would not create a new Random object for each random number you need -- rather, you should create a Random object and reuse it as much as possible within your code.
