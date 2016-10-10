@@ -1,6 +1,6 @@
 = ASP.NET for Web Developers
 Amelia Garripoli <agarripoli@olympic.edu>
-v1.1, September 25, 2016
+v1.2, October 9, 2016
 
 :doctype: book
 :source-highlighter: coderay
