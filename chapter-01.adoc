@@ -713,9 +713,12 @@ work. The goal is to learn how to make the application work.
 
 === Further Reading
 
-- ASP.NET 4.5 overview
-- .NET 4.5 overview
-- SignalR, WebAPI, MVC, Web Forms, Web Pages home pages on asp.net
+- https://msdn.microsoft.com/en-us/library/4w3ex9c2.aspx[ASP.NET Overview from Microsoft]
+- https://msdn.microsoft.com/en-us/library/ms178466.aspx[ASP.NET Compilation Overview from Microsoft]
+- https://msdn.microsoft.com/en-us/library/vstudio/hh425099.aspx[Getting Started with the .NET Framework from Microsoft]
+- https://msdn.microsoft.com/en-us/library/vstudio/zw4w595w.aspx[Overview of the .NET Framework from Microsoft]
+- https://msdn.microsoft.com/en-us/library/aa292164(v=vs.71).aspx[.NET Programming Languages from Microsoft]
+- http://www.asp.net/web-pages/overview/getting-started/introducing-aspnet-web-pages-2/getting-started[Introducing ASP.NET Web Pages]
 
 === Exercises
 
