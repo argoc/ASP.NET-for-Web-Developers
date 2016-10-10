@@ -54,15 +54,15 @@ It's always a good idea to know the history behind what you are learning, so her
 
 ASP.NET was first released in 2002 by Microsoft as a web application framework on top of the .NET platform (first released in 2000), their common framework and engine for several programming languages. It provides a library and framework to support web development, and replaced the earlier Active Server Pages tehnology developed by Microsoft.
 
-Razor was developed in 2010 by Andrew Nurse (http://vibrantcode.com/) for Microsoft it replaces Active Server Pages' (.aspx's) inlining syntax with a simpler form that has been embraced by the Microsoft developer community. It streamlines the transition between HTML and code.
+Razor was developed in 2010 by Andrew Nurse (of http://vibrantcode.com/[vibrantcode.com]) for Microsoft. It replaces Active Server Pages' (.aspx's) inlining syntax with a simpler form that has been embraced by the Microsoft developer community. It streamlines the transition between HTML and code.
 
 C# was developed in 1999 by Microsoft. Who designed paticular features we do not know, but the team lead was Anders Hejlsberg. If you know Java, some of the changes may seem silly (IndexOutOfBoundsException instead of ArrayIndexOutOfBoundsException, for example) but some changes are helpful -- the foreach loop in C# resulted in the definition of a similar structure in Java, after C# did it. C# also introduced many helpful shorthands in defining classes, so properties really are properties, and not directly tied to class instance variables. Was C# a response to Java's license requiring no changes to Java? we will never know, but its lead developer claims that C# is "not a Java clone" but is more related to C++.
 
 For more background, see
 
-- https://en.wikipedia.org/wiki/.NET_Framework
-- https://en.wikipedia.org/wiki/ASP.NET
-- https://en.wikipedia.org/wiki/ASP.NET_Razor
-- https://en.wikipedia.org/wiki/C_Sharp_(programming_language)
+- https://en.wikipedia.org/wiki/.NET_Framework[.NET Framework @ Wikipedia]
+- https://en.wikipedia.org/wiki/ASP.NET[ASP.NET @ Wikipedia]
+- https://en.wikipedia.org/wiki/ASP.NET_Razor[ASP.NET Razor @ Wikipedia]
+- https://en.wikipedia.org/wiki/C_Sharp_(programming_language)[C# programming language @ Wikipedia]
 
 

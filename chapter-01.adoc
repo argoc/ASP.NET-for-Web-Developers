@@ -19,7 +19,7 @@ ____
 
 === What you write
 
-When you develop a website or web application in the ASP.NET environment, you write HTML, JavaScript, and CSS, and then you add server-side coding and databases using Razor to embed C# in your page/application and call out to your own C# classes and those of the ASP.NET library. The database access can be done in several ways; we will be executing SQL classes using the ASP.NET SQLClient. Microsoft also provides LINQ, with provides both a library and _another_ language for database access. The LINQ language is like SQL -- similar to how C# is like Java.
+When you develop a website or web application in the ASP.NET environment, you write HTML, JavaScript, and CSS, and then you add server-side coding and databases using Razor to embed C# in your page/application and call out to your own C# classes and those of the ASP.NET library. The database access can be done in several ways; we will be executing SQL classes using the ASP.NET SQLClient. Microsoft also provides LINQ, which provides both a library and _another_ language for database access. The LINQ language is like SQL -- similar to how C# is like Java.
 
 You write your application code in Visual Studio, and when it is run within Visual Studio, it runs in a local web server using IIS Express. IIS is Internet Information Services, Microsoft's web server; IIS Express is a lightweight version for development use. In deployed mode, your application would be packaged and deployed in Internet Information Services (IIS) for Windows® Server or some other web server supporting ASP.NET.
 
@@ -96,7 +96,7 @@ I realize you do not yet know C#, Razor, and ASP.NET; however, the advice here w
 
 Different kinds of errors can occur in a program, and it is useful to distinguish among them in order to track them down more quickly:
 
-* Syntax errors are produced by HTML, CSS, JavaScript, Razor, and C# when Visual Studio first encounters them. If you are running "on the wire", without Visual Studio, then they are detected at the first piece of software to handle them. HTML, CSS, and JavaScript syntax errors may not be detected until the browser sees them; most browsers try to recover gracefully, but may also output error messages or bad pages when handed syntactically incorrect HTML, CSS, or JavaScript. Razor and C# syntax errors are detected at compile time (C#) or interpretation time (Razor). It is the web server that interprets Razor and turns it into HTML for the client to display.  Syntax errors indicatye that there is something wrong with the syntax of the program. Example: Omitting the semicolon at the end of a C# statement yields an error `unexpected keyword` when the next keyword is found at the start of the next statement.
+* Syntax errors are produced by HTML, CSS, JavaScript, Razor, and C# when Visual Studio first encounters them. If you are running "on the wire", without Visual Studio, then they are detected at the first piece of software to handle them. HTML, CSS, and JavaScript syntax errors may not be detected until the browser sees them; most browsers try to recover gracefully, but may also output error messages or bad pages when handed syntactically incorrect HTML, CSS, or JavaScript. Razor and C# syntax errors are detected at compile time (C#) or interpretation time (Razor). It is the web server that interprets Razor and turns it into HTML for the client to display.  Syntax errors indicate that there is something wrong with the syntax of the program. Example: Omitting the semicolon at the end of a C# statement yields an error `unexpected keyword` when the next keyword is found at the start of the next statement.
 
 * Runtime errors are produced by the interpreter if something goes wrong while the program is running. Most runtime error messages include information about where the error occurred and what methods or functions were executing. Example: An infinite recursion eventually cases the runtime error `StackOverflowException`.
 
@@ -567,7 +567,7 @@ y = x / 2 * Math.Pi;
 
 That is not correct because multiplication and division have
 the same precedence and are evaluated from left to right.
-So this expression computes x π / 2.
+So this expression computes ( x / 2 ) and then multiplies it by π, which is x π / 2.
 
 A good way to debug expressions is to add parentheses to make
 the order of evaluation explicit:
@@ -577,6 +577,8 @@ the order of evaluation explicit:
  y = x / (2 * Math.Pi);
 
 ----
+
+Now we can clearly see that π is in the divisor, not above it.
 
 Whenever you are not sure of the order of evaluation, use
 parentheses. Not only will the program be correct (in the sense
