@@ -24,7 +24,7 @@
         var delete = "DELETE FROM PhoneBook WHERE Id=@0";
         db.Execute(delete,id);
         db.Close(); // clean up then return to the list
-        Response.Redirect("~/PhoneBookChoices.cshtml");
+        Response.Redirect("~/PhoneBookChoices");
     }
 
 
@@ -47,7 +47,7 @@
         )
       )
     </div>
-    <div><a href="~/PhoneBookChoices.cshtml">Cancel</a></div>
+    <div><a href="~/PhoneBookChoices">Cancel</a></div>
     @{
     db.Close();
     }

@@ -30,12 +30,12 @@
           grid.Column("Email"),
           grid.Column("TwitterHandle", "Twitter Handle"),
           grid.Column("Id","Change",
-            format: @<text><a href="~/DeleteEntry.cshtml?id=@item.Id">Delete</a>&nbsp;
-                <a href="~/UpdateEntry.cshtml?id=@item.Id">Update</a> </text>)
+            format: @<text><a href="~/DeleteEntry?id=@item.Id">Delete</a>&nbsp;
+                <a href="~/UpdateEntry?id=@item.Id">Update</a> </text>)
         )
       )
     </div>
-    <div><a href="~/AddPhoneBookEntry.cshtml">Add new entry</a></div>
+    <div><a href="~/AddPhoneBookEntry">Add new entry</a></div>
     @{
     db.Close();
     }

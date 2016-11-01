@@ -15,7 +15,7 @@
     //no row, 'quiet' error and return to the list page
     if (row == null) {
         db.Close();
-        Response.Redirect("~/PhoneBookChoices.cshtml");
+        Response.Redirect("~/PhoneBookChoices");
     }
 
     if (IsPost) {
@@ -47,7 +47,7 @@
         }
 
         db.Close(); // clean-up
-        Response.Redirect("~/PhoneBookChoices.cshtml");
+        Response.Redirect("~/PhoneBookChoices");
     } else {
         // get the values from the row to see what changes the user wants to make
         name = row.Name;

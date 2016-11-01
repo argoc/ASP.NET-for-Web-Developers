@@ -399,8 +399,8 @@ Notice the "extra" column in the `GetHtml` on the grid:
 ----
 grid.Column("Id","Change",
             format: @<text>
-                <a href="~/DeleteEntry.cshtml?id=@item.Id">Delete</a>&nbsp;
-                <a href="~/UpdateEntry.cshtml?id=@item.Id">Update</a> </text>)
+                <a href="~/DeleteEntry?id=@item.Id">Delete</a>&nbsp;
+                <a href="~/UpdateEntry?id=@item.Id">Update</a> </text>)
 ----
 
 This column uses Id as its underlying value, but has its displayed column header say "Change". We don't want to display the Id, but we do want to use it in links. We do this by generating links directly in the format parameter. Notice that this is embedded HTML, not a string value, for the parameter.
@@ -411,7 +411,7 @@ You may have noticed the added link below the table as well, to add a new entry.
 
 [source,html]
 ----
-Response.Redirect("~/PhoneBookChoices.cshtml");
+Response.Redirect("~/PhoneBookChoices");
 ----
 
 
