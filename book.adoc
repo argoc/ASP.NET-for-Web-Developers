@@ -19,9 +19,11 @@ Formerly: New to ASP: Razor, C#, ASP.NET
 
 Generate PDF:
 asciidoctor-pdf -a toc book.adoc
+# makes book.pdf
 
 Generate HTML:
-asciidoctor -a toc book.html
+asciidoctor -a toc book.adoc
+# makes book.html
 
 Rev to github:
 git status / git add / git commit

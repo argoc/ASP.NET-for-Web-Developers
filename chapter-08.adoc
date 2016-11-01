@@ -26,7 +26,7 @@ Although the implementations of collections provided in C# are classes, it defin
 |IList | a collection that can be accessed by a numeric index (like an array)
 |====
 
-There are two more interfaces in `System.Collections` which we make heavy use of: `IEnumerator`and `IEnumerable`. A class that implements `IEnumerator` will provide an `IEnumerable`. This is important because `IEnumerable` lets you not only move through the collection item by item, but also lets you access the collection's elements using a foreach loop. We say that the foreach loop enumerates through the items in the collection.
+There are two more interfaces in `System.Collections` which we make heavy use of: `IEnumerator` and `IEnumerable`. A class that implements `IEnumerator` will provide an `IEnumerable`. This is important because `IEnumerable` lets you not only move through the collection item by item, but also lets you access the collection's elements using a foreach loop. We say that the foreach loop enumerates through the items in the collection.
 
 ==== Collection Classes
 
